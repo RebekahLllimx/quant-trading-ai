@@ -104,6 +104,11 @@ def plot_candlestick(df, title, save_path, stock_info, show_ma=True):
         gridstyle='--', gridaxis='both',
         facecolor='white', figcolor='white',
         y_on_right=False,
+        rc={
+            'font.sans-serif': ['Heiti SC', 'STHeiti', 'PingFang SC', 'Arial Unicode MS', 'SimHei', 'sans-serif'],
+            'font.monospace': ['Heiti SC', 'STHeiti', 'sans-serif'],
+            'axes.unicode_minus': False,
+        }
     )
 
     # 构建均线叠加
@@ -177,7 +182,10 @@ def plot_candlestick_recent(df, title, save_path, months=3):
         up='red', down='green', edge='inherit', wick='inherit',
         volume={'up': 'red', 'down': 'green'}, alpha=0.85)
     s = mpf.make_mpf_style(marketcolors=mc, gridstyle='--', gridaxis='both',
-                           facecolor='white', figcolor='white', y_on_right=False)
+                           facecolor='white', figcolor='white', y_on_right=False,
+                           rc={'font.sans-serif': ['Heiti SC', 'STHeiti', 'PingFang SC', 'Arial Unicode MS', 'SimHei', 'sans-serif'],
+                               'font.monospace': ['Heiti SC', 'STHeiti', 'sans-serif'],
+                               'axes.unicode_minus': False})
 
     ma10 = ohlc_df['Close'].rolling(10).mean()
     ma30 = ohlc_df['Close'].rolling(30).mean()
