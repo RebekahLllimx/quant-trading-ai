@@ -34,7 +34,11 @@ END_DATE = datetime.now().strftime("%Y%m%d")
 START_DATE = (datetime.now() - timedelta(days=365)).strftime("%Y%m%d")
 
 OUTPUT_DIR = os.path.dirname(os.path.abspath(__file__))
-CHART_COMPARE = os.path.join(OUTPUT_DIR, "multi_stock_compare.png")
+CHART_DIR = os.path.join(OUTPUT_DIR, '..', 'data', 'charts')
+DATA_DIR  = os.path.join(OUTPUT_DIR, '..', 'data')
+os.makedirs(CHART_DIR, exist_ok=True)
+os.makedirs(DATA_DIR, exist_ok=True)
+CHART_COMPARE = os.path.join(CHART_DIR, "multi_stock_compare.png")
 
 # 中文字体
 plt.rcParams['font.sans-serif'] = ['Heiti SC', 'STHeiti', 'PingFang SC', 'Arial Unicode MS', 'SimHei', 'sans-serif']
@@ -230,7 +234,7 @@ def plot_individual_charts(stocks_data, stocks_info):
         ax2.xaxis.set_major_locator(mdates.MonthLocator(interval=2))
         plt.setp(ax2.xaxis.get_majorticklabels(), rotation=30, ha='right', fontsize=8)
 
-        chart_path = os.path.join(OUTPUT_DIR, f"{info['code']}_{s_name}_chart.png")
+        chart_path = os.path.join(CHART_DIR, f"{info['code']}_{s_name}_chart.png")
         plt.tight_layout()
         plt.savefig(chart_path, dpi=150, bbox_inches='tight')
         plt.close()
@@ -275,7 +279,7 @@ def save_csv_files(stocks_data, stocks_info):
     """保存每只股票的CSV"""
     for s_name, df in stocks_data.items():
         info = stocks_info[s_name]
-        csv_path = os.path.join(OUTPUT_DIR, f"{info['code']}_{s_name}_daily.csv")
+        csv_path = os.path.join(DATA_DIR, f"{info['code']}_{s_name}_daily.csv")
         df_out = df.copy()
         df_out['trade_date'] = df_out['trade_date'].dt.strftime('%Y-%m-%d')
         df_out.to_csv(csv_path, index=False, encoding='utf-8-sig')
@@ -311,7 +315,7 @@ if __name__ == "__main__":
     # 3. 生成统计汇总表
     print("\n>>> 步骤3: 统计汇总")
     stats_df = build_statistics_table(stocks_data, stocks_info)
-    stats_csv = os.path.join(OUTPUT_DIR, "multi_stock_summary.csv")
+    stats_csv = os.path.join(DATA_DIR, "multi_stock_summary.csv")
     stats_df.to_csv(stats_csv, index=False, encoding='utf-8-sig')
     print(stats_df.to_string(index=False))
     print(f"\n统计汇总已保存: {stats_csv}")

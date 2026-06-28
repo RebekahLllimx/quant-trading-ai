@@ -18,6 +18,10 @@ warnings.filterwarnings('ignore')
 
 # ==================== 配置 ====================
 OUTPUT_DIR = os.path.dirname(os.path.abspath(__file__))
+CHART_DIR = os.path.join(OUTPUT_DIR, '..', 'data', 'charts')
+DATA_DIR  = os.path.join(OUTPUT_DIR, '..', 'data')
+os.makedirs(CHART_DIR, exist_ok=True)
+os.makedirs(DATA_DIR, exist_ok=True)
 
 END_DATE = datetime.now().strftime("%Y%m%d")
 START_DATE = (datetime.now() - timedelta(days=365)).strftime("%Y%m%d")
@@ -304,7 +308,7 @@ def plot_ah_comparison(a_data, hk_data):
              ha='center', fontsize=10, fontweight='bold', color='#9467bd')
 
     plt.tight_layout(rect=[0, 0, 1, 0.96])
-    save_path = os.path.join(OUTPUT_DIR, "AH_comparison.png")
+    save_path = os.path.join(CHART_DIR, "AH_comparison.png")
     plt.savefig(save_path, dpi=150, bbox_inches='tight')
     plt.close()
     print(f"\n[对比图] A股vs港股已保存: AH_comparison.png")
@@ -382,7 +386,7 @@ if __name__ == "__main__":
         df = a_data[name]
         # 全年K线图
         title = f"{name}（{s['code']}）过去一年日K线图"
-        save_path = os.path.join(OUTPUT_DIR, f"{s['code']}_{name}_candle.png")
+        save_path = os.path.join(CHART_DIR, f"{s['code']}_{name}_candle.png")
         plot_candlestick(df, title, save_path, s)
 
     # ═══ 步骤4: 绘制港股K线蜡烛图 ═══
@@ -394,7 +398,7 @@ if __name__ == "__main__":
         print(f"  正在绘制 {name}...")
         df = hk_data[name]
         title = f"{name}（{s['code']}.HK）过去一年日K线图"
-        save_path = os.path.join(OUTPUT_DIR, f"{s['code']}_{name}_candle.png")
+        save_path = os.path.join(CHART_DIR, f"{s['code']}_{name}_candle.png")
         plot_candlestick(df, title, save_path, s)
 
     # ═══ 步骤5: 选两只代表性股票画近期K线细节 ═══
@@ -403,13 +407,13 @@ if __name__ == "__main__":
     if '宁德时代' in a_data:
         df = a_data['宁德时代']
         title = '宁德时代（300750）近3个月日K线图'
-        save_path = os.path.join(OUTPUT_DIR, "300750_宁德时代_recent_candle.png")
+        save_path = os.path.join(CHART_DIR, "300750_宁德时代_recent_candle.png")
         plot_candlestick_recent(df, title, save_path, months=3)
     # 港股代表：腾讯控股
     if '腾讯控股' in hk_data:
         df = hk_data['腾讯控股']
         title = '腾讯控股（00700.HK）近3个月日K线图'
-        save_path = os.path.join(OUTPUT_DIR, "00700_腾讯控股_recent_candle.png")
+        save_path = os.path.join(CHART_DIR, "00700_腾讯控股_recent_candle.png")
         plot_candlestick_recent(df, title, save_path, months=3)
 
     # ═══ 步骤6: A股vs港股综合对比 ═══
@@ -419,21 +423,21 @@ if __name__ == "__main__":
     # ═══ 步骤7: 统计汇总 ═══
     print("\n>>> 步骤7: 生成统计汇总表...")
     summary = build_summary(a_data, hk_data)
-    summary_path = os.path.join(OUTPUT_DIR, "AH_summary.csv")
+    summary_path = os.path.join(DATA_DIR, "AH_summary.csv")
     summary.to_csv(summary_path, index=False, encoding='utf-8-sig')
     print(summary.to_string(index=False))
     print(f"\n统计汇总已保存: AH_summary.csv")
 
     # ═══ 步骤8: 保存CSV ═══
     print("\n>>> 步骤8: 保存所有个股CSV...")
-    all_stocks = [(A_STOCKS, a_data, 'A'), (HK_STOCKS, hk_data, 'HK')]
+    all_stocks = [(A_STOCKS, a_data, 'A股'), (HK_STOCKS, hk_data, '港股')]
     for stock_list, data_dict, mkt in all_stocks:
         for s in stock_list:
             name = s['name']
             if name in data_dict:
                 df_out = data_dict[name].copy()
                 df_out['Date'] = df_out['Date'].dt.strftime('%Y-%m-%d')
-                csv_path = os.path.join(OUTPUT_DIR, f"{s['code']}_{name}_{mkt}_daily.csv")
+                csv_path = os.path.join(DATA_DIR, f"{s['code']}_{name}_{mkt}_daily.csv")
                 df_out.to_csv(csv_path, index=False, encoding='utf-8-sig')
                 print(f"  [{mkt}股] {name} → {os.path.basename(csv_path)}")
 

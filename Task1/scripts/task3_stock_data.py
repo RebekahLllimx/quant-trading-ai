@@ -30,10 +30,14 @@ STOCK_NAME = "平安银行"     # 股票名称
 END_DATE = datetime.now().strftime("%Y%m%d")
 START_DATE = (datetime.now() - timedelta(days=365)).strftime("%Y%m%d")
 
-# 输出文件路径
+# 输出文件路径（输出到 ../data/ 和 ../data/charts/）
 OUTPUT_DIR = os.path.dirname(os.path.abspath(__file__))
-CSV_FILE = os.path.join(OUTPUT_DIR, f"{STOCK_CODE}_{STOCK_NAME}_daily.csv")
-CHART_FILE = os.path.join(OUTPUT_DIR, f"{STOCK_CODE}_{STOCK_NAME}_close_price.png")
+DATA_DIR  = os.path.join(OUTPUT_DIR, '..', 'data')
+CHART_DIR = os.path.join(OUTPUT_DIR, '..', 'data', 'charts')
+os.makedirs(DATA_DIR, exist_ok=True)
+os.makedirs(CHART_DIR, exist_ok=True)
+CSV_FILE = os.path.join(DATA_DIR, f"{STOCK_CODE}_{STOCK_NAME}_A股_daily.csv")
+CHART_FILE = os.path.join(CHART_DIR, f"{STOCK_CODE}_{STOCK_NAME}_close_price.png")
 
 # ==================== 方案A：使用 Tushare Pro ====================
 def fetch_data_tushare():
