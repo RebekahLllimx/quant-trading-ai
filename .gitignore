@@ -1,0 +1,9 @@
+__pycache__/
+.DS_Store
+*.pyc
+~$*.docx
+
+# Sensitive config — contains API tokens
+Task1/config.py
+dashboard/config.py
+config.py
