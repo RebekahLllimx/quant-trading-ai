@@ -21,6 +21,9 @@ config.py
 *李沐晓*
 *.zip
 
+# Internal workflow doc (contains AI de-texting tricks, not for teachers/TAs)
+skills.md
+
 # Claude Code
 .claude/
 
