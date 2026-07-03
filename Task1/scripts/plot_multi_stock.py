@@ -14,8 +14,6 @@ import tushare as ts
 
 # ==================== 配置 ====================
 # 从 config.py 读取 Tushare Token（config.py 已被 gitignore 排除）
-import sys
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 try:
     from config import TUSHARE_TOKEN
 except ImportError:
@@ -34,8 +32,8 @@ END_DATE = datetime.now().strftime("%Y%m%d")
 START_DATE = (datetime.now() - timedelta(days=365)).strftime("%Y%m%d")
 
 OUTPUT_DIR = os.path.dirname(os.path.abspath(__file__))
-CHART_DIR = os.path.join(OUTPUT_DIR, '..', 'data', 'charts')
-DATA_DIR  = os.path.join(OUTPUT_DIR, '..', 'data')
+CHART_DIR = os.path.join(OUTPUT_DIR, '..', '..', 'data', 'charts', 'task1')
+DATA_DIR  = os.path.join(OUTPUT_DIR, '..', '..', 'data', 'csv')
 os.makedirs(CHART_DIR, exist_ok=True)
 os.makedirs(DATA_DIR, exist_ok=True)
 CHART_COMPARE = os.path.join(CHART_DIR, "multi_stock_compare.png")

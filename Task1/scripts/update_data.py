@@ -15,8 +15,6 @@ from datetime import datetime, timedelta
 # ==================== 配置区域 ====================
 # 从 config.py 读取 Tushare Token（config.py 已被 gitignore 排除）
 # 复制 config.example.py 为 config.py 并填入真实 Token
-import sys
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 try:
     from config import TUSHARE_TOKEN
 except ImportError:
@@ -32,8 +30,8 @@ START_DATE = (datetime.now() - timedelta(days=365)).strftime("%Y%m%d")
 
 # 输出文件路径（输出到 ../data/ 和 ../data/charts/）
 OUTPUT_DIR = os.path.dirname(os.path.abspath(__file__))
-DATA_DIR  = os.path.join(OUTPUT_DIR, '..', 'data')
-CHART_DIR = os.path.join(OUTPUT_DIR, '..', 'data', 'charts')
+DATA_DIR  = os.path.join(OUTPUT_DIR, '..', '..', 'data', 'csv')
+CHART_DIR = os.path.join(OUTPUT_DIR, '..', '..', 'data', 'charts', 'task1')
 os.makedirs(DATA_DIR, exist_ok=True)
 os.makedirs(CHART_DIR, exist_ok=True)
 CSV_FILE = os.path.join(DATA_DIR, f"{STOCK_CODE}_{STOCK_NAME}_A股_daily.csv")

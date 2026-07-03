@@ -18,8 +18,8 @@ warnings.filterwarnings('ignore')
 
 # ==================== 配置 ====================
 OUTPUT_DIR = os.path.dirname(os.path.abspath(__file__))
-CHART_DIR = os.path.join(OUTPUT_DIR, '..', 'data', 'charts')
-DATA_DIR  = os.path.join(OUTPUT_DIR, '..', 'data')
+CHART_DIR = os.path.join(OUTPUT_DIR, '..', '..', 'data', 'charts', 'task1')
+DATA_DIR  = os.path.join(OUTPUT_DIR, '..', '..', 'data', 'csv')
 os.makedirs(CHART_DIR, exist_ok=True)
 os.makedirs(DATA_DIR, exist_ok=True)
 

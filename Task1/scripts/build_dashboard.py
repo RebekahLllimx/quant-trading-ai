@@ -13,11 +13,12 @@ import numpy as np
 from datetime import datetime
 
 OUTPUT_DIR = "/Users/rebecca/Desktop/量化交易/Task1"
+DATA_DIR = "/Users/rebecca/Desktop/量化交易/data/csv"
 HTML_FILE = os.path.join(OUTPUT_DIR, "stock_dashboard.html")
 
 # 读取所有CSV数据
 STOCKS = []
-csv_dir = OUTPUT_DIR
+csv_dir = DATA_DIR
 for f in sorted(os.listdir(csv_dir)):
     if f.endswith('_daily.csv') and ('A_daily' in f or 'HK_daily' in f):
         # 解析文件名：代码_名称_市场_daily.csv

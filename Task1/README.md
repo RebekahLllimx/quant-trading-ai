@@ -1,89 +1,68 @@
-# Task 1: Quantitative Trading Foundations & Data Dashboard
+# Task 1: 量化交易初体验 — 从零搭建数据引擎
 
-## 📋 Tasks
+## 📋 任务说明
 
-1. **Explain the advantages of quantitative trading** over traditional manual trading
-2. **Define basic concepts**: K-line (candlestick), fundamental analysis, technical analysis
-3. **Register on Tushare Pro**, obtain an API token, and use Python to:
-   - Fetch one year of daily trading data for a CSI stock
-   - Plot the daily closing price chart
-   - Save data as CSV
+1. 解释量化交易相较于传统手工操作交易的优势
+2. 定义基本概念：K线、基本面分析、技术分析
+3. 使用 AKShare/Tushare 获取A股+港股数据，绘制K线图，保存为CSV
 
-## 📂 Structure
+## 📂 目录结构
 
 ```
 Task1/
-├── Rebecca+Task1.docx          # Full report (Chinese, 宋体/五号/1.5行距)
+├── Rebecca+Task1.docx          # 完整报告（宋体/五号/1.5行距）
 ├── dashboard/
-│   ├── index.html              # Standalone dashboard (GitHub Pages compatible)
-│   ├── server.py               # Flask backend for live data fetching
-│   └── requirements.txt        # Python dependencies
-├── scripts/
-│   ├── task3_stock_data.py     # Basic single-stock fetch + plot + CSV
-│   ├── multi_stock_analysis.py # 5 A-stock comparison (mplfinance charts)
-│   ├── candlestick_analysis.py # A+H K-line analysis with mplfinance
-│   ├── generate_report.py      # Word report generator (python-docx)
-│   └── build_dashboard.py      # Dashboard HTML generator
-└── data/
-    ├── AH_summary.csv          # Summary statistics for 10 stocks
-    ├── multi_stock_summary.csv # 5 A-stock summary
-    ├── _embedded_data.json     # Embedded OHLC data for standalone dashboard
-    ├── *_daily.csv             # Individual stock daily data (10 files)
-    └── charts/                 # PNG chart exports
+│   ├── index.html              # 自包含看板（GitHub Pages 兼容）
+│   ├── server.py               # Flask 后端
+│   └── requirements.txt        # Python 依赖
+└── scripts/
+    ├── update_data.py          # 单股数据获取 + 收盘价图 + CSV
+    ├── plot_multi_stock.py     # 5只A股对比分析（mplfinance图表）
+    ├── plot_candlestick.py     # A股+港股K线分析（mplfinance）
+    ├── generate_report.py      # Word报告生成（python-docx）
+    └── build_dashboard.py      # 看板HTML生成
+
+数据文件: ../data/csv/*.csv
+图表输出: ../data/charts/task1/*.png
 ```
 
-## 🚀 Usage
+## 🚀 使用
 
-### Live Dashboard (local)
+### 看板（无需后端）
+```bash
+open dashboard/index.html       # 双击打开即可
+```
+
+### Flask 后端（实时数据）
 ```bash
 cd dashboard
 pip install -r requirements.txt
-python server.py
-# Open http://localhost:8765
+python server.py                # http://localhost:8765
 ```
 
-### Standalone Dashboard (no backend)
-Open `dashboard/index.html` directly in a browser. Contains embedded data for 10 stocks.
-
-### Scripts
+### 脚本
 ```bash
 cd scripts
-python task3_stock_data.py      # Single A-stock analysis
-python multi_stock_analysis.py  # 5 A-stock comparison
-python candlestick_analysis.py  # A+H K-line analysis
+python update_data.py           # 单股数据分析
+python plot_multi_stock.py  # 多股对比
+python plot_candlestick.py  # A+H K线分析
 ```
 
-## 📊 Dashboard Features
+## 📊 看板功能
 
-- **10 stocks**: 5 A-shares (CSI) + 5 HK stocks (HSI constituents)
-- **Interactive K-line**: ECharts candlestick chart with MA20/MA60 + volume
-- **Metrics**: Return, annualized volatility, max drawdown, win rate
-- **Analysis**: Daily return distribution histogram + cumulative return curve
-- **Export**: Download OHLC data as CSV
-- **Input validation**: Auto-detects market/code mismatches
+- **10只标的**: 5只A股（沪深）+ 5只港股（恒生成分股）
+- **交互K线**: ECharts 蜡烛图 + MA20/MA60 + 成交量
+- **指标**: 收益率、年化波动率、最大回撤、胜率
+- **分析**: 日收益分布直方图 + 累计收益曲线
+- **导出**: 下载 OHLC 数据为 CSV
 
-## 🛠 Tech Stack
+## 🛠 技术栈
 
-| Layer | Technology |
-|-------|-----------|
-| Data | AKShare (primary), Tushare Pro (secondary) |
-| Charts (scripts) | mplfinance, matplotlib |
-| Dashboard frontend | ECharts 5.x, vanilla JS |
-| Dashboard backend | Flask REST API |
-| Report | python-docx |
-| Deployment | GitHub Pages (standalone HTML) |
-
-## 📈 Sample Stocks
-
-| Market | Code | Name | Sector | Return |
-|--------|------|------|--------|--------|
-| A股 | 000001 | 平安银行 | Banking | -10.81% |
-| A股 | 600519 | 贵州茅台 | Liquor | -13.92% |
-| A股 | 002594 | 比亚迪 | EV | -28.46% |
-| A股 | 300750 | 宁德时代 | Battery | +55.95% |
-| A股 | 601318 | 中国平安 | Insurance | -10.52% |
-| 港股 | 00700 | 腾讯控股 | Internet | -17.26% |
-| 港股 | 09988 | 阿里巴巴 | E-commerce | -17.72% |
-| 港股 | 03690 | 美团 | Local Services | -48.72% |
-| 港股 | 00388 | 香港交易所 | Exchange | -10.85% |
-| 港股 | 00941 | 中国移动 | Telecom | -5.41% |
+| 层 | 技术 |
+|---|------|
+| 数据 | AKShare（主力）、Tushare Pro（补充），qfq 前复权 |
+| 脚本图表 | mplfinance, matplotlib |
+| 看板前端 | ECharts 5.x, vanilla JS |
+| 看板后端 | Flask REST API |
+| 报告 | python-docx |
+| 部署 | GitHub Pages（静态HTML） |

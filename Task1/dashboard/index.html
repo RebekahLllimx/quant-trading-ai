@@ -67,7 +67,7 @@ select:focus{outline:2px solid var(--accent)}
     <div class="quick-btns" id="quick-btns"></div>
   </div>
   <div class="footer" style="border:none;padding:8px 0;">
-    🏠 <a href="https://github.com/RebekahLllimx/ai_quant_course_hw" target="_blank" style="color:var(--accent);">ai_quant_course_hw</a><br>
+    🏠 <a href="https://github.com/RebekahLllimx/quant-trading-ai" target="_blank" style="color:var(--accent);">quant-trading-ai</a><br>
     Data: AKShare & Tushare Pro | qfq
   </div>
 </div>
@@ -164,12 +164,10 @@ function renderKline() {
 
   const chart = _init('kline-chart');
   chart.setOption({
-    tooltip:{trigger:'axis',axisPointer:{type:'cross'},formatter:function(p){var d=p[0];if(!d)return'';var v=d.data;if(Array.isArray(v)&&v.length===4)return'<b>'+d.axisValue+'</b><br/>O:'+v[1]+' C:'+v[2]+'<br/>L:'+v[3]+' H:'+v[4]+'<br/>Chg:'+((v[2]-v[1])/v[1]*100).toFixed(2)+'%';return d.seriesName+': '+v.toFixed(2)}},
-    axisPointer:{link:[{xAxisIndex:'all'}]},
+    tooltip:{trigger:'axis',axisPointer:{type:'cross'},formatter:function(params){if(!params||params.length===0)return'';var html='<b>'+params[0].axisValue+'</b><br/>';params.forEach(function(d){if(d.seriesType==='candlestick'){var v=d.value;html+='O:'+v[1]+' C:'+v[2]+' L:'+v[3]+' H:'+v[4]+'<br/>Chg:'+((v[2]-v[1])/v[1]*100).toFixed(2)+'%<br/>'}else{var v=d.data;if(v!==null&&v!==undefined){html+=d.seriesName+': '+Number(v).toFixed(2)+'<br/>'}}});return html}},
     grid:[{left:'8%',right:'3%',top:50,height:'55%'},{left:'8%',right:'3%',top:'78%',height:'16%'}],
     xAxis:[{type:'category',data:dates,gridIndex:0,axisLabel:{rotate:30,fontSize:9},boundaryGap:true},{type:'category',data:dates,gridIndex:1,axisLabel:{show:false},boundaryGap:true}],
     yAxis:[{scale:true,gridIndex:0,splitArea:{show:true},axisLabel:{fontSize:10}},{scale:true,gridIndex:1,splitNumber:3,axisLabel:{fontSize:9,formatter:function(v){return(v/10000).toFixed(0)+'万'}}}],
-    dataZoom:[{type:'inside',xAxisIndex:[0,1],start:50,end:100},{type:'slider',xAxisIndex:[0,1],start:50,end:100,bottom:8}],
     series:[
       {name:'K-line',type:'candlestick',data:values,xAxisIndex:0,yAxisIndex:0,itemStyle:{color:'#d63031',color0:'#00b894',borderColor:'#d63031',borderColor0:'#00b894'}},
       {name:'MA20',type:'line',data:ma20,xAxisIndex:0,yAxisIndex:0,smooth:true,showSymbol:false,lineStyle:{width:1.2,color:'#fdcb6e',type:'dashed'}},

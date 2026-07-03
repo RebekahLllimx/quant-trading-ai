@@ -1,123 +1,110 @@
-# AI Quantitative Trading Course — Homework Repository
+# 量化交易：AI大模型辅助的金融交易策略
 
-📈 **`ai_quant_course_hw`** — Coursework repository for the AI Quantitative Strategy course (8 assignments), covering financial data engineering, quantitative strategy development, and AI-driven trading systems.
+📈 北京大学光华管理学院商业分析工作坊（光华BA工作坊）课程项目。包含 8 个阶段性任务，从数据引擎搭建到策略路演，覆盖金融数据处理、技术指标构造、策略回测、机器学习预测与模拟实盘部署。
 
-[![Tasks](https://img.shields.io/badge/tasks-8-blue)](https://github.com/RebekahLllimx/ai_quant_course_hw)
+[![Tasks](https://img.shields.io/badge/tasks-8-blue)](https://github.com/RebekahLllimx/quant-trading-ai)
 [![Python](https://img.shields.io/badge/python-3.10%2B-3776AB?logo=python)](https://www.python.org/)
-[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
 ---
 
-## 📚 Assignments
+## 📋 任务列表
 
-| # | Task | Description | Status |
-|---|------|-------------|--------|
-| **1** | [Foundations & Data Dashboard](Task1/) | Quant trading fundamentals, Tushare data pipeline, K-line candlestick dashboard (A+H stocks) | ✅ Done |
-| 2 | TBD | — | ⏳ |
-| 3 | TBD | — | ⏳ |
-| 4 | TBD | — | ⏳ |
-| 5 | TBD | — | ⏳ |
-| 6 | TBD | — | ⏳ |
-| 7 | TBD | — | ⏳ |
-| 8 | TBD | — | ⏳ |
-
----
-
-## 🏗 Tech Stack
-
-| Domain | Tools & Libraries |
-|--------|-------------------|
-| **Data Sources** | [AKShare](https://github.com/akfamily/akshare), [Tushare Pro](https://tushare.pro/) |
-| **Data Processing** | Python 3.10+, pandas, NumPy |
-| **Visualization** | ECharts 5.x, mplfinance, matplotlib |
-| **Dashboard** | Flask REST API + standalone HTML (GitHub Pages) |
-| **Reporting** | python-docx (Word documents) |
-| **Deployment** | GitHub Pages |
+| # | 官方名称 | 说明 | 状态 |
+|---|---------|------|------|
+| **1** | [量化交易初体验：从零搭建数据引擎](Task1/) | 获取A股+港股数据，K线可视化看板 | ✅ |
+| **2** | [数据炼金术：数据诊断与构造交易指标](Task2/) | 8大技术指标计算与交互看板 | ✅ |
+| **3** | 策略首秀：用均线交叉反映市场波动 | 移动平均线交叉 + 均值回归策略回测 | ⏳ |
+| **4** | 复刻传奇：海龟交易法则实战演练 | 突破入场、ATR止损、分批止盈、仓位管理 | ⏳ |
+| **5** | AI交易引擎：机器学习算法与场景应用 | 线性回归、决策树、KNN 训练与评估 | ⏳ |
+| **6** | 智能决策者：用机器学习定制专属策略 | 特征工程 + 涨跌预测 + 策略回测对比 | ⏳ |
+| **7** | 实战推演：策略实盘部署与交易实战 | JoinQuant 模拟交易 | ⏳ |
+| **8** | 成果展示：专业报告撰写与策略路演 | 综合报告与路演材料 | ⏳ |
 
 ---
 
-## 📂 Repository Structure
+## 🏗 技术栈
+
+| 领域 | 工具与库 |
+|------|---------|
+| **数据源** | AKShare（主力）、Tushare Pro（补充），均使用前复权(qfq) |
+| **数据处理** | Python 3.10+, pandas, NumPy |
+| **金融绘图** | mplfinance |
+| **交互看板** | ECharts 5.5（自包含 HTML，无需后端） |
+| **报告** | python-docx（宋体 10.5pt，1.5倍行距） |
+| **部署** | GitHub Pages（静态文件） |
+
+---
+
+## 📂 目录结构
 
 ```
-ai_quant_course_hw/
-├── README.md                    # ← You are here
-├── Task1/                       # Foundations & Data Dashboard
-│   ├── README.md                # Task 1 details
-│   ├── Rebecca+Task1.docx       # Full report (Chinese)
-│   ├── dashboard/               # Standalone dashboard (GitHub Pages)
-│   │   ├── index.html           #   Static version with embedded data
-│   │   ├── server.py            #   Flask backend for live fetching
-│   │   └── requirements.txt     #   Python dependencies
-│   ├── scripts/                 # Analysis scripts
-│   │   ├── task3_stock_data.py
-│   │   ├── multi_stock_analysis.py
-│   │   └── candlestick_analysis.py
-│   └── data/                    # CSV data + chart exports
-├── Task2/                       # (upcoming)
-├── Task3/                       # (upcoming)
-...
-└── Task8/                       # (upcoming)
+量化交易/
+├── index.html                  ← Hub 导航页
+├── README.md                   ← 本文件
+├── skills.md                   ← 工作流 SOP
+├── .gitignore
+├── data/                       ← 共享数据
+│   ├── csv/                    ←   10只标的 CSV（A股+港股）
+│   └── charts/
+│       ├── task1/              ←   K线图（20张）
+│       └── task2/              ←   指标图（7张）
+├── src/                        ← 共享模块
+│   ├── indicators.py           ←   8个技术指标计算
+│   └── report_utils.py         ←   docx 格式化辅助
+├── Task1/
+│   ├── Rebecca+Task1.docx
+│   ├── dashboard/index.html    ←   K线看板
+│   └── scripts/
+├── Task2/
+│   ├── spec.md                 ←   设计文档
+│   ├── Rebecca+Task2.docx
+│   ├── dashboard/index.html    ←   指标看板
+│   └── scripts/
+└── Task3/ ... Task8/           ← 待完成
 ```
 
 ---
 
-## 🚀 Quick Start — Task 1 Dashboard
+## 🚀 快速开始
 
-### Option A: Live Dashboard (local Python server)
+### 看板（无需安装）
 ```bash
-cd Task1/dashboard
-pip install -r requirements.txt
-python server.py
-# Open http://localhost:8765
+# 方式A：从 Hub 页进入
+open index.html
+
+# 方式B：直接打开各任务看板
+open Task1/dashboard/index.html   # K线看板
+open Task2/dashboard/index.html   # 技术指标看板
 ```
 
-### Option B: Standalone Dashboard (no installation)
-Open [`Task1/dashboard/index.html`](Task1/dashboard/index.html) directly in any browser. Contains pre-loaded data for 10 stocks (5 A-shares + 5 HK stocks).
-
-### Option C: GitHub Pages
-Visit `https://rebekahlllimx.github.io/ai_quant_course_hw/` after deployment.
-
----
-
-## 📊 Task 1 Highlights
-
-- **Quantitative trading fundamentals**: Data-driven execution, backtesting, systematic risk control
-- **K-line candlestick charts**: Interactive ECharts OHLC visualization with MA20/MA60 overlays
-- **Cross-market analysis**: 5 A-shares (CSI) vs 5 HK stocks (HSI constituents)
-- **10 metrics**: Return, annualized volatility, max drawdown, win rate, skewness, and more
-- **Dual data sources**: AKShare (free) + Tushare Pro (token-gated, higher quality)
-- **Forward-adjusted (qfq) prices**: Eliminates distortion from stock splits and dividends
-
----
-
-## 🔑 Key Concepts Covered
-
-1. **Quantitative vs Manual Trading**: Scalability, consistency, backtesting, automated risk control
-2. **K-line (Candlestick)**: OHLC structure, bullish/bearish patterns, shadow interpretation
-3. **Fundamental Analysis**: Macro → Industry → Company three-layer framework
-4. **Technical Analysis**: Trend indicators (MA, MACD), oscillators (RSI, KDJ), chart patterns
-5. **Data Pipeline**: API integration → pandas processing → visualization → CSV export
-6. **Dashboard Engineering**: Flask REST API, ECharts interactive charts, input validation, responsive design
-
----
-
-## 📝 Report
-
-The complete Word report for Task 1 is available at [`Task1/Rebecca+Task1.docx`](Task1/Rebecca+Task1.docx), formatted in 宋体 (SimSun) 10.5pt with 1.5× line spacing, containing detailed analysis, charts with captions, and interpretations.
-
----
-
-## 🤝 Academic Context
-
-This repository is part of an AI Quantitative Strategy graduate-level course. The curriculum progresses from data foundations through strategy development to AI-powered trading models:
-
+### 更新数据
+```bash
+python Task2/scripts/update_data.py   # 拉取最新行情（AKShare）
 ```
-Task 1-2: Data Engineering & Visualization
-Task 3-4: Factor Research & Alpha Discovery
-Task 5-6: Strategy Backtesting & Risk Management
-Task 7-8: ML/DL Models & Live Trading Systems
+
+### 生成报告
+```bash
+python TaskN/scripts/generate_report.py   # 输出 Rebecca+TaskN.docx
 ```
 
 ---
 
-*Maintained by [@RebekahLllimx](https://github.com/RebekahLllimx)*
+## 🔑 课程涵盖概念
+
+1. **数据管道**：API 获取 → pandas 清洗 → CSV 存储 → 可视化
+2. **技术指标**：RSI（Wilder平滑）、MACD、布林带、ATR、KDJ、MA、CCI、ADX
+3. **均线策略**：多周期均线交叉与均值回归
+4. **海龟交易**：突破入场、ATR 动态止损、仓位管理
+5. **机器学习**：scikit-learn 训练、评估、特征重要性
+6. **模拟实盘**：JoinQuant 平台、initialize/handle_data
+7. **研究表达**：结构化报告、图表规范、结论审慎
+
+---
+
+## 📝 报告格式
+
+所有报告统一使用：宋体(SimSun) 五号(10.5pt)、1.5倍行距、0pt段间距、两端对齐。无封面，标题用 Normal 段落 + 字号区分（14pt Bold / 12pt Bold）。文件名格式：`Rebecca+TaskN.docx`。
+
+---
+
+*课程：北京大学光华管理学院商业分析工作坊（2026.6.28–7.22）*

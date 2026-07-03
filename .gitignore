@@ -1,9 +1,29 @@
+# Python
 __pycache__/
-.DS_Store
 *.pyc
-~$*.docx
+*.pyo
+
+# System
+.DS_Store
+Thumbs.db
 
 # Sensitive config — contains API tokens
 Task1/config.py
+Task2/config.py
 dashboard/config.py
 config.py
+
+# Report generation scripts (AI-generated scaffolding, not hand-written code)
+*generate_report*
+*生成报告*
+
+# Files containing real Chinese name (李沐晓)
+*李沐晓*
+*.zip
+
+# Claude Code
+.claude/
+
+# Temporary office files
+~$*.docx
+~$*.pdf

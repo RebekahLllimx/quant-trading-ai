@@ -2,8 +2,246 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="refresh" content="0;url=Task1/dashboard/">
-<title>量化交易数据看板</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI量化交易 — 课程项目</title>
+<style>
+:root {
+  --bg: #f5f6fa;
+  --card: #fff;
+  --text: #2d3436;
+  --muted: #636e72;
+  --accent: #0984e3;
+  --border: #dfe6e9;
+  --shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+.topbar {
+  background: linear-gradient(135deg, #2d3436 0%, #434a54 100%);
+  color: #fff;
+  padding: 16px 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.topbar h1 {
+  font-size: 1.4em;
+  font-weight: 600;
+}
+.topbar .subtitle {
+  font-size: 0.82em;
+  opacity: 0.75;
+  margin-left: 12px;
+  font-weight: 400;
+}
+.badge {
+  font-size: 0.75em;
+  background: var(--accent);
+  padding: 5px 12px;
+  border-radius: 12px;
+  font-weight: 500;
+}
+.container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 28px 20px;
+}
+.overview {
+  background: var(--card);
+  border-radius: 12px;
+  padding: 24px 28px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+  margin-bottom: 24px;
+}
+.overview h2 {
+  font-size: 1.1em;
+  color: var(--accent);
+  margin-bottom: 10px;
+}
+.overview p {
+  font-size: 0.88em;
+  color: var(--muted);
+  line-height: 1.7;
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 18px;
+}
+.card {
+  background: var(--card);
+  border-radius: 12px;
+  padding: 22px 24px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+}
+.card .num {
+  font-size: 0.72em;
+  color: var(--accent);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+}
+.card .title {
+  font-size: 1.1em;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.card .desc {
+  font-size: 0.82em;
+  color: var(--muted);
+  line-height: 1.6;
+  flex: 1;
+  margin-bottom: 14px;
+}
+.card .link {
+  display: inline-block;
+  padding: 8px 18px;
+  background: var(--accent);
+  color: #fff;
+  border-radius: 6px;
+  text-decoration: none;
+  font-size: 0.85em;
+  font-weight: 500;
+  text-align: center;
+  transition: background 0.15s;
+}
+.card .link:hover {
+  background: #0773c5;
+}
+.card.coming .link {
+  background: #b2bec3;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+.footer {
+  text-align: center;
+  padding: 20px;
+  color: var(--muted);
+  font-size: 0.75em;
+  border-top: 1px solid var(--border);
+  margin-top: 32px;
+}
+.footer a {
+  color: var(--accent);
+  text-decoration: none;
+}
+</style>
 </head>
-<body></body>
+<body>
+
+<div class="topbar">
+  <div>
+    <h1>AI量化交易<span class="subtitle">课程项目总览</span></h1>
+  </div>
+  <span class="badge">8 Tasks · GitHub Pages</span>
+</div>
+
+<div class="container">
+  <div class="overview">
+    <h2>关于本项目</h2>
+    <p>
+      本项目为北京大学光华管理学院商业分析工作坊《量化交易：AI大模型辅助的金融交易策略》的八个阶段性任务集合，
+      涵盖数据引擎搭建、技术指标构造、均线交叉策略、海龟交易法则、机器学习预测、智能交易策略、模拟实盘部署、以及最终策略路演。
+      数据源采用 AKShare 与 Tushare Pro 双通道，覆盖 A 股（沪深）与港股（联交所）共 10 只标的，
+      使用前复权（qfq）价格确保回测严谨性。看板均为自包含 HTML，无需后端即可在浏览器中交互使用。
+    </p>
+  </div>
+
+  <div class="grid">
+
+    <!-- Task 1 -->
+    <div class="card">
+      <div class="num">Task 1</div>
+      <div class="title">K线可视化</div>
+      <div class="desc">
+        A股与港股10只标的的交互式K线图。支持市场切换、多股对比、十字光标、缩放拖拽，数据嵌入页面无需服务器。
+      </div>
+      <a class="link" href="Task1/dashboard/index.html">进入看板</a>
+    </div>
+
+    <!-- Task 2 -->
+    <div class="card">
+      <div class="num">Task 2</div>
+      <div class="title">技术指标分析</div>
+      <div class="desc">
+        八大技术指标（RSI、MACD、布林带、ATR、KDJ、MA、CCI、ADX）的交互式计算与可视化，支持参数调节、多指标叠加对比。
+      </div>
+      <a class="link" href="Task2/dashboard/index.html">进入看板</a>
+    </div>
+
+    <!-- Task 3 -->
+    <div class="card coming">
+      <div class="num">Task 3</div>
+      <div class="title">均线交叉策略</div>
+      <div class="desc">移动平均线交叉策略与均值回归策略，历史数据回测，计算胜率、最大回撤等绩效指标。</div>
+      <span class="link">即将发布</span>
+    </div>
+
+    <!-- Task 4 -->
+    <div class="card coming">
+      <div class="num">Task 4</div>
+      <div class="title">海龟交易法则</div>
+      <div class="desc">突破入场、ATR止损、分批止盈与仓位管理规则，Python实现交易逻辑并形成绩效报告。</div>
+      <span class="link">即将发布</span>
+    </div>
+
+    <!-- Task 5 -->
+    <div class="card coming">
+      <div class="num">Task 5</div>
+      <div class="title">机器学习算法应用</div>
+      <div class="desc">线性回归、决策树、KNN等基础模型，scikit-learn训练与评估，RMSE、准确率、混淆矩阵分析。</div>
+      <span class="link">即将发布</span>
+    </div>
+
+    <!-- Task 6 -->
+    <div class="card coming">
+      <div class="num">Task 6</div>
+      <div class="title">ML驱动交易策略</div>
+      <div class="desc">扩展特征工程，训练模型预测涨跌概率，结合模型信号设计交易规则，与买入持有等朴素策略比较。</div>
+      <span class="link">即将发布</span>
+    </div>
+
+    <!-- Task 7 -->
+    <div class="card coming">
+      <div class="num">Task 7</div>
+      <div class="title">模拟实盘部署</div>
+      <div class="desc">JoinQuant平台基本操作，编写initialize和handle_data函数，运行模拟交易，记录订单日志与持仓变化。</div>
+      <span class="link">即将发布</span>
+    </div>
+
+    <!-- Task 8 -->
+    <div class="card coming">
+      <div class="num">Task 8</div>
+      <div class="title">报告撰写与策略路演</div>
+      <div class="desc">整合前序任务成果，撰写包含背景、方法论、代码片段、回测结果和结论反思的综合实习报告。</div>
+      <span class="link">即将发布</span>
+    </div>
+
+  </div>
+</div>
+
+<div class="footer">
+  <a href="https://github.com/RebekahLllimx/quant-trading-ai" target="_blank">GitHub: quant-trading-ai</a>
+  &nbsp;&middot;&nbsp;
+  Data: AKShare &amp; Tushare Pro (qfq)
+  &nbsp;&middot;&nbsp;
+  仅用于教育与研究目的
+</div>
+
+</body>
 </html>

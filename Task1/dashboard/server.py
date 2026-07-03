@@ -16,7 +16,7 @@ import pandas as pd
 import numpy as np
 
 # 尝试从 config.py 读取 Token（回退方案）
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'scripts'))
 try:
     from config import TUSHARE_TOKEN as _CONFIG_TOKEN
 except ImportError:
