@@ -35,8 +35,8 @@ select{width:100%;cursor:pointer}
 .btn-primary:hover{background:#0773c5}
 .chart-panel{background:var(--card);border-radius:10px;padding:8px;
   box-shadow:var(--shadow);border:1px solid var(--border);flex-shrink:0}
-.chart-box{width:100%;height:450px}
-.chart-box.half{height:340px}
+.chart-box{width:100%;height:520px}
+.chart-box.half{height:400px}
 .param-row{display:flex;align-items:center;justify-content:space-between;gap:4px;
   font-size:0.76em;padding:3px 0}
 .param-row span.lbl{color:var(--text);min-width:54px}
@@ -21843,7 +21843,7 @@ function dateAxis(dates) {
 }
 
 function makeGrid(top) {
-  return { left: 55, right: 25, top: top || 40, bottom: 40 };
+  return { left: 65, right: 25, top: top || 55, bottom: 40 };
 }
 
 function makeLine(name, data, color, width) {
@@ -21875,12 +21875,12 @@ function drawSignals(rawData, result, stockName, stockCode) {
   }
 
   const option = {
-    title: { text: `${stockName} (${stockCode}) — 价格 · 均线 · 交易信号`, left: 10, top: 6,
+    title: { text: `${stockName} (${stockCode}) — 价格 · 均线 · 交易信号`, left: 10, top: 2,
       textStyle: { fontSize: 13, color: '#2d3436' } },
     tooltip: { trigger: 'axis' },
-    legend: { data: ['收盘价', 'MA短', 'MA长'], top: 6, right: 10,
+    legend: { data: ['收盘价', 'MA短', 'MA长'], top: 2, right: 10,
       textStyle: { fontSize: 10, color: '#636e72' } },
-    grid: makeGrid(50),
+    grid: makeGrid(62),
     xAxis: dateAxis(dates),
     yAxis: { type: 'value', name: '价格(元)', nameTextStyle: { fontSize: 10 },
       axisLabel: { fontSize: 10 }, splitLine: { lineStyle: { color: '#f0f0f0' } },
@@ -21930,12 +21930,12 @@ function drawEquity(rawData, result, metrics, stockName) {
   const bhData = result.bhEquityCurve.map(e => e.equity);
 
   const option = {
-    title: { text: `${stockName} — 资产曲线对比 (策略 vs 买入持有)`, left: 10, top: 6,
+    title: { text: `${stockName} — 资产曲线对比 (策略 vs 买入持有)`, left: 10, top: 2,
       textStyle: { fontSize: 12, color: '#2d3436' } },
     tooltip: { trigger: 'axis' },
-    legend: { data: ['策略资产', '买入持有'], top: 6, right: 10,
+    legend: { data: ['策略资产', '买入持有'], top: 2, right: 10,
       textStyle: { fontSize: 10, color: '#636e72' } },
-    grid: makeGrid(46),
+    grid: makeGrid(58),
     xAxis: dateAxis(dates),
     yAxis: { type: 'value', name: '资产(元)', nameTextStyle: { fontSize: 10 },
       axisLabel: { fontSize: 10, formatter: v => fmtMoney(v) },
@@ -21967,7 +21967,7 @@ function drawDrawdown(rawData, result, metrics, stockName) {
   });
 
   const option = {
-    title: { text: `${stockName} — 回撤曲线 (Max DD: ${metrics ? metrics.mdd.toFixed(2) : '--'}%)`, left: 10, top: 6,
+    title: { text: `${stockName} — 回撤曲线 (Max DD: ${metrics ? metrics.mdd.toFixed(2) : '--'}%)`, left: 10, top: 2,
       textStyle: { fontSize: 12, color: '#2d3436' } },
     tooltip: {
       trigger: 'axis',
@@ -21975,7 +21975,7 @@ function drawDrawdown(rawData, result, metrics, stockName) {
         return params[0].axisValue + '<br/>回撤: ' + params[0].value.toFixed(2) + '%';
       }
     },
-    grid: makeGrid(46),
+    grid: makeGrid(58),
     xAxis: dateAxis(dates),
     yAxis: { type: 'value', name: '回撤(%)', nameTextStyle: { fontSize: 10 },
       axisLabel: { fontSize: 10, formatter: v => v.toFixed(0) + '%' },
