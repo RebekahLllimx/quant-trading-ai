@@ -437,6 +437,7 @@ function calcMetrics(result, initialCapital, riskFreeRate) {
   return {
     totalReturn, annualReturn, mdd, sharpe,
     winRate, profitLossRatio, annualVol,
+    finalEquity,
     totalTrades: completedTrades.length,
     bhTotalReturn,
     days: Math.round(days),
@@ -462,6 +463,7 @@ function renderMetrics(metrics) {
 
   const items = [
     { label: '累计回报', value: fmtPct(metrics.totalReturn), cls: metrics.totalReturn >= 0 ? 'pos' : 'neg' },
+    { label: '最终权益', value: (metrics.finalEquity / 10000).toFixed(2) + '万', cls: metrics.totalReturn >= 0 ? 'pos' : 'neg' },
     { label: '年化收益', value: fmtPct(metrics.annualReturn), cls: metrics.annualReturn >= 0 ? 'pos' : 'neg' },
     { label: '最大回撤(MDD)', value: metrics.mdd.toFixed(2) + '%', cls: metrics.mdd > -10 ? 'pos' : (metrics.mdd < -20 ? 'neg' : 'neutral') },
     { label: '夏普比率', value: metrics.sharpe.toFixed(2), cls: metrics.sharpe >= 1 ? 'pos' : (metrics.sharpe < 0 ? 'neg' : 'neutral') },
@@ -525,7 +527,7 @@ function drawSignals(rawData, result, stockName, stockCode) {
     tooltip: { trigger: 'axis' },
     legend: { data: ['收盘价', 'MA短', 'MA长'], top: 2, right: 10,
       textStyle: { fontSize: 10, color: '#636e72' } },
-    grid: makeGrid(62),
+    grid: makeGrid(75),
     xAxis: dateAxis(dates),
     yAxis: { type: 'value', name: '价格(元)', nameTextStyle: { fontSize: 10 },
       axisLabel: { fontSize: 10 }, splitLine: { lineStyle: { color: '#f0f0f0' } },
@@ -580,7 +582,7 @@ function drawEquity(rawData, result, metrics, stockName) {
     tooltip: { trigger: 'axis' },
     legend: { data: ['策略资产', '买入持有'], top: 2, right: 10,
       textStyle: { fontSize: 10, color: '#636e72' } },
-    grid: makeGrid(58),
+    grid: makeGrid(70),
     xAxis: dateAxis(dates),
     yAxis: { type: 'value', name: '资产(元)', nameTextStyle: { fontSize: 10 },
       axisLabel: { fontSize: 10, formatter: v => fmtMoney(v) },
@@ -620,7 +622,7 @@ function drawDrawdown(rawData, result, metrics, stockName) {
         return params[0].axisValue + '<br/>回撤: ' + params[0].value.toFixed(2) + '%';
       }
     },
-    grid: makeGrid(58),
+    grid: makeGrid(70),
     xAxis: dateAxis(dates),
     yAxis: { type: 'value', name: '回撤(%)', nameTextStyle: { fontSize: 10 },
       axisLabel: { fontSize: 10, formatter: v => v.toFixed(0) + '%' },
@@ -828,8 +830,14 @@ function init() {
   document.getElementById('stock-info').textContent =
     `${stock.code} ${stock.name} (${stock.market}) | ${stock.dateStart} ~ ${stock.dateEnd} | ${stock.count}条`;
 
-  // 首次回测
-  runAll();
+  // 首次回测（双 RAF 确保 DOM 布局完成）
+  // setTimeout(0) 确保 DOM 布局完成后再初始化渲染
+  setTimeout(() => {
+    requestAnimationFrame(() => {
+      Object.values(charts).forEach(c => { if (c) c.resize(); });
+      runAll();
+    });
+  }, 0);
 
   // resize 处理
   window.addEventListener('resize', function() {
@@ -838,6 +846,8 @@ function init() {
 }
 
 document.addEventListener('DOMContentLoaded', init);
+// 备用：window.load 再次触发渲染（防止 DOMContentLoaded 时布局未完成）
+window.addEventListener('load', () => { setTimeout(() => { Object.values(charts).forEach(c => { if (c) c.resize(); }); runAll(); }, 100); });
 </script>
 </body>
 </html>'''
