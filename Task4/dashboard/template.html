@@ -58,12 +58,16 @@ body { font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; back
   <div class="param-row"><input type="range" id="stopMult" min="0.5" max="5" step="0.1" value="2.0" oninput="document.getElementById('stopMultVal').textContent=this.value;redrawAll()"><span id="stopMultVal">2.0</span></div>
   <h3>💰 风险比例 (%)</h3>
   <div class="param-row"><input type="range" id="riskPct" min="0.5" max="5" step="0.1" value="2.0" oninput="document.getElementById('riskPctVal').textContent=this.value;redrawAll()"><span id="riskPctVal">2.0</span></div>
+  <h3>🔺 金字塔加仓</h3>
+  <label>最大加仓次数</label><input type="number" id="maxUnits" value="4" min="1" max="4" step="1" onchange="redrawAll()">
+  <div class="param-row"><input type="range" id="pyramidAtr" min="0.3" max="1.0" step="0.1" value="0.5" oninput="document.getElementById('pyramidAtrVal').textContent=this.value;redrawAll()"><span id="pyramidAtrVal">0.5</span></div>
+  <label style="font-size:10px;color:var(--muted);">价格每上涨 pyramidAtr×N 加仓一次</label>
   <h3>💵 初始资金 (万)</h3>
   <input type="number" id="initCap" value="100" step="10" onchange="redrawAll()">
   <h3>📊 交易成本</h3>
   <label>手续费 (%)</label><input type="number" id="feeRate" value="0.03" step="0.01" onchange="redrawAll()">
   <label>滑点 (%)</label><input type="number" id="slippage" value="0.01" step="0.01" onchange="redrawAll()">
-  <p style="font-size:10px;color:var(--muted);margin-top:8px;">🐢 海龟 System 1 (20/10)<br>仓位: RiskAmt / (k×N)<br>止损: 2×N 动态上移</p>
+  <p style="font-size:10px;color:var(--muted);margin-top:8px;">🐢 海龟 System 1 (20/10)<br>仓位: RiskAmt / (k×N)<br>止损: 2×N 动态上移<br>加仓: 金字塔 0.5×N×4</p>
 </div>
 <div class="main">
   <div class="cards" id="cards"></div>
@@ -360,7 +364,7 @@ function redrawAll() {
   if (charts['chart1']) {
     charts['chart1'].setOption({
       tooltip: { trigger: 'axis' },
-      legend: { data: ['收盘价','入场通道上轨','离场通道下轨','买入','卖出','止损'], top: 5 },
+      legend: { data: ['收盘价','入场通道上轨','离场通道下轨','买入','加仓','卖出','止损'], top: 5 },
       grid: { left: 60, right: 30, top: 60, bottom: 40 },
       xAxis: { type: 'category', data: dates },
       yAxis: { type: 'value', name: '价格 (元)' },
@@ -370,6 +374,7 @@ function redrawAll() {
         { name: '入场通道上轨', type: 'line', data: result.dcEntry.high, lineStyle: { color: '#e17055', width: 1, type: 'dashed' }, symbol: 'none' },
         { name: '离场通道下轨', type: 'line', data: result.dcExit.low, lineStyle: { color: '#0984e3', width: 1, type: 'dotted' }, symbol: 'none' },
         { name: '买入', type: 'scatter', data: result.signalsB, symbolSize: 14, itemStyle: { color: '#d63031' }, symbol: 'triangle' },
+        { name: '加仓', type: 'scatter', data: result.signalsAdd, symbolSize: 12, itemStyle: { color: '#fdcb6e' }, symbol: 'diamond' },
         { name: '卖出', type: 'scatter', data: result.signalsS, symbolSize: 12, itemStyle: { color: '#00b894' } },
         { name: '止损', type: 'scatter', data: result.signalsX, symbolSize: 10, itemStyle: { color: '#e17055' }, symbol: 'pin' },
       ]
@@ -456,7 +461,7 @@ function init() {
   sel.value = '600519';
 
   // Set default param display values
-  ['entryPeriodVal','exitPeriodVal','atrPeriodVal','stopMultVal','riskPctVal'].forEach(id => {
+  ['entryPeriodVal','exitPeriodVal','atrPeriodVal','stopMultVal','riskPctVal','pyramidAtrVal'].forEach(id => {
     const sliderId = id.replace('Val','');
     document.getElementById(id).textContent = document.getElementById(sliderId).value;
   });
