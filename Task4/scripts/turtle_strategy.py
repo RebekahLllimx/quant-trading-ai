@@ -160,6 +160,10 @@ def generate_signals(df: pd.DataFrame,
     # 遍历生成信号
     max_period = max(entry_period, exit_period, atr_period)
     last_trade_lost = False  # 海龟过滤规则
+    # 加仓状态追踪
+    in_position = False
+    last_signal_price = 0.0
+    units_count = 0
 
     for t in range(max_period + 2, len(result)):
         # T-1 日的通道值 (避免未来函数)
@@ -182,9 +186,23 @@ def generate_signals(df: pd.DataFrame,
                 # 跳过此次信号 (但记录)
                 result.loc[result.index[t], 'Signal'] = 'FILTERED_BUY'
                 last_trade_lost = False
+                in_position = False
             else:
                 result.loc[result.index[t], 'Signal'] = 'BUY'
                 result.loc[result.index[t], 'Signal_Price'] = close.iloc[t]
+                in_position = True
+                last_signal_price = close.iloc[t]
+                units_count = 1
+
+        # 加仓信号: 持仓中, 价格较最近买入/加仓价上涨 >= 0.5×N
+        if in_position and units_count < 4:
+            n_val = result['N_Value'].iloc[t]
+            if (not pd.isna(n_val) and n_val > 0 and
+                    close.iloc[t] >= last_signal_price + 0.5 * n_val):
+                result.loc[result.index[t], 'Signal'] = 'ADD'
+                result.loc[result.index[t], 'Signal_Price'] = close.iloc[t]
+                last_signal_price = close.iloc[t]
+                units_count += 1
 
     return result
 
@@ -262,6 +280,7 @@ def run_backtest(df: pd.DataFrame,
     entry_price = 0.0
     stop_price = 0.0  # 动态止损价
     units_held = 0  # 当前加仓次数
+    last_add_price = 0.0  # 最近一次加仓价格（金字塔加仓基准）
     last_trade_lost = False
 
     trades = []
@@ -269,6 +288,7 @@ def run_backtest(df: pd.DataFrame,
     signals_buy = []
     signals_sell = []
     signals_stop = []
+    signals_add = []  # 金字塔加仓信号
 
     start_idx = max(entry_period, exit_period, atr_period) + 2
 
@@ -344,6 +364,7 @@ def run_backtest(df: pd.DataFrame,
             stop_price = entry_price - atr_stop_mult * n_t
             has_position = True
             units_held = 1
+            last_add_price = buy_price
 
             trades.append({
                 'buy_date': date_t,
@@ -366,6 +387,45 @@ def run_backtest(df: pd.DataFrame,
                     trailing_stop = price_t - atr_stop_mult * n_t
                     new_stop = max(new_stop, trailing_stop)
                 stop_price = max(stop_price, new_stop)
+
+            # 金字塔加仓: 价格每上涨 pyramid_atr_mult × N，加仓一个单位
+            if (units_held < max_units and n_t > 0 and not pd.isna(n_t) and
+                    price_t >= last_add_price + pyramid_atr_mult * n_t):
+                add_price = price_t * (1 + slippage)
+                # 仓位计算: 与初始入场相同的公式
+                if n_t > 0:
+                    risk_amount = cash * risk_percent
+                    stop_distance = atr_stop_mult * n_t
+                    safe_shares = risk_amount / stop_distance
+                    max_shares_buy = cash / (add_price * (1 + fee_rate))
+                    add_shares = min(safe_shares, max_shares_buy)
+                else:
+                    add_shares = 0
+
+                if add_shares > 0:
+                    add_cost = add_shares * add_price * (1 + fee_rate)
+                    if add_cost <= cash:
+                        cash -= add_cost
+                        # 更新加权平均入场价
+                        total_cost_basis = shares * entry_price + add_shares * add_price
+                        shares += add_shares
+                        entry_price = total_cost_basis / shares
+                        units_held += 1
+                        last_add_price = add_price
+                        # 海龟原版: 加仓后止损收紧至最新加仓价 − k×N
+                        stop_price = add_price - atr_stop_mult * n_t
+
+                        # 更新 trade 记录
+                        trades[-1].setdefault('pyramid_adds', []).append({
+                            'add_date': date_t,
+                            'add_price': round(add_price, 4),
+                            'add_shares': round(add_shares, 2),
+                            'add_cost': round(add_cost, 2),
+                        })
+                        trades[-1]['shares'] = round(shares, 2)
+                        trades[-1]['cost'] = round(trades[-1]['cost'] + add_cost, 2)
+
+                        signals_add.append((date_t, add_price))
 
             # 检查止损
             if stop_hit:
@@ -443,6 +503,7 @@ def run_backtest(df: pd.DataFrame,
         'signals_buy': signals_buy,
         'signals_sell': signals_sell,
         'signals_stop': signals_stop,
+        'signals_add': signals_add,  # 金字塔加仓信号
         'final_equity': final_equity,
         'bh_equity_curve': bh_equity,
         'bh_final_equity': bh_final,
@@ -698,6 +759,7 @@ def main():
     # 信号统计
     print(f'\n📊 信号统计:')
     print(f'   买入信号: {len(result["signals_buy"])} 次')
+    print(f'   加仓信号: {len(result["signals_add"])} 次')
     print(f'   卖出信号: {len(result["signals_sell"])} 次')
     print(f'   止损触发: {len(result["signals_stop"])} 次')
 

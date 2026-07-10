@@ -126,7 +126,7 @@ function calcATR(highs, lows, closes, n) {
   return wilderSmooth(tr, n);
 }
 
-function runTurtleBacktest(data, entryP, exitP, atrP, stopM, riskP, initCap, feeR, slipR) {
+function runTurtleBacktest(data, entryP, exitP, atrP, stopM, riskP, initCap, feeR, slipR, maxUnits, pyramidAtr) {
   const dates = data.map(d => d[0]);
   const opens = data.map(d => d[1]);
   const closes = data.map(d => d[2]);
@@ -137,9 +137,9 @@ function runTurtleBacktest(data, entryP, exitP, atrP, stopM, riskP, initCap, fee
   const dcEntry = calcDonchian(highs, lows, entryP);
   const dcExit = calcDonchian(highs, lows, exitP);
 
-  let cash = initCap, shares = 0, hasPos = false;
-  let entryPrice = 0, stopPrice = 0, lastLost = false;
-  const trades = [], equity = [], signalsB = [], signalsS = [], signalsX = [];
+  let cash = initCap, shares = 0, unitsHeld = 0;
+  let entryPrice = 0, stopPrice = 0, lastAddPrice = 0, lastLost = false;
+  const trades = [], equity = [], signalsB = [], signalsS = [], signalsX = [], signalsAdd = [];
 
   const start = Math.max(entryP, exitP, atrP) + 2;
 
@@ -163,9 +163,9 @@ function runTurtleBacktest(data, entryP, exitP, atrP, stopM, riskP, initCap, fee
 
     // Stop check
     let stopHit = false;
-    if (hasPos && stopPrice > 0) stopHit = lows[t] <= stopPrice;
+    if (unitsHeld > 0 && stopPrice > 0) stopHit = lows[t] <= stopPrice;
 
-    if (breakout && !hasPos) {
+    if (breakout && unitsHeld === 0) {
       if (lastLost) { lastLost = false; continue; }
       const bp = price * (1 + slipR);
       const riskAmt = cash * riskP;
@@ -178,13 +178,39 @@ function runTurtleBacktest(data, entryP, exitP, atrP, stopM, riskP, initCap, fee
       cash -= sh * bp * (1 + feeR);
       entryPrice = bp;
       stopPrice = entryPrice - stopDist;
-      shares = sh; hasPos = true;
+      shares = sh; unitsHeld = 1; lastAddPrice = bp;
       trades.push({ bDate: date, bPrice: bp, shares: sh, cost: sh * bp * (1 + feeR), sDate: null, sPrice: null, ret: null, reason: null });
       signalsB.push([date, bp]);
-    } else if (hasPos) {
+    } else if (unitsHeld > 0) {
       // Dynamic stop (only move up)
       const trailStop = price - stopM * nv;
       if (trailStop > stopPrice) stopPrice = trailStop;
+
+      // Pyramid add: price rises pyramidAtr * N above last add price
+      if (unitsHeld < maxUnits && nv > 0 && price >= lastAddPrice + pyramidAtr * nv) {
+        const addPrice = price * (1 + slipR);
+        const riskAmt = cash * riskP;
+        const stopDist = stopM * nv;
+        let addSh = riskAmt / stopDist;
+        const maxAddSh = cash / (addPrice * (1 + feeR));
+        if (addSh > maxAddSh) addSh = maxAddSh;
+        const addCost = addSh * addPrice * (1 + feeR);
+        if (addCost <= cash) {
+          cash -= addCost;
+          const totalCB = shares * entryPrice + addSh * addPrice;
+          shares += addSh;
+          entryPrice = totalCB / shares;
+          unitsHeld++;
+          lastAddPrice = addPrice;
+          stopPrice = addPrice - stopDist;
+          const trd = trades[trades.length - 1];
+          if (!trd.pyramidAdds) trd.pyramidAdds = [];
+          trd.pyramidAdds.push({ date, price: addPrice, shares: addSh });
+          trd.shares = shares;
+          trd.cost += addCost;
+          signalsAdd.push([date, addPrice]);
+        }
+      }
 
       if (stopHit) {
         const sp = stopPrice * (1 - slipR);
@@ -194,7 +220,7 @@ function runTurtleBacktest(data, entryP, exitP, atrP, stopM, riskP, initCap, fee
         trd.ret = (shares * sp * (1 - feeR) / trd.cost - 1) * 100;
         trd.reason = '止损';
         lastLost = trd.ret < 0;
-        shares = 0; hasPos = false; stopPrice = 0;
+        shares = 0; unitsHeld = 0; stopPrice = 0;
         signalsS.push([date, sp]); signalsX.push([date, sp]);
       } else if (exitSig) {
         const sp = price * (1 - slipR);
@@ -204,13 +230,13 @@ function runTurtleBacktest(data, entryP, exitP, atrP, stopM, riskP, initCap, fee
         trd.ret = (shares * sp * (1 - feeR) / trd.cost - 1) * 100;
         trd.reason = '通道离场';
         lastLost = trd.ret < 0;
-        shares = 0; hasPos = false; stopPrice = 0;
+        shares = 0; unitsHeld = 0; stopPrice = 0;
         signalsS.push([date, sp]);
       }
     }
   }
   // Force close
-  if (hasPos) {
+  if (unitsHeld > 0) {
     const fp = closes[closes.length - 1] * (1 - slipR);
     cash += shares * fp * (1 - feeR);
     const trd = trades[trades.length - 1];
@@ -231,7 +257,7 @@ function runTurtleBacktest(data, entryP, exitP, atrP, stopM, riskP, initCap, fee
   const bhEq = closes.map((p, i) => ({ date: dates[i], equity: bhShares * p }));
   const bhFinal = bhShares * closes[closes.length - 1];
 
-  return { nVal, dcEntry, dcExit, trades, equity: fullEq, signalsB, signalsS, signalsX, finalEq, bhEq, bhFinal, params: { entryP, exitP, atrP, stopM, riskP } };
+  return { nVal, dcEntry, dcExit, trades, equity: fullEq, signalsB, signalsS, signalsX, signalsAdd, finalEq, bhEq, bhFinal, params: { entryP, exitP, atrP, stopM, riskP, maxUnits, pyramidAtr } };
 }
 
 function calcMetrics(result, initCap) {
@@ -295,6 +321,8 @@ function getParams() {
     initCap: parseFloat(document.getElementById('initCap').value) * 10000,
     feeR: parseFloat(document.getElementById('feeRate').value) / 100,
     slipR: parseFloat(document.getElementById('slippage').value) / 100,
+    maxUnits: parseInt(document.getElementById('maxUnits').value),
+    pyramidAtr: parseFloat(document.getElementById('pyramidAtr').value),
   };
 }
 
@@ -304,7 +332,7 @@ function redrawAll() {
   const stock = STOCKS[code];
   const p = getParams();
 
-  const result = runTurtleBacktest(stock.data, p.entryP, p.exitP, p.atrP, p.stopM, p.riskP, p.initCap, p.feeR, p.slipR);
+  const result = runTurtleBacktest(stock.data, p.entryP, p.exitP, p.atrP, p.stopM, p.riskP, p.initCap, p.feeR, p.slipR, p.maxUnits, p.pyramidAtr);
   const m = calcMetrics(result, p.initCap);
 
   // KPI Cards

@@ -75,6 +75,13 @@ def plot_turtle_signals(df, result, stock_name, stock_code,
                    zorder=5, edgecolors='white', linewidth=0.8,
                    label=f'买入 (突破入场)')
 
+    # 加仓信号 (橙色菱形)
+    if result.get('signals_add'):
+        add_dates, add_prices = zip(*result['signals_add'])
+        ax.scatter(add_dates, add_prices, marker='D', s=80, c='#fdcb6e',
+                   zorder=5, edgecolors='white', linewidth=0.8,
+                   label='加仓 (金字塔)')
+
     # 卖出信号 (绿色下三角) — 包含信号离场和止损
     if result['signals_sell']:
         sell_dates, sell_prices = zip(*result['signals_sell'])
@@ -96,7 +103,7 @@ def plot_turtle_signals(df, result, stock_name, stock_code,
                  fontsize=13, fontweight='bold')
     ax.set_xlabel('日期', fontsize=11)
     ax.set_ylabel('价格 (元)', fontsize=11)
-    ax.legend(loc='upper left', fontsize=8.5, framealpha=0.9, ncol=2)
+    ax.legend(loc='upper left', fontsize=8.5, framealpha=0.9, ncol=3)
     ax.grid(True, alpha=0.3, linestyle='--')
     ax.yaxis.set_major_formatter(mticker.FormatStrFormatter('%.0f'))
     fig.autofmt_xdate()
