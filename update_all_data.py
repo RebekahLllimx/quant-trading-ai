@@ -41,6 +41,7 @@ STOCKS = [
 # Fetch ~1 year of daily data
 START_DATE = (datetime.now() - timedelta(days=400)).strftime('%Y%m%d')
 END_DATE = datetime.now().strftime('%Y%m%d')
+MAX_FETCH_ATTEMPTS = 3
 
 # ═══════════════ Helpers ═══════════════
 
@@ -135,6 +136,24 @@ def fetch_hk_stock(code, name):
         return None
 
 
+def fetch_with_retry(fetcher, code, name):
+    """Fetch one stock with bounded retries for transient provider failures."""
+    for attempt in range(1, MAX_FETCH_ATTEMPTS + 1):
+        df = fetcher(code, name)
+        if df is not None and not df.empty:
+            return df
+
+        if attempt < MAX_FETCH_ATTEMPTS:
+            delay = 2 ** (attempt - 1)
+            print(
+                f"     ↻ Retry {attempt + 1}/{MAX_FETCH_ATTEMPTS} "
+                f"in {delay}s..."
+            )
+            time.sleep(delay)
+
+    return None
+
+
 def rebuild_dashboards():
     """Rebuild all dashboard index.html files with updated CSV data."""
     import subprocess
@@ -183,6 +202,8 @@ def main():
     print('=' * 60)
 
     updated = 0
+    attempted = 0
+    failures = []
     for code, name, market, ak_symbol in STOCKS:
         fname = f'{code}_{name}_{market}_daily.csv'
         fpath = os.path.join(DATA_DIR, fname)
@@ -192,19 +213,27 @@ def main():
             continue
 
         print(f'  📡 {code} {name} ({market})...')
+        attempted += 1
         time.sleep(0.5)  # Rate limit
 
         if market == 'A股':
-            df = fetch_a_stock(ak_symbol, name)
+            df = fetch_with_retry(fetch_a_stock, ak_symbol, name)
         else:
-            df = fetch_hk_stock(ak_symbol, name)
+            df = fetch_with_retry(fetch_hk_stock, ak_symbol, name)
 
         if df is not None and len(df) > 0:
             df.to_csv(fpath, index=False, encoding='utf-8-sig')
             print(f'     ✅ Saved {len(df)} rows to {fname}')
             updated += 1
+        else:
+            failures.append(f'{code} {name}')
 
-    print(f'\n📊 Updated: {updated}/{len(STOCKS)} stocks')
+    print(f'\n📊 Updated: {updated}/{attempted} attempted stocks')
+
+    if failures:
+        print(f'❌ Failed after {MAX_FETCH_ATTEMPTS} attempts: {", ".join(failures)}')
+        print('No dashboards were rebuilt; failing the workflow to avoid a false success.')
+        sys.exit(1)
 
     if updated > 0:
         print('\n🔨 Rebuilding dashboards...')
