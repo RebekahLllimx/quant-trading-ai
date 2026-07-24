@@ -1,0 +1,132 @@
+{
+  "evidence_reviewed_at": "2026-07-24",
+  "platform": "JoinQuant",
+  "backtest_settings": {
+    "start": "2019-01-01",
+    "end": "2026-07-23",
+    "initial_capital": 500000,
+    "frequency": "daily",
+    "python_version": "Python 3",
+    "benchmark": "沪深300"
+  },
+  "backtests": [
+    {
+      "strategy": "A",
+      "name": "TASK7-A-MA20模板基线",
+      "status": "completed",
+      "strategy_return": -0.0066,
+      "annualized_return": -0.0009,
+      "excess_return": -0.3674,
+      "benchmark_return": 0.5704,
+      "alpha": -0.053,
+      "beta": 0.519,
+      "sharpe": -0.291,
+      "win_rate": 0.347,
+      "profit_loss_ratio": 1.049,
+      "max_drawdown": -0.3697,
+      "sortino": -0.381,
+      "daily_excess_return": -0.0002,
+      "excess_max_drawdown": -0.4124,
+      "excess_sharpe": -0.737,
+      "daily_win_rate": 0.511,
+      "profitable_trades": 41,
+      "losing_trades": 77,
+      "information_ratio": -0.475,
+      "strategy_volatility": 0.140,
+      "benchmark_volatility": 0.191,
+      "max_drawdown_interval": "2020-07-13至2025-03-21",
+      "evidence_file": "Screenshot 2026-07-24 at 23.13.04.png"
+    },
+    {
+      "strategy": "B",
+      "name": "TASK7-B-MA10_30-ATR风控",
+      "status": "completed",
+      "strategy_return": 0.0291,
+      "annualized_return": 0.0039,
+      "excess_return": -0.3447,
+      "benchmark_return": 0.5704,
+      "alpha": -0.040,
+      "beta": 0.164,
+      "sharpe": -0.771,
+      "win_rate": 0.481,
+      "profit_loss_ratio": 1.135,
+      "max_drawdown": -0.1231,
+      "sortino": -0.984,
+      "daily_excess_return": -0.0002,
+      "excess_max_drawdown": -0.4456,
+      "excess_sharpe": -0.589,
+      "daily_win_rate": 0.489,
+      "profitable_trades": 38,
+      "losing_trades": 41,
+      "information_ratio": -0.365,
+      "strategy_volatility": 0.047,
+      "benchmark_volatility": 0.191,
+      "max_drawdown_interval": "2021-01-12至2025-05-27",
+      "evidence_file": "Screenshot 2026-07-24 at 23.14.30.png"
+    },
+    {
+      "strategy": "C",
+      "name": "TASK7-C-ETF动量轮动15D",
+      "status": "completed",
+      "strategy_return": 0.7184,
+      "annualized_return": 0.0767,
+      "excess_return": 0.0943,
+      "benchmark_return": 0.5704,
+      "alpha": 0.027,
+      "beta": 0.425,
+      "sharpe": 0.313,
+      "win_rate": 0.716,
+      "profit_loss_ratio": 1.661,
+      "max_drawdown": -0.1691,
+      "sortino": 0.437,
+      "daily_excess_return": 0.0001,
+      "excess_max_drawdown": -0.3037,
+      "excess_sharpe": -0.199,
+      "daily_win_rate": 0.512,
+      "profitable_trades": 151,
+      "losing_trades": 60,
+      "information_ratio": 0.095,
+      "strategy_volatility": 0.117,
+      "benchmark_volatility": 0.191,
+      "max_drawdown_interval": "2024-10-08至2025-02-05",
+      "evidence_file": "Screenshot 2026-07-24 at 23.16.51.png"
+    }
+  ],
+  "simulation_deployments": [
+    {
+      "strategy": "A",
+      "name": "TASK7-A-MA20模板基线",
+      "status": "deployed_waiting_data",
+      "deployed_at": "2026-07-24",
+      "data_available": false,
+      "status_evidence": "用户在已登录页面完成并确认"
+    },
+    {
+      "strategy": "B",
+      "name": "TASK7-B-MA10_30-ATR风控",
+      "status": "deployed_waiting_data",
+      "deployed_at": "2026-07-24",
+      "data_available": false,
+      "status_evidence": "用户在已登录页面完成并确认"
+    },
+    {
+      "strategy": "C",
+      "name": "TASK7-C-ETF动量轮动15D",
+      "status": "deployed_waiting_data",
+      "deployed_at": "2026-07-24",
+      "data_available": false,
+      "status_evidence": "用户在已登录页面完成并确认"
+    }
+  ],
+  "simulation_status": {
+    "status": "deployed_waiting_data",
+    "message": "用户已在登录页面完成并确认三个私有模拟盘部署；截至2026-07-24尚无平台运行数据，等待至少一个A股交易时段后更新。",
+    "actual_performance_available": false
+  },
+  "privacy_review": {
+    "contains_password": false,
+    "contains_cookie_or_token": false,
+    "contains_private_share_link": false,
+    "contains_visible_personal_identifier": false
+  }
+}

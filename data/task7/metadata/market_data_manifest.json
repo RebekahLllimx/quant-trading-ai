@@ -1,0 +1,63 @@
+{
+  "generated_at_utc": "2026-07-24T13:42:54.731122+00:00",
+  "latest_common_date": "2026-07-24",
+  "adjustment": {
+    "etfs": "Yahoo adjusted close; OHLC multiplied by AdjClose/RawClose",
+    "benchmark": "Price index; no adjustment required"
+  },
+  "privacy": "No JoinQuant account, link, password, cookie or token is used.",
+  "sources": [
+    {
+      "symbol": "510300",
+      "rows": 2805,
+      "first_date": "2015-01-05",
+      "last_date": "2026-07-24",
+      "duplicate_dates": 0,
+      "missing_ohlc": 0,
+      "nonpositive_ohlc": 0,
+      "invalid_high_low": 0,
+      "monotonic_dates": true,
+      "status": "pass",
+      "sha256": "eda87bd97a03d11d3bdea8bd08bff9e36151d20106e7d11bf5a089b41f39c731"
+    },
+    {
+      "symbol": "510500",
+      "rows": 2805,
+      "first_date": "2015-01-05",
+      "last_date": "2026-07-24",
+      "duplicate_dates": 0,
+      "missing_ohlc": 0,
+      "nonpositive_ohlc": 0,
+      "invalid_high_low": 0,
+      "monotonic_dates": true,
+      "status": "pass",
+      "sha256": "7c5d948f209838912de800f21bd21d996586c183246e4efc5207dc8c0831fed4"
+    },
+    {
+      "symbol": "159915",
+      "rows": 2805,
+      "first_date": "2015-01-05",
+      "last_date": "2026-07-24",
+      "duplicate_dates": 0,
+      "missing_ohlc": 0,
+      "nonpositive_ohlc": 0,
+      "invalid_high_low": 0,
+      "monotonic_dates": true,
+      "status": "pass",
+      "sha256": "912a0c158008c4d1e054a272a0fa21ac0554bfa1fabd1c48edaa7c4a765093da"
+    },
+    {
+      "symbol": "000300",
+      "rows": 2808,
+      "first_date": "2015-01-05",
+      "last_date": "2026-07-24",
+      "duplicate_dates": 0,
+      "missing_ohlc": 0,
+      "nonpositive_ohlc": 0,
+      "invalid_high_low": 0,
+      "monotonic_dates": true,
+      "status": "pass",
+      "sha256": "5190aa3f02bc7829c577fc33790e935394f9d858f684e813985621ff31a43ea6"
+    }
+  ]
+}

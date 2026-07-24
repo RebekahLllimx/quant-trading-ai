@@ -17,7 +17,7 @@
 | **4** | 复刻传奇：海龟交易法则实战演练 | 突破入场、ATR止损、分批止盈、仓位管理 | ⏳ |
 | **5** | AI交易引擎：机器学习算法与场景应用 | 线性回归、决策树、KNN 训练与评估 | ⏳ |
 | **6** | 智能决策者：用机器学习定制专属策略 | 特征工程 + 涨跌预测 + 策略回测对比 | ⏳ |
-| **7** | 实战推演：策略实盘部署与交易实战 | JoinQuant 模拟交易 | ⏳ |
+| **7** | [实战推演：策略实盘部署与交易实战](Task7/) | JoinQuant三策略、平台回测、私有模拟盘与自动更新Dashboard | ✅ |
 | **8** | 成果展示：专业报告撰写与策略路演 | 综合报告与路演材料 | ⏳ |
 
 ---
@@ -75,11 +75,15 @@ open index.html
 # 方式B：直接打开各任务看板
 open Task1/dashboard/index.html   # K线看板
 open Task2/dashboard/index.html   # 技术指标看板
+open Task7/dashboard/index.html   # 三策略回测与影子跟踪看板
 ```
 
 ### 更新数据
 ```bash
 python Task2/scripts/update_data.py   # 拉取最新行情（AKShare）
+python Task7/scripts/update_live_data.py --use-existing-on-error
+python Task7/scripts/shadow_engine.py
+python Task7/scripts/build_dashboard.py
 ```
 
 ### 生成报告
