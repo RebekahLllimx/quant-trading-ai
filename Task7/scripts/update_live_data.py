@@ -103,6 +103,13 @@ def merge_existing_snapshot(path: Path, recent: pd.DataFrame) -> pd.DataFrame:
     )
 
 
+def latest_stored_date(path: Path):
+    if not path.exists():
+        return None
+    dates = pd.read_csv(path, usecols=["Date"])
+    return pd.to_datetime(dates["Date"]).max()
+
+
 def fetch_etf(code: str) -> pd.DataFrame:
     errors = []
     try:
@@ -311,6 +318,7 @@ def main() -> int:
     for code in ["510300", "510500", "159915"]:
         path = RAW_DIR / f"{code}.csv"
         try:
+            previous_latest = latest_stored_date(path)
             frame = merge_existing_snapshot(path, fetch_etf(code))
             frame = (
                 frame.sort_values("Date")
@@ -320,7 +328,18 @@ def main() -> int:
             report = validate_frame(code, frame)
             if report["status"] != "pass":
                 raise ValueError(f"Data quality failure for {code}: {report}")
-            frame.to_csv(path, index=False, encoding="utf-8-sig", float_format="%.8f")
+            if (
+                previous_latest is None
+                or pd.Timestamp(report["last_date"]) > previous_latest
+            ):
+                frame.to_csv(
+                    path,
+                    index=False,
+                    encoding="utf-8-sig",
+                    float_format="%.8f",
+                )
+            else:
+                print(f"ℹ️ {code}: no new trading day; snapshot unchanged")
             print(f"✅ {code}: {len(frame)} rows through {report['last_date']}")
         except Exception as exc:
             if args.use_existing_on_error and path.exists():
@@ -339,6 +358,7 @@ def main() -> int:
 
     benchmark_path = RAW_DIR / "000300.csv"
     try:
+        previous_latest = latest_stored_date(benchmark_path)
         benchmark = merge_existing_snapshot(benchmark_path, fetch_benchmark())
         benchmark = (
             benchmark.sort_values("Date")
@@ -348,9 +368,18 @@ def main() -> int:
         report = validate_frame("000300", benchmark)
         if report["status"] != "pass":
             raise ValueError(f"Data quality failure for 000300: {report}")
-        benchmark.to_csv(
-            benchmark_path, index=False, encoding="utf-8-sig", float_format="%.8f"
-        )
+        if (
+            previous_latest is None
+            or pd.Timestamp(report["last_date"]) > previous_latest
+        ):
+            benchmark.to_csv(
+                benchmark_path,
+                index=False,
+                encoding="utf-8-sig",
+                float_format="%.8f",
+            )
+        else:
+            print("ℹ️ 000300: no new trading day; snapshot unchanged")
         print(
             f"✅ 000300: {len(benchmark)} rows through {report['last_date']}"
         )
