@@ -4,9 +4,13 @@
 Unified data update script — fetches latest OHLCV for all 10 stocks.
 Runs in GitHub Actions or locally.
 
+Tencent Finance is the primary source because it is reachable from GitHub
+Actions without credentials. AKShare remains a bounded fallback.
+
 Usage:
     python update_all_data.py           # full fetch
     python update_all_data.py --check   # check if update needed (exit 0=needed, 1=not)
+    python update_all_data.py --force   # fetch even outside a trading day
 """
 
 import os
@@ -14,6 +18,7 @@ import sys
 import time
 import argparse
 import pandas as pd
+import requests
 from datetime import datetime, timedelta
 
 # ═══════════════ Config ═══════════════
@@ -69,6 +74,64 @@ def needs_update(filepath):
 
 
 # ═══════════════ Fetch ═══════════════
+
+def tencent_symbol(code, market):
+    if market == '港股':
+        return f'hk{code}'
+    exchange = 'sh' if code.startswith(('5', '6', '9')) else 'sz'
+    return f'{exchange}{code}'
+
+
+def fetch_tencent_stock(code, name, market):
+    """Fetch recent daily bars from Tencent Finance."""
+    try:
+        symbol = tencent_symbol(code, market)
+        response = requests.get(
+            'https://web.ifzq.gtimg.cn/appstock/app/fqkline/get',
+            params={'param': f'{symbol},day,,,320,qfq'},
+            timeout=45,
+            headers={'User-Agent': 'Mozilla/5.0 quant-trading-ai'},
+        )
+        response.raise_for_status()
+        payload = response.json()
+        node = payload.get('data', {}).get(symbol, {})
+        rows = node.get('qfqday') or node.get('day') or []
+        if payload.get('code') != 0 or not rows:
+            raise ValueError(
+                f'Tencent returned no rows: {payload.get("msg", "")}'
+            )
+
+        df = pd.DataFrame(
+            [row[:6] for row in rows],
+            columns=['Date', 'Open', 'Close', 'High', 'Low', 'Volume'],
+        )
+        df['Date'] = pd.to_datetime(df['Date'])
+        for column in ['Open', 'Close', 'High', 'Low', 'Volume']:
+            df[column] = pd.to_numeric(df[column], errors='coerce')
+        df = df.dropna(subset=['Date', 'Open', 'Close', 'High', 'Low'])
+        df = df[
+            (df['Date'] >= pd.to_datetime(START_DATE))
+            & (df['Date'] <= pd.to_datetime(END_DATE))
+        ].copy()
+        previous_close = df['Close'].shift(1)
+        df['股票代码'] = code
+        df['Amount'] = pd.NA
+        df['振幅'] = ((df['High'] - df['Low']) / previous_close * 100).round(4)
+        df['PctChg'] = df['Close'].pct_change().mul(100).round(4)
+        df['涨跌额'] = df['Close'].diff().round(4)
+        df['Turnover'] = pd.NA
+        df['Date'] = df['Date'].dt.strftime('%Y-%m-%d')
+        keep_cols = [
+            'Date', '股票代码', 'Open', 'Close', 'High', 'Low',
+            'Volume', 'Amount', '振幅', 'PctChg', '涨跌额', 'Turnover',
+        ]
+        series_name = 'qfqday' if node.get('qfqday') else 'day'
+        print(f'     ✅ Tencent {series_name}: {symbol}')
+        return df[keep_cols].sort_values('Date').reset_index(drop=True)
+    except Exception as e:
+        print(f'     ⚠️  Tencent failed for {code} {name}: {e}')
+        return None
+
 
 def fetch_a_stock(code, name):
     """Fetch A-share daily data via AKShare."""
@@ -136,10 +199,10 @@ def fetch_hk_stock(code, name):
         return None
 
 
-def fetch_with_retry(fetcher, code, name):
+def fetch_with_retry(fetcher, code, name, *extra):
     """Fetch one stock with bounded retries for transient provider failures."""
     for attempt in range(1, MAX_FETCH_ATTEMPTS + 1):
-        df = fetcher(code, name)
+        df = fetcher(code, name, *extra)
         if df is not None and not df.empty:
             return df
 
@@ -183,6 +246,11 @@ def rebuild_dashboards():
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--check', action='store_true', help='Only check if update needed')
+    parser.add_argument(
+        '--force',
+        action='store_true',
+        help='Fetch all symbols even when the calendar check says no update is needed',
+    )
     args = parser.parse_args()
 
     if args.check:
@@ -208,7 +276,11 @@ def main():
         fname = f'{code}_{name}_{market}_daily.csv'
         fpath = os.path.join(DATA_DIR, fname)
 
-        if not args.check and not needs_update(fpath) and os.path.exists(fpath):
+        if (
+            not args.force
+            and not needs_update(fpath)
+            and os.path.exists(fpath)
+        ):
             print(f'  ⏭️  {code} {name}: up to date')
             continue
 
@@ -216,10 +288,13 @@ def main():
         attempted += 1
         time.sleep(0.5)  # Rate limit
 
-        if market == 'A股':
-            df = fetch_with_retry(fetch_a_stock, ak_symbol, name)
-        else:
-            df = fetch_with_retry(fetch_hk_stock, ak_symbol, name)
+        df = fetch_with_retry(fetch_tencent_stock, code, name, market)
+        if df is None:
+            print('     ↪ Falling back to AKShare')
+            if market == 'A股':
+                df = fetch_with_retry(fetch_a_stock, ak_symbol, name)
+            else:
+                df = fetch_with_retry(fetch_hk_stock, ak_symbol, name)
 
         if df is not None and len(df) > 0:
             df.to_csv(fpath, index=False, encoding='utf-8-sig')
@@ -231,7 +306,7 @@ def main():
     print(f'\n📊 Updated: {updated}/{attempted} attempted stocks')
 
     if failures:
-        print(f'❌ Failed after {MAX_FETCH_ATTEMPTS} attempts: {", ".join(failures)}')
+        print(f'❌ All public sources failed: {", ".join(failures)}')
         print('No dashboards were rebuilt; failing the workflow to avoid a false success.')
         sys.exit(1)
 

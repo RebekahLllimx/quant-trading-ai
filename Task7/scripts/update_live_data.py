@@ -2,9 +2,11 @@
 # -*- coding: utf-8 -*-
 """Fetch and validate public daily data for the TASK7 shadow portfolios.
 
-Yahoo chart data is the primary ETF source because it provides an adjusted
-close series for all three funds. OHLC values are multiplied by the same
-adjustment factor. Eastmoney/AKShare is primary for the CSI 300 benchmark.
+Tencent's daily K-line API is the primary source because it is reachable from
+GitHub Actions without a private token. Yahoo remains an ETF fallback and
+AKShare remains a benchmark fallback. Recent observations are merged into the
+stored long-history snapshots before the strategies are rebuilt.
+
 No JoinQuant credential, private link, cookie or password is read or stored.
 """
 
@@ -31,6 +33,94 @@ from task7_common import (
 
 
 START_DATE = "2015-01-01"
+TENCENT_ROWS = 320
+
+
+def tencent_symbol(code: str) -> str:
+    if code == "000300" or code.startswith(("5", "6", "9")):
+        return f"sh{code}"
+    return f"sz{code}"
+
+
+def fetch_tencent(code: str, *, benchmark: bool = False) -> pd.DataFrame:
+    symbol = tencent_symbol(code)
+    if benchmark:
+        url = "https://web.ifzq.gtimg.cn/appstock/app/kline/kline"
+        query = f"{symbol},day,,,{TENCENT_ROWS}"
+    else:
+        url = "https://web.ifzq.gtimg.cn/appstock/app/fqkline/get"
+        query = f"{symbol},day,,,{TENCENT_ROWS},qfq"
+
+    response = requests.get(
+        url,
+        params={"param": query},
+        timeout=45,
+        headers={"User-Agent": "Mozilla/5.0 TASK7 research"},
+    )
+    response.raise_for_status()
+    payload = response.json()
+    node = payload.get("data", {}).get(symbol, {})
+    rows = node.get("qfqday") or node.get("day") or []
+    if payload.get("code") != 0 or not rows:
+        raise ValueError(
+            f"Tencent returned no rows for {symbol}: {payload.get('msg', '')}"
+        )
+
+    frame = pd.DataFrame(
+        [row[:6] for row in rows],
+        columns=["Date", "Open", "Close", "High", "Low", "Volume"],
+    )
+    frame["Date"] = pd.to_datetime(frame["Date"])
+    for column in ["Open", "High", "Low", "Close", "Volume"]:
+        frame[column] = pd.to_numeric(frame[column], errors="coerce")
+    frame["Source"] = (
+        "Tencent Finance daily index API (unadjusted)"
+        if benchmark
+        else (
+            "Tencent Finance qfq daily API"
+            if node.get("qfqday")
+            else "Tencent Finance daily API (unadjusted)"
+        )
+    )
+    return frame.dropna(subset=["Date", "Open", "High", "Low", "Close"])
+
+
+def merge_existing_snapshot(path: Path, recent: pd.DataFrame) -> pd.DataFrame:
+    if not path.exists():
+        return recent
+    existing = pd.read_csv(path)
+    existing["Date"] = pd.to_datetime(existing["Date"])
+    if "Source" not in existing:
+        existing["Source"] = "Existing validated snapshot"
+    # Published backtests must remain reproducible. Keep the previously
+    # validated value for overlapping dates and append only genuinely new
+    # trading days from the live provider.
+    new_rows = recent.loc[recent["Date"] > existing["Date"].max()].copy()
+    return (
+        pd.concat([existing, new_rows], ignore_index=True, sort=False)
+        .sort_values("Date")
+        .reset_index(drop=True)
+    )
+
+
+def latest_stored_date(path: Path):
+    if not path.exists():
+        return None
+    dates = pd.read_csv(path, usecols=["Date"])
+    return pd.to_datetime(dates["Date"]).max()
+
+
+def fetch_etf(code: str) -> pd.DataFrame:
+    errors = []
+    try:
+        return fetch_tencent(code)
+    except Exception as exc:
+        errors.append(f"Tencent: {exc}")
+    try:
+        return fetch_yahoo(SYMBOLS[code]["yahoo"])
+    except Exception as exc:
+        errors.append(f"Yahoo: {exc}")
+    raise RuntimeError("; ".join(errors))
 
 
 def fetch_yahoo(symbol: str, start: str = START_DATE) -> pd.DataFrame:
@@ -124,7 +214,7 @@ def fetch_yahoo(symbol: str, start: str = START_DATE) -> pd.DataFrame:
     return result
 
 
-def fetch_benchmark() -> pd.DataFrame:
+def fetch_benchmark_akshare() -> pd.DataFrame:
     import akshare as ak
 
     today = pd.Timestamp.today().strftime("%Y%m%d")
@@ -161,6 +251,18 @@ def fetch_benchmark() -> pd.DataFrame:
     frame["Source"] = source
     keep = ["Date", "Open", "High", "Low", "Close", "Volume", "Amount", "Source"]
     return frame[[column for column in keep if column in frame.columns]]
+
+
+def fetch_benchmark() -> pd.DataFrame:
+    try:
+        return fetch_tencent("000300", benchmark=True)
+    except Exception as primary_error:
+        frame = fetch_benchmark_akshare()
+        frame["Source"] = (
+            frame["Source"].astype(str)
+            + f"; Tencent unavailable: {type(primary_error).__name__}"
+        )
+        return frame
 
 
 def validate_frame(symbol: str, frame: pd.DataFrame) -> dict:
@@ -216,7 +318,8 @@ def main() -> int:
     for code in ["510300", "510500", "159915"]:
         path = RAW_DIR / f"{code}.csv"
         try:
-            frame = fetch_yahoo(SYMBOLS[code]["yahoo"])
+            previous_latest = latest_stored_date(path)
+            frame = merge_existing_snapshot(path, fetch_etf(code))
             frame = (
                 frame.sort_values("Date")
                 .drop_duplicates("Date", keep="last")
@@ -225,7 +328,18 @@ def main() -> int:
             report = validate_frame(code, frame)
             if report["status"] != "pass":
                 raise ValueError(f"Data quality failure for {code}: {report}")
-            frame.to_csv(path, index=False, encoding="utf-8-sig", float_format="%.8f")
+            if (
+                previous_latest is None
+                or pd.Timestamp(report["last_date"]) > previous_latest
+            ):
+                frame.to_csv(
+                    path,
+                    index=False,
+                    encoding="utf-8-sig",
+                    float_format="%.8f",
+                )
+            else:
+                print(f"ℹ️ {code}: no new trading day; snapshot unchanged")
             print(f"✅ {code}: {len(frame)} rows through {report['last_date']}")
         except Exception as exc:
             if args.use_existing_on_error and path.exists():
@@ -244,7 +358,8 @@ def main() -> int:
 
     benchmark_path = RAW_DIR / "000300.csv"
     try:
-        benchmark = fetch_benchmark()
+        previous_latest = latest_stored_date(benchmark_path)
+        benchmark = merge_existing_snapshot(benchmark_path, fetch_benchmark())
         benchmark = (
             benchmark.sort_values("Date")
             .drop_duplicates("Date", keep="last")
@@ -253,9 +368,18 @@ def main() -> int:
         report = validate_frame("000300", benchmark)
         if report["status"] != "pass":
             raise ValueError(f"Data quality failure for 000300: {report}")
-        benchmark.to_csv(
-            benchmark_path, index=False, encoding="utf-8-sig", float_format="%.8f"
-        )
+        if (
+            previous_latest is None
+            or pd.Timestamp(report["last_date"]) > previous_latest
+        ):
+            benchmark.to_csv(
+                benchmark_path,
+                index=False,
+                encoding="utf-8-sig",
+                float_format="%.8f",
+            )
+        else:
+            print("ℹ️ 000300: no new trading day; snapshot unchanged")
         print(
             f"✅ 000300: {len(benchmark)} rows through {report['last_date']}"
         )
@@ -278,7 +402,10 @@ def main() -> int:
         "generated_at_utc": datetime.now(timezone.utc).isoformat(),
         "latest_common_date": min(latest_dates).strftime("%Y-%m-%d"),
         "adjustment": {
-            "etfs": "Yahoo adjusted close; OHLC multiplied by AdjClose/RawClose",
+            "etfs": (
+                "Tencent qfq daily data; Yahoo adjusted data is used only "
+                "when Tencent is unavailable"
+            ),
             "benchmark": "Price index; no adjustment required",
         },
         "privacy": "No JoinQuant account, link, password, cookie or token is used.",
