@@ -1,6 +1,6 @@
 # 量化交易：AI大模型辅助的金融交易策略
 
-📈 北京大学光华管理学院商业分析工作坊（光华BA工作坊）课程项目。包含 8 个阶段性任务，从数据引擎搭建到策略路演，覆盖金融数据处理、技术指标构造、策略回测、机器学习预测与模拟实盘部署。
+📈 北京大学光华管理学院商业分析工作坊（光华BA工作坊）课程项目。包含8个阶段性任务，从数据引擎搭建到专业学习报告，覆盖金融数据处理、技术指标构造、策略回测、机器学习预测与模拟交易部署。
 
 [![Tasks](https://img.shields.io/badge/tasks-8-blue)](https://github.com/RebekahLllimx/quant-trading-ai)
 [![Python](https://img.shields.io/badge/python-3.10%2B-3776AB?logo=python)](https://www.python.org/)
@@ -13,12 +13,12 @@
 |---|---------|------|------|
 | **1** | [量化交易初体验：从零搭建数据引擎](Task1/) | 获取A股+港股数据，K线可视化看板 | ✅ |
 | **2** | [数据炼金术：数据诊断与构造交易指标](Task2/) | 8大技术指标计算与交互看板 | ✅ |
-| **3** | 策略首秀：用均线交叉反映市场波动 | 移动平均线交叉 + 均值回归策略回测 | ⏳ |
-| **4** | 复刻传奇：海龟交易法则实战演练 | 突破入场、ATR止损、分批止盈、仓位管理 | ⏳ |
-| **5** | AI交易引擎：机器学习算法与场景应用 | 线性回归、决策树、KNN 训练与评估 | ⏳ |
-| **6** | 智能决策者：用机器学习定制专属策略 | 特征工程 + 涨跌预测 + 策略回测对比 | ⏳ |
-| **7** | [实战推演：策略实盘部署与交易实战](Task7/) | JoinQuant三策略、平台回测、私有模拟盘与自动更新Dashboard | ✅ |
-| **8** | 成果展示：专业报告撰写与策略路演 | 综合报告与路演材料 | ⏳ |
+| **3** | [策略首秀：用均线交叉反映市场波动](Task3/) | 移动平均线交叉 + 均值回归策略回测 | ✅ |
+| **4** | [复刻传奇：海龟交易法则实战演练](Task4/) | 突破入场、ATR止损、分批止盈、仓位管理 | ✅ |
+| **5** | [AI交易引擎：机器学习算法与场景应用](Task5/) | 乳腺癌二分类、特征筛选、ROC/AUC与金融尝试反思 | ✅ |
+| **6** | [智能决策者：用机器学习定制专属策略](Task6/) | 特征工程 + 涨跌预测 + 策略回测对比 | ✅ |
+| **7** | [实战推演：策略实盘部署与交易实战](Task7/) | JoinQuant 三策略、参数检验、私有模拟盘与自动更新Dashboard | 🚧 |
+| **8** | [成果展示：专业学习报告](Task8/) | 前七项任务综合分析、个人思考与研究展望 | ✅ |
 
 ---
 
@@ -30,7 +30,7 @@
 | **数据处理** | Python 3.10+, pandas, NumPy |
 | **金融绘图** | mplfinance |
 | **交互看板** | ECharts 5.5（自包含 HTML，无需后端） |
-| **报告** | python-docx（宋体 10.5pt，1.5倍行距） |
+| **报告** | python-docx / Jupyter Notebook / XeLaTeX（宋体五号，1.5倍行距） |
 | **部署** | GitHub Pages（静态文件） |
 
 ---
@@ -39,29 +39,20 @@
 
 ```
 量化交易/
-├── index.html                  ← Hub 导航页
-├── README.md                   ← 本文件
-├── skills.md                   ← 工作流 SOP
-├── .gitignore
-├── data/                       ← 共享数据
-│   ├── csv/                    ←   10只标的 CSV（A股+港股）
-│   └── charts/
-│       ├── task1/              ←   K线图（20张）
-│       └── task2/              ←   指标图（7张）
-├── src/                        ← 共享模块
-│   ├── indicators.py           ←   8个技术指标计算
-│   └── report_utils.py         ←   docx 格式化辅助
-├── Task1/
-│   ├── Rebecca+Task1.docx
-│   ├── dashboard/index.html    ←   K线看板
-│   └── scripts/
-├── Task2/
-│   ├── spec.md                 ←   设计文档
-│   ├── Rebecca+Task2.docx
-│   ├── dashboard/index.html    ←   指标看板
-│   └── scripts/
-└── Task3/ ... Task8/           ← 待完成
+├── Task1/ ... Task8/           ← 稳定的任务入口：报告、Dashboard、spec与scripts
+├── data/                       ← 原始、处理后数据与元数据
+├── artifacts/
+│   ├── charts/task1...task8/  ← 可重新生成的图表
+│   └── models/task5...task6/  ← 已保存模型
+├── output/submissions/         ← 八个Task正式PDF的项目级镜像
+├── build/                      ← 本地构建、PDF渲染和QA中间文件（Git忽略）
+├── docs/                       ← 协作、研究、写作和目录规范
+├── src/                        ← 跨任务共享模块
+├── index.html                  ← GitHub Pages Hub
+└── README.md
 ```
+
+完整的目录职责和新Task模板见 [`docs/directory-structure.md`](docs/directory-structure.md)。
 
 ---
 
@@ -75,7 +66,11 @@ open index.html
 # 方式B：直接打开各任务看板
 open Task1/dashboard/index.html   # K线看板
 open Task2/dashboard/index.html   # 技术指标看板
-open Task7/dashboard/index.html   # 三策略回测与影子跟踪看板
+open Task3/dashboard/index.html   # 双均线交叉策略看板
+open Task4/dashboard/index.html   # 海龟交易策略看板
+open Task5/dashboard/index.html   # 机器学习模型评估看板
+open Task6/dashboard/index.html   # 机器学习选股与择时看板
+open Task7/dashboard/index.html   # 三策略部署与影子跟踪看板
 ```
 
 ### 更新数据
@@ -84,11 +79,16 @@ python Task2/scripts/update_data.py   # 拉取最新行情（AKShare）
 python Task7/scripts/update_live_data.py --use-existing-on-error
 python Task7/scripts/shadow_engine.py
 python Task7/scripts/build_dashboard.py
+python Task7/scripts/validate_results.py
+python Task8/scripts/build_figures.py
+python Task8/scripts/generate_report.py
 ```
 
-### 生成报告
+### 复现TASK5分析
 ```bash
-python TaskN/scripts/generate_report.py   # 输出 Rebecca+TaskN.docx
+python Task5/scripts/cancer_case_analysis.py
+jupyter nbconvert --to notebook --execute --inplace Task5/Rebecca+Task5.ipynb
+python Task5/scripts/build_task5_dashboard.py
 ```
 
 ---
@@ -107,7 +107,7 @@ python TaskN/scripts/generate_report.py   # 输出 Rebecca+TaskN.docx
 
 ## 📝 报告格式
 
-所有报告统一使用：宋体(SimSun) 五号(10.5pt)、1.5倍行距、0pt段间距、两端对齐。无封面，标题用 Normal 段落 + 字号区分（14pt Bold / 12pt Bold）。文件名格式：`Rebecca+TaskN.docx`。
+课程报告统一使用宋体五号、1.5倍行距、0pt段间距和两端对齐。TASK5采用可执行Notebook作为可编辑母版，TASK8采用Word作为综合报告母版；提交前逐页检查图号、标题、解读和分页。完整语言要求见[`docs/report-writing-guidelines.md`](docs/report-writing-guidelines.md)。
 
 ---
 

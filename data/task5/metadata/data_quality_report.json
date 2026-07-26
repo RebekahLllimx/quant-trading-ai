@@ -1,0 +1,104 @@
+{
+  "created_at": "2026-07-17T16:55:30.160727+08:00",
+  "grain": "one stock at one global month-end observation date",
+  "observation_rule": "last market date in each calendar month",
+  "target": "future 60-trading-day cross-sectional top 30% versus bottom 30%",
+  "feature_transform": "same-date cross-sectional percentile rank minus 0.5",
+  "raw_quality": {
+    "rows": 213347,
+    "duplicates_symbol_date": 0,
+    "invalid_ohlc_rows": 0,
+    "missing_core_cells": 0
+  },
+  "pre_feature_rows": 9329,
+  "dropped_for_feature_or_forward_return_missing": 373,
+  "dropped_middle_40pct_or_ties": 3550,
+  "unassigned_or_purged_rows": 532,
+  "missing_by_feature_before_drop": {
+    "momentum_12_1": 74,
+    "return_120d": 17,
+    "ma120_gap": 17,
+    "downside_volatility60": 4,
+    "return_60d": 4,
+    "ma60_gap": 4,
+    "max_drawdown60": 4,
+    "volatility60": 4,
+    "return_1d": 0,
+    "amihud20": 0,
+    "open_close_return": 0,
+    "intraday_range": 0,
+    "amount_ratio20": 0,
+    "volume_ratio20": 0,
+    "atr14_pct": 0,
+    "volatility20": 0,
+    "return_5d": 0,
+    "macd_pct": 0,
+    "rsi14": 0,
+    "ma20_gap": 0,
+    "return_20d": 0,
+    "amount_mean20_log": 0
+  },
+  "final_rows": 4874,
+  "symbols": 100,
+  "months": 83,
+  "date_start": "2018-02-28",
+  "date_end": "2025-09-30",
+  "duplicate_keys": 0,
+  "remaining_missing_cells": 0,
+  "label_values": [
+    0,
+    1
+  ],
+  "split_summary": [
+    {
+      "Split": "train",
+      "rows": 3289,
+      "positive": 1673,
+      "symbols": 100,
+      "months": 56,
+      "start": "2018-02-28",
+      "end": "2022-09-30",
+      "positive_rate": 0.5086652477956826
+    },
+    {
+      "Split": "validation",
+      "rows": 529,
+      "positive": 269,
+      "symbols": 98,
+      "months": 9,
+      "start": "2023-01-31",
+      "end": "2023-09-28",
+      "positive_rate": 0.5085066162570888
+    },
+    {
+      "Split": "development",
+      "rows": 531,
+      "positive": 270,
+      "symbols": 97,
+      "months": 9,
+      "start": "2024-01-31",
+      "end": "2024-09-30",
+      "positive_rate": 0.5084745762711864
+    },
+    {
+      "Split": "test",
+      "rows": 525,
+      "positive": 267,
+      "symbols": 97,
+      "months": 9,
+      "start": "2025-01-27",
+      "end": "2025-09-30",
+      "positive_rate": 0.5085714285714286
+    }
+  ],
+  "purged_train_boundary_rows": 298,
+  "purged_validation_boundary_rows": 291,
+  "purged_development_boundary_rows": 291,
+  "purged_test_boundary_rows": 0,
+  "dataset_sha256": "8186dd004ab0ca87dc9fac45b29ff1260c4e849767128e62e37e3cab64db0800",
+  "environment": {
+    "python": "3.10.9",
+    "pandas": "2.3.3",
+    "numpy": "1.26.4"
+  }
+}

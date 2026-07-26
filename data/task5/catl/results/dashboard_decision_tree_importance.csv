@@ -1,0 +1,9 @@
+﻿model,model_label,feature,feature_cn,value,value_type,absolute_value,rank
+decision_tree,决策树,return_1d,1日收益,0.1308381397678391,不纯度重要性,0.1308381397678391,4
+decision_tree,决策树,rsi14,RSI(14),0.4081772516536452,不纯度重要性,0.4081772516536452,1
+decision_tree,决策树,return_10d,10日收益,0.1568268640330782,不纯度重要性,0.1568268640330782,3
+decision_tree,决策树,return_20d,20日收益,0.035273457074165,不纯度重要性,0.035273457074165,5
+decision_tree,决策树,amount_ratio20,20日额比,0.2688842874712724,不纯度重要性,0.2688842874712724,2
+decision_tree,决策树,return_5d,5日收益,0.0,不纯度重要性,0.0,6
+decision_tree,决策树,intraday_range,日内振幅,0.0,不纯度重要性,0.0,7
+decision_tree,决策树,benchmark_volatility20,沪深300 20日波动率,0.0,不纯度重要性,0.0,8

@@ -1,0 +1,84 @@
+{
+  "created_at": "2026-07-17T16:58:46.143892+08:00",
+  "random_seed": 42,
+  "target": "future 60-trading-day top 30% versus bottom 30% cross-sectional return",
+  "selection_rule": "highest mean AUC across 2023 validation and 2024 development; minimum annual AUC breaks ties",
+  "refit_rule": "selected hyperparameters refitted on 2018-2024 before one 2025 test evaluation",
+  "auc_uncertainty": "95% moving-block bootstrap over month-end dates; three-month blocks; 1000 repetitions",
+  "classification_threshold": 0.5,
+  "feature_columns": [
+    "return_1d",
+    "return_5d",
+    "return_20d",
+    "return_60d",
+    "return_120d",
+    "momentum_12_1",
+    "ma20_gap",
+    "ma60_gap",
+    "ma120_gap",
+    "rsi14",
+    "macd_pct",
+    "atr14_pct",
+    "volatility20",
+    "volatility60",
+    "downside_volatility60",
+    "max_drawdown60",
+    "volume_ratio20",
+    "amount_ratio20",
+    "intraday_range",
+    "open_close_return",
+    "amihud20",
+    "amount_mean20_log"
+  ],
+  "fit_rows": 4349,
+  "test_rows": 525,
+  "test_months": 9,
+  "training_positive_rate": 0.5086226718785928,
+  "models": {
+    "logistic_regression": {
+      "selected_candidate": "C=0.01",
+      "parameters": {
+        "C": 0.01
+      },
+      "selection_score_mean_auc": 0.6638911491327135,
+      "model_file": "logistic_regression.joblib",
+      "model_sha256": "e395adc6e619771d577ebb54ffdd35f7fade014fd769d5dccef54297d7fe2462"
+    },
+    "decision_tree": {
+      "selected_candidate": "depth=3,leaf=50",
+      "parameters": {
+        "max_depth": 3,
+        "min_samples_leaf": 50
+      },
+      "selection_score_mean_auc": 0.5408515540637134,
+      "model_file": "decision_tree.joblib",
+      "model_sha256": "d67b52fc113e39a71c3403aafc9aed80f4a2d5f56972ed20f96fd4036528a30b"
+    },
+    "random_forest": {
+      "selected_candidate": "depth=5,leaf=20,features=sqrt",
+      "parameters": {
+        "n_estimators": 400,
+        "max_samples": 0.8,
+        "class_weight": "balanced",
+        "max_depth": 5,
+        "min_samples_leaf": 20,
+        "max_features": "sqrt"
+      },
+      "selection_score_mean_auc": 0.6600114882877777,
+      "model_file": "random_forest.joblib",
+      "model_sha256": "52d383b0974cb03797ae36092e17f089751852efdbd6fdb86cdc286876630681"
+    }
+  },
+  "outputs": {
+    "candidate_metrics_sha256": "d93ed42ada4de49341b828d341a934894486fcd7f9a5fc4cc40b9f8b9905c9e9",
+    "metrics_sha256": "35a0bc6c231fe490c73f204933cb4b2bab3b8024f8e814b9a8fa4998ceb45a01",
+    "predictions_sha256": "9775e9565c35ec20e4ab7c523a038030f2534416350a63f1a9fd80e759dd7d6a"
+  },
+  "environment": {
+    "python": "3.10.9",
+    "pandas": "2.3.3",
+    "numpy": "1.26.4",
+    "scikit_learn": "1.2.1",
+    "joblib": "1.1.1"
+  }
+}

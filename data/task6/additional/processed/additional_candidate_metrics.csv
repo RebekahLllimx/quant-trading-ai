@@ -1,0 +1,4 @@
+﻿model,model_label,validation_auc,validation_rows
+logistic_regression,逻辑回归,0.6921921921921923,73
+random_forest,随机森林,0.45345345345345345,73
+decision_tree,决策树,0.3828828828828829,73

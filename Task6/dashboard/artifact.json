@@ -1,0 +1,1432 @@
+{
+  "surface": "dashboard",
+  "manifest": {
+    "version": 1,
+    "surface": "dashboard",
+    "title": "TASK6 机器学习选股与动态仓位看板",
+    "description": "从数据、因子、模型、选股规则到回测结论的完整课程展示。",
+    "generatedAt": "2026-07-18T20:53:19.308581+08:00",
+    "filters": [
+      {
+        "id": "portfolio_filter",
+        "label": "季度收益组合",
+        "dataset": "quarter_compare",
+        "field": "portfolio",
+        "includeAll": true,
+        "targets": [
+          {
+            "dataset": "quarter_compare",
+            "field": "portfolio"
+          }
+        ]
+      }
+    ],
+    "cards": [
+      {
+        "id": "ew_card",
+        "description": "线性回归每季等权持有预测前30只，扣单边20bp成本。",
+        "dataset": "kpis",
+        "sourceId": "weighted_source",
+        "metrics": [
+          {
+            "label": "EW Top30累计净收益",
+            "field": "ew_return",
+            "format": "percent"
+          }
+        ]
+      },
+      {
+        "id": "market_card",
+        "description": "同三个测试季度的样本股票等权平均。",
+        "dataset": "kpis",
+        "sourceId": "main_return_source",
+        "metrics": [
+          {
+            "label": "全市场等权累计收益",
+            "field": "market_return",
+            "format": "percent",
+            "signed": true
+          }
+        ]
+      },
+      {
+        "id": "excess_card",
+        "description": "EW Top30净收益减去全市场等权收益。",
+        "dataset": "kpis",
+        "sourceId": "main_return_source",
+        "metrics": [
+          {
+            "label": "EW相对市场收益差",
+            "field": "ew_excess",
+            "format": "percent",
+            "signed": true
+          }
+        ]
+      },
+      {
+        "id": "pw_card",
+        "description": "按预测排名分配权重的Top30增强组合。",
+        "dataset": "kpis",
+        "sourceId": "weighted_source",
+        "metrics": [
+          {
+            "label": "PW Top30累计净收益",
+            "field": "pw_return",
+            "format": "percent"
+          }
+        ]
+      },
+      {
+        "id": "auc_card",
+        "description": "平安银行未来3日方向的180行滚动逻辑回归。",
+        "dataset": "kpis",
+        "sourceId": "addon_run_source",
+        "metrics": [
+          {
+            "label": "附加题测试AUC",
+            "field": "final_auc",
+            "format": "number"
+          }
+        ]
+      },
+      {
+        "id": "ml_card",
+        "description": "双阈值、动态仓位与风险控制后的ML择时净收益。",
+        "dataset": "kpis",
+        "sourceId": "addon_strategy_source",
+        "metrics": [
+          {
+            "label": "ML择时净收益",
+            "field": "ml_return",
+            "format": "percent",
+            "signed": true
+          }
+        ]
+      },
+      {
+        "id": "buyhold_card",
+        "description": "附加题同测试窗口买入并持有的净收益。",
+        "dataset": "kpis",
+        "sourceId": "addon_strategy_source",
+        "metrics": [
+          {
+            "label": "买入持有净收益",
+            "field": "buyhold_return",
+            "format": "percent",
+            "signed": true
+          }
+        ]
+      }
+    ],
+    "charts": [
+      {
+        "id": "model_ic_chart",
+        "title": "六种模型的测试期排序能力",
+        "subtitle": "Rank IC越高，模型排序与实际收益排序越一致。",
+        "type": "bar",
+        "dataset": "model_ic",
+        "sourceId": "main_model_source",
+        "valueFormat": "number",
+        "encodings": {
+          "x": {
+            "field": "model",
+            "type": "nominal",
+            "label": "模型"
+          },
+          "y": {
+            "field": "test_ic",
+            "type": "quantitative",
+            "label": "平均测试Rank IC"
+          },
+          "tooltip": [
+            {
+              "field": "validation_ic",
+              "type": "quantitative",
+              "label": "验证Rank IC",
+              "format": "number"
+            }
+          ]
+        }
+      },
+      {
+        "id": "main_return_chart",
+        "title": "六种Top30模型策略的累计净收益",
+        "subtitle": "各模型使用相同股票池、持股数和成本口径。",
+        "type": "bar",
+        "dataset": "main_net",
+        "sourceId": "main_strategy_source",
+        "valueFormat": "percent",
+        "encodings": {
+          "x": {
+            "field": "model",
+            "type": "nominal",
+            "label": "模型"
+          },
+          "y": {
+            "field": "total_return",
+            "type": "quantitative",
+            "label": "累计净收益"
+          },
+          "tooltip": [
+            {
+              "field": "average_turnover",
+              "type": "quantitative",
+              "label": "平均换手率",
+              "format": "percent"
+            }
+          ]
+        }
+      },
+      {
+        "id": "quarter_chart",
+        "title": "EW、PW与市场的季度收益",
+        "subtitle": "查看收益差异出现在哪些测试季度。",
+        "type": "bar",
+        "dataset": "quarter_compare",
+        "sourceId": "weighted_return_source",
+        "valueFormat": "percent",
+        "encodings": {
+          "x": {
+            "field": "Date",
+            "type": "nominal",
+            "label": "季度"
+          },
+          "y": {
+            "field": "net_return",
+            "type": "quantitative",
+            "label": "季度收益"
+          },
+          "color": {
+            "field": "portfolio",
+            "type": "nominal",
+            "label": "组合"
+          },
+          "tooltip": [
+            {
+              "field": "turnover",
+              "type": "quantitative",
+              "label": "换手率",
+              "format": "percent"
+            }
+          ]
+        }
+      },
+      {
+        "id": "addon_strategy_chart",
+        "title": "附加题三种策略的测试净收益",
+        "subtitle": "ML信号有弱预测力，但未超过买入持有和均线策略。",
+        "type": "bar",
+        "dataset": "addon_strategies",
+        "sourceId": "addon_strategy_source",
+        "valueFormat": "percent",
+        "encodings": {
+          "x": {
+            "field": "strategy",
+            "type": "nominal",
+            "label": "策略"
+          },
+          "y": {
+            "field": "total_return",
+            "type": "quantitative",
+            "label": "累计净收益"
+          },
+          "tooltip": [
+            {
+              "field": "max_drawdown",
+              "type": "quantitative",
+              "label": "最大回撤",
+              "format": "percent"
+            }
+          ]
+        }
+      },
+      {
+        "id": "tuning_chart",
+        "title": "三轮调参的验证与测试AUC",
+        "subtitle": "验证窗口高分不等于新市场阶段仍然有效。",
+        "type": "bar",
+        "dataset": "tuning_long",
+        "sourceId": "tuning_source",
+        "valueFormat": "number",
+        "encodings": {
+          "x": {
+            "field": "round_label",
+            "type": "nominal",
+            "label": "调参轮次"
+          },
+          "y": {
+            "field": "auc",
+            "type": "quantitative",
+            "label": "AUC"
+          },
+          "color": {
+            "field": "sample",
+            "type": "nominal",
+            "label": "样本"
+          },
+          "tooltip": [
+            {
+              "field": "design",
+              "type": "nominal",
+              "label": "设计"
+            }
+          ]
+        }
+      },
+      {
+        "id": "auc_grid_chart",
+        "title": "144组网格冠军与原滚动模型",
+        "subtitle": "网格冠军验证AUC更高，但测试AUC低于原模型。",
+        "type": "bar",
+        "dataset": "auc_long",
+        "sourceId": "auc_source",
+        "valueFormat": "number",
+        "encodings": {
+          "x": {
+            "field": "candidate_label",
+            "type": "nominal",
+            "label": "方案"
+          },
+          "y": {
+            "field": "auc",
+            "type": "quantitative",
+            "label": "AUC"
+          },
+          "color": {
+            "field": "sample",
+            "type": "nominal",
+            "label": "样本"
+          }
+        }
+      }
+    ],
+    "tables": [
+      {
+        "id": "weight_table",
+        "title": "EW/PW组合口径与结果",
+        "subtitle": "验证集选定PW20收益略高，但波动和换手也更高。",
+        "dataset": "weight_table",
+        "sourceId": "weighted_source",
+        "columns": [
+          {
+            "field": "portfolio_label",
+            "label": "组合",
+            "type": "text"
+          },
+          {
+            "field": "top_n",
+            "label": "持股数",
+            "format": "number"
+          },
+          {
+            "field": "weight_method",
+            "label": "权重方式",
+            "type": "text"
+          },
+          {
+            "field": "weight_cap",
+            "label": "单股上限",
+            "format": "percent"
+          },
+          {
+            "field": "total_return",
+            "label": "累计净收益",
+            "format": "percent"
+          },
+          {
+            "field": "annualized_volatility",
+            "label": "年化波动",
+            "format": "percent"
+          },
+          {
+            "field": "average_turnover",
+            "label": "平均换手",
+            "format": "percent"
+          }
+        ]
+      },
+      {
+        "id": "top30_table",
+        "title": "2022-06-30 线性回归EW Top30选股清单",
+        "subtitle": "这是报告最终采用的主策略持仓，按模型预测排名列出。",
+        "dataset": "top30",
+        "sourceId": "main_holding_source",
+        "defaultSort": {
+          "field": "predicted_rank",
+          "direction": "asc"
+        },
+        "columns": [
+          {
+            "field": "Code",
+            "label": "股票代码",
+            "type": "text"
+          },
+          {
+            "field": "predicted_rank",
+            "label": "预测排名",
+            "format": "number"
+          },
+          {
+            "field": "prediction",
+            "label": "预测分数",
+            "format": "number"
+          },
+          {
+            "field": "Next_Ret",
+            "label": "实现收益",
+            "format": "percent"
+          }
+        ]
+      },
+      {
+        "id": "addon_model_table",
+        "title": "附加题三种分类模型对比",
+        "subtitle": "AUC衡量模型把上涨样本排在下跌样本之前的能力。",
+        "dataset": "addon_models",
+        "sourceId": "addon_model_source",
+        "defaultSort": {
+          "field": "test_auc",
+          "direction": "desc"
+        },
+        "columns": [
+          {
+            "field": "model",
+            "label": "模型",
+            "type": "text"
+          },
+          {
+            "field": "validation_auc",
+            "label": "验证AUC",
+            "format": "number"
+          },
+          {
+            "field": "test_auc",
+            "label": "测试AUC",
+            "format": "number"
+          },
+          {
+            "field": "accuracy",
+            "label": "准确率",
+            "format": "percent"
+          },
+          {
+            "field": "balanced_accuracy",
+            "label": "平衡准确率",
+            "format": "percent"
+          },
+          {
+            "field": "f1",
+            "label": "F1",
+            "format": "number"
+          }
+        ]
+      },
+      {
+        "id": "addon_strategy_table",
+        "title": "附加题策略风险收益明细",
+        "subtitle": "同时查看收益、波动、回撤、交易次数和换手。",
+        "dataset": "addon_strategies",
+        "sourceId": "addon_strategy_source",
+        "columns": [
+          {
+            "field": "strategy",
+            "label": "策略",
+            "type": "text"
+          },
+          {
+            "field": "total_return",
+            "label": "累计净收益",
+            "format": "percent"
+          },
+          {
+            "field": "volatility",
+            "label": "年化波动",
+            "format": "percent"
+          },
+          {
+            "field": "sharpe",
+            "label": "夏普比率",
+            "format": "number"
+          },
+          {
+            "field": "max_drawdown",
+            "label": "最大回撤",
+            "format": "percent"
+          },
+          {
+            "field": "trade_count",
+            "label": "交易次数",
+            "format": "number"
+          },
+          {
+            "field": "turnover",
+            "label": "总换手",
+            "format": "number"
+          }
+        ]
+      }
+    ],
+    "sources": [
+      {
+        "id": "main_model_source",
+        "label": "主任务模型评估",
+        "path": "data/task6/main/processed/main_model_metrics.csv",
+        "query": {
+          "engine": "duckdb",
+          "language": "sql",
+          "sql": "SELECT * FROM read_csv_auto('data/task6/main/processed/main_model_metrics.csv')",
+          "description": "读取已复核的CSV结果：主任务模型评估",
+          "executed_at": "2026-07-18T20:53:19.308581+08:00"
+        }
+      },
+      {
+        "id": "main_strategy_source",
+        "label": "主任务策略指标",
+        "path": "data/task6/main/processed/main_strategy_metrics.csv",
+        "query": {
+          "engine": "duckdb",
+          "language": "sql",
+          "sql": "SELECT * FROM read_csv_auto('data/task6/main/processed/main_strategy_metrics.csv')",
+          "description": "读取已复核的CSV结果：主任务策略指标",
+          "executed_at": "2026-07-18T20:53:19.308581+08:00"
+        }
+      },
+      {
+        "id": "main_return_source",
+        "label": "主任务季度收益",
+        "path": "data/task6/main/processed/main_quarterly_returns.csv",
+        "query": {
+          "engine": "duckdb",
+          "language": "sql",
+          "sql": "SELECT * FROM read_csv_auto('data/task6/main/processed/main_quarterly_returns.csv')",
+          "description": "读取已复核的CSV结果：主任务季度收益",
+          "executed_at": "2026-07-18T20:53:19.308581+08:00"
+        }
+      },
+      {
+        "id": "main_holding_source",
+        "label": "主任务选股明细",
+        "path": "data/task6/main/processed/main_portfolio_holdings.csv",
+        "query": {
+          "engine": "duckdb",
+          "language": "sql",
+          "sql": "SELECT * FROM read_csv_auto('data/task6/main/processed/main_portfolio_holdings.csv')",
+          "description": "读取已复核的CSV结果：主任务选股明细",
+          "executed_at": "2026-07-18T20:53:19.308581+08:00"
+        }
+      },
+      {
+        "id": "weighted_source",
+        "label": "EW/PW组合评估",
+        "path": "data/task6/enhanced/processed/main_weighted_strategy_metrics.csv",
+        "query": {
+          "engine": "duckdb",
+          "language": "sql",
+          "sql": "SELECT * FROM read_csv_auto('data/task6/enhanced/processed/main_weighted_strategy_metrics.csv')",
+          "description": "读取已复核的CSV结果：EW/PW组合评估",
+          "executed_at": "2026-07-18T20:53:19.308581+08:00"
+        }
+      },
+      {
+        "id": "weighted_return_source",
+        "label": "EW/PW季度收益",
+        "path": "data/task6/enhanced/processed/main_weighted_quarterly_returns.csv",
+        "query": {
+          "engine": "duckdb",
+          "language": "sql",
+          "sql": "SELECT * FROM read_csv_auto('data/task6/enhanced/processed/main_weighted_quarterly_returns.csv')",
+          "description": "读取已复核的CSV结果：EW/PW季度收益",
+          "executed_at": "2026-07-18T20:53:19.308581+08:00"
+        }
+      },
+      {
+        "id": "addon_model_source",
+        "label": "附加题模型评估",
+        "path": "data/task6/additional/processed/additional_model_metrics.csv",
+        "query": {
+          "engine": "duckdb",
+          "language": "sql",
+          "sql": "SELECT * FROM read_csv_auto('data/task6/additional/processed/additional_model_metrics.csv')",
+          "description": "读取已复核的CSV结果：附加题模型评估",
+          "executed_at": "2026-07-18T20:53:19.308581+08:00"
+        }
+      },
+      {
+        "id": "addon_strategy_source",
+        "label": "附加题策略指标",
+        "path": "data/task6/additional/processed/additional_strategy_metrics.csv",
+        "query": {
+          "engine": "duckdb",
+          "language": "sql",
+          "sql": "SELECT * FROM read_csv_auto('data/task6/additional/processed/additional_strategy_metrics.csv')",
+          "description": "读取已复核的CSV结果：附加题策略指标",
+          "executed_at": "2026-07-18T20:53:19.308581+08:00"
+        }
+      },
+      {
+        "id": "auc_source",
+        "label": "附加题AUC受控网格",
+        "path": "data/task6/enhanced/processed/additional_guarded_auc_grid.csv",
+        "query": {
+          "engine": "duckdb",
+          "language": "sql",
+          "sql": "SELECT * FROM read_csv_auto('data/task6/enhanced/processed/additional_guarded_auc_grid.csv')",
+          "description": "读取已复核的CSV结果：附加题AUC受控网格",
+          "executed_at": "2026-07-18T20:53:19.308581+08:00"
+        }
+      },
+      {
+        "id": "tuning_source",
+        "label": "附加题三轮调参",
+        "path": "data/task6/additional/processed/additional_tuning_rounds.csv",
+        "query": {
+          "engine": "duckdb",
+          "language": "sql",
+          "sql": "SELECT * FROM read_csv_auto('data/task6/additional/processed/additional_tuning_rounds.csv')",
+          "description": "读取已复核的CSV结果：附加题三轮调参",
+          "executed_at": "2026-07-18T20:53:19.308581+08:00"
+        }
+      },
+      {
+        "id": "main_run_source",
+        "label": "主任务方法配置",
+        "path": "data/task6/main/metadata/model_run.json",
+        "query": {
+          "engine": "duckdb",
+          "language": "sql",
+          "sql": "SELECT * FROM read_json_auto('data/task6/main/metadata/model_run.json')",
+          "description": "读取已复核的JSON结果：主任务方法配置",
+          "executed_at": "2026-07-18T20:53:19.308581+08:00"
+        }
+      },
+      {
+        "id": "addon_run_source",
+        "label": "附加题方法配置",
+        "path": "data/task6/additional/metadata/model_run.json",
+        "query": {
+          "engine": "duckdb",
+          "language": "sql",
+          "sql": "SELECT * FROM read_json_auto('data/task6/additional/metadata/model_run.json')",
+          "description": "读取已复核的JSON结果：附加题方法配置",
+          "executed_at": "2026-07-18T20:53:19.308581+08:00"
+        }
+      },
+      {
+        "id": "quality_source",
+        "label": "主任务数据质量报告",
+        "path": "data/task6/main/metadata/data_quality_report.json",
+        "query": {
+          "engine": "duckdb",
+          "language": "sql",
+          "sql": "SELECT * FROM read_json_auto('data/task6/main/metadata/data_quality_report.json')",
+          "description": "读取已复核的JSON结果：主任务数据质量报告",
+          "executed_at": "2026-07-18T20:53:19.308581+08:00"
+        }
+      }
+    ],
+    "blocks": [
+      {
+        "id": "overview",
+        "type": "markdown",
+        "body": "## 这份作业在做什么\n\n主任务是用每只股票在季末的估值、规模和成长因子，预测下一季度收益的横截面排名，再把排名转换为Top30选股策略。附加题使用单股日线数据预测未来方向，并把概率转换为动态仓位。"
+      },
+      {
+        "id": "coverage",
+        "type": "markdown",
+        "sourceId": "quality_source",
+        "body": "## 数据和时间划分\n\n主样本含39,616条股票-季度记录、4,281只股票、10个季度，覆盖2020-03-31至2022-06-30。按时间前7季训练、后3季测试，不随机打乱。财务因子先转换为每季横截面百分位排名，以降低极端值和量纲差异的影响。"
+      },
+      {
+        "id": "main_method",
+        "type": "markdown",
+        "sourceId": "main_run_source",
+        "body": "## 主任务从因子到买入决策\n\n1. X：19项原始财务因子的季度排名及4个复合因子。  \n2. Y：回归模型预测下季度收益排名；逻辑回归预测是否高于当季中位数。  \n3. 模型：线性回归、Ridge、逻辑回归、决策树、随机森林和梯度提升。  \n4. 决策：每季按预测分数降序排列，主策略等权买入前30只。  \n5. 成本：净收益=毛收益−单边20bp×换手率。"
+      },
+      {
+        "id": "headline",
+        "type": "metric-strip",
+        "cardIds": [
+          "ew_card",
+          "market_card",
+          "excess_card",
+          "pw_card"
+        ]
+      },
+      {
+        "id": "model_ic",
+        "type": "chart",
+        "chartId": "model_ic_chart"
+      },
+      {
+        "id": "main_return",
+        "type": "chart",
+        "chartId": "main_return_chart"
+      },
+      {
+        "id": "quarter",
+        "type": "chart",
+        "chartId": "quarter_chart"
+      },
+      {
+        "id": "weight_explain",
+        "type": "markdown",
+        "body": "## EW和PW有什么不同\n\nEW是等权，入选股票权重相同，规则简单。PW是预测加权，排名越靠前的股票权重越高，能放大高信心标的影响，但也可能增加集中度、波动和换手。"
+      },
+      {
+        "id": "weight",
+        "type": "table",
+        "tableId": "weight_table"
+      },
+      {
+        "id": "holdings_intro",
+        "type": "markdown",
+        "body": "## 主策略到底选什么股\n\n报告的正式主策略是线性回归EW Top30。下表是最近测试季度的完整持仓清单；PW是增强对照，不替代主策略结论。"
+      },
+      {
+        "id": "top30",
+        "type": "table",
+        "tableId": "top30_table"
+      },
+      {
+        "id": "addon_intro",
+        "type": "markdown",
+        "sourceId": "addon_run_source",
+        "body": "## 附加题：课程方法的双阈值与动态仓位\n\n模型预测平安银行未来3日上涨概率。概率高于0.60时允许建仓，低于0.35时清仓，两个阈值之间保持原仓位。目标仓位随概率超过0.5的程度线性增加，上限80%；另加RSI14<70的入场限制、8%止损、15%止盈和单边20bp成本。阈值和最大仓位从27组训练期内部网格中选出。"
+      },
+      {
+        "id": "addon_headline",
+        "type": "metric-strip",
+        "cardIds": [
+          "auc_card",
+          "ml_card",
+          "buyhold_card"
+        ]
+      },
+      {
+        "id": "addon_models",
+        "type": "table",
+        "tableId": "addon_model_table"
+      },
+      {
+        "id": "addon_strategy",
+        "type": "chart",
+        "chartId": "addon_strategy_chart"
+      },
+      {
+        "id": "addon_strategy_detail",
+        "type": "table",
+        "tableId": "addon_strategy_table"
+      },
+      {
+        "id": "tuning",
+        "type": "chart",
+        "chartId": "tuning_chart"
+      },
+      {
+        "id": "auc_grid",
+        "type": "chart",
+        "chartId": "auc_grid_chart"
+      },
+      {
+        "id": "conclusion",
+        "type": "markdown",
+        "body": "## 怎样解读结果\n\n- 选股结论：线性回归EW Top30是本作业的主策略，PW Top30是收益更高但风险也更高的增强对照。\n- 附加题结论：AUC高于0.5说明方向没有拟反，但ML择时未超过简单基准，因此不应宣称策略成功。\n- 使用边界：主任务测试期较短，且缺少财务披露日、历史成分股、停牌、ST和流动性标记；结果仅用于课程回测。"
+      },
+      {
+        "id": "definitions",
+        "type": "markdown",
+        "body": "## 指标小词典\n\n- Rank IC：预测排名与实际收益排名的Spearman相关系数。\n- AUC：随机抽取一个上涨样本和一个下跌样本时，模型把上涨样本排在前面的概率。\n- 换手率：相邻两期权重变化绝对值之和的一半；首期建仓记为100%。\n- 最大回撤：净值从历史高点下降到之后低点的最大幅度。\n- 夏普比率：每承担一单位波动获得的平均超额收益，本作业假设无风险利率为0。"
+      }
+    ]
+  },
+  "snapshot": {
+    "version": 1,
+    "generatedAt": "2026-07-18T20:53:19.308581+08:00",
+    "status": "ready",
+    "datasets": {
+      "kpis": [
+        {
+          "ew_return": 0.4145898106,
+          "market_return": -0.159102613,
+          "ew_excess": 0.5736924235,
+          "pw_return": 0.4627754546,
+          "final_auc": 0.5714809384,
+          "ml_return": 0.0050426709,
+          "buyhold_return": 0.0992843395
+        }
+      ],
+      "coverage": [
+        {
+          "rows": 39616,
+          "stocks": 4281,
+          "quarters": 10,
+          "date_min": "2020-03-31",
+          "date_max": "2022-06-30",
+          "train_quarters": 7,
+          "test_quarters": 3,
+          "feature_count": 23
+        }
+      ],
+      "model_ic": [
+        {
+          "model": "线性回归",
+          "test_ic": 0.2732779279,
+          "validation_ic": 0.1288017891,
+          "selected": true
+        },
+        {
+          "model": "Ridge回归",
+          "test_ic": 0.2740548566,
+          "validation_ic": 0.1315058149,
+          "selected": false
+        },
+        {
+          "model": "逻辑回归",
+          "test_ic": 0.2625213093,
+          "validation_ic": 0.125791866,
+          "selected": false
+        },
+        {
+          "model": "决策树",
+          "test_ic": 0.2354105427,
+          "validation_ic": 0.1137357627,
+          "selected": false
+        },
+        {
+          "model": "随机森林",
+          "test_ic": 0.2595461198,
+          "validation_ic": 0.1297951036,
+          "selected": false
+        },
+        {
+          "model": "梯度提升",
+          "test_ic": 0.2576285157,
+          "validation_ic": 0.1272249033,
+          "selected": false
+        }
+      ],
+      "main_net": [
+        {
+          "model": "决策树",
+          "total_return": 0.1900698436,
+          "sharpe": 2.405896718,
+          "average_turnover": 0.7333333333
+        },
+        {
+          "model": "梯度提升",
+          "total_return": 0.3246900788,
+          "sharpe": 8.0824402788,
+          "average_turnover": 0.9222222222
+        },
+        {
+          "model": "线性回归",
+          "total_return": 0.4145898106,
+          "sharpe": 4.4778736863,
+          "average_turnover": 0.8333333333
+        },
+        {
+          "model": "逻辑回归",
+          "total_return": 0.3972626644,
+          "sharpe": 3.3849442069,
+          "average_turnover": 0.8333333333
+        },
+        {
+          "model": "随机森林",
+          "total_return": 0.5067579491,
+          "sharpe": 2.6577577636,
+          "average_turnover": 0.9111111111
+        },
+        {
+          "model": "Ridge回归",
+          "total_return": 0.3927344066,
+          "sharpe": 4.5867549472,
+          "average_turnover": 0.8222222222
+        }
+      ],
+      "quarter_compare": [
+        {
+          "Date": "2021-12-31",
+          "net_return": 0.14974,
+          "turnover": 1.0,
+          "portfolio": "EW Top30"
+        },
+        {
+          "Date": "2022-03-31",
+          "net_return": 0.1605966667,
+          "turnover": 0.9333333333,
+          "portfolio": "EW Top30"
+        },
+        {
+          "Date": "2022-06-30",
+          "net_return": 0.0601066667,
+          "turnover": 0.5666666667,
+          "portfolio": "EW Top30"
+        },
+        {
+          "Date": "2021-12-31",
+          "net_return": 0.156028172,
+          "turnover": 1.0,
+          "portfolio": "PW Top30"
+        },
+        {
+          "Date": "2022-03-31",
+          "net_return": 0.2041513978,
+          "turnover": 0.9462365591,
+          "portfolio": "PW Top30"
+        },
+        {
+          "Date": "2022-06-30",
+          "net_return": 0.0508195699,
+          "turnover": 0.6322580645,
+          "portfolio": "PW Top30"
+        },
+        {
+          "Date": "2021-12-31",
+          "net_return": -0.0837472801,
+          "turnover": null,
+          "portfolio": "全市场等权"
+        },
+        {
+          "Date": "2022-03-31",
+          "net_return": 0.0107244087,
+          "turnover": null,
+          "portfolio": "全市场等权"
+        },
+        {
+          "Date": "2022-06-30",
+          "net_return": -0.0919809244,
+          "turnover": null,
+          "portfolio": "全市场等权"
+        }
+      ],
+      "weight_table": [
+        {
+          "portfolio_label": "EW Top30",
+          "top_n": 30,
+          "weight_method": "等权",
+          "weight_cap": 0.1,
+          "total_return": 0.4145898106,
+          "annualized_volatility": 0.1103033446,
+          "sharpe": 4.4778736863,
+          "average_turnover": 0.8333333333
+        },
+        {
+          "portfolio_label": "PW Top30",
+          "top_n": 30,
+          "weight_method": "排名加权",
+          "weight_cap": 0.1,
+          "total_return": 0.4627754546,
+          "annualized_volatility": 0.1568339765,
+          "sharpe": 3.4941335108,
+          "average_turnover": 0.8594982079
+        },
+        {
+          "portfolio_label": "验证集选定PW20",
+          "top_n": 20,
+          "weight_method": "排名加权",
+          "weight_cap": 0.08,
+          "total_return": 0.4634219609,
+          "annualized_volatility": 0.1875141196,
+          "sharpe": 2.9422936764,
+          "average_turnover": 0.8795487179
+        }
+      ],
+      "top30": [
+        {
+          "Date": "2022-06-30",
+          "Code": "300105",
+          "predicted_rank": 1,
+          "prediction": 0.174907859,
+          "Next_Ret": 0.0191
+        },
+        {
+          "Date": "2022-06-30",
+          "Code": "000806",
+          "predicted_rank": 2,
+          "prediction": 0.1559923721,
+          "Next_Ret": -0.0622
+        },
+        {
+          "Date": "2022-06-30",
+          "Code": "002696",
+          "predicted_rank": 3,
+          "prediction": 0.1558594708,
+          "Next_Ret": 0.0136
+        },
+        {
+          "Date": "2022-06-30",
+          "Code": "600287",
+          "predicted_rank": 4,
+          "prediction": 0.1469955489,
+          "Next_Ret": -0.0241
+        },
+        {
+          "Date": "2022-06-30",
+          "Code": "600387",
+          "predicted_rank": 5,
+          "prediction": 0.1461036648,
+          "Next_Ret": 0.2605
+        },
+        {
+          "Date": "2022-06-30",
+          "Code": "002358",
+          "predicted_rank": 6,
+          "prediction": 0.1453048641,
+          "Next_Ret": 0.0262
+        },
+        {
+          "Date": "2022-06-30",
+          "Code": "603586",
+          "predicted_rank": 7,
+          "prediction": 0.1439029801,
+          "Next_Ret": 0.0372
+        },
+        {
+          "Date": "2022-06-30",
+          "Code": "002478",
+          "predicted_rank": 8,
+          "prediction": 0.1422459617,
+          "Next_Ret": 0.1623
+        },
+        {
+          "Date": "2022-06-30",
+          "Code": "002193",
+          "predicted_rank": 9,
+          "prediction": 0.1422033337,
+          "Next_Ret": 0.0388
+        },
+        {
+          "Date": "2022-06-30",
+          "Code": "002699",
+          "predicted_rank": 10,
+          "prediction": 0.1409691129,
+          "Next_Ret": -0.0579
+        },
+        {
+          "Date": "2022-06-30",
+          "Code": "603003",
+          "predicted_rank": 11,
+          "prediction": 0.1398356927,
+          "Next_Ret": -0.1089
+        },
+        {
+          "Date": "2022-06-30",
+          "Code": "300533",
+          "predicted_rank": 12,
+          "prediction": 0.1378624242,
+          "Next_Ret": -0.0053
+        },
+        {
+          "Date": "2022-06-30",
+          "Code": "600780",
+          "predicted_rank": 13,
+          "prediction": 0.1372672777,
+          "Next_Ret": 0.019
+        },
+        {
+          "Date": "2022-06-30",
+          "Code": "603086",
+          "predicted_rank": 14,
+          "prediction": 0.136403381,
+          "Next_Ret": 0.4536
+        },
+        {
+          "Date": "2022-06-30",
+          "Code": "600565",
+          "predicted_rank": 15,
+          "prediction": 0.135111993,
+          "Next_Ret": -0.0345
+        },
+        {
+          "Date": "2022-06-30",
+          "Code": "000726",
+          "predicted_rank": 16,
+          "prediction": 0.1325782908,
+          "Next_Ret": 0.0406
+        },
+        {
+          "Date": "2022-06-30",
+          "Code": "000543",
+          "predicted_rank": 17,
+          "prediction": 0.1316847938,
+          "Next_Ret": 0.1228
+        },
+        {
+          "Date": "2022-06-30",
+          "Code": "605088",
+          "predicted_rank": 18,
+          "prediction": 0.1311419264,
+          "Next_Ret": 0.1231
+        },
+        {
+          "Date": "2022-06-30",
+          "Code": "002661",
+          "predicted_rank": 19,
+          "prediction": 0.1311184997,
+          "Next_Ret": -0.015
+        },
+        {
+          "Date": "2022-06-30",
+          "Code": "003042",
+          "predicted_rank": 20,
+          "prediction": 0.1309361233,
+          "Next_Ret": -0.1478
+        },
+        {
+          "Date": "2022-06-30",
+          "Code": "002871",
+          "predicted_rank": 21,
+          "prediction": 0.1307810935,
+          "Next_Ret": 0.264
+        },
+        {
+          "Date": "2022-06-30",
+          "Code": "000616",
+          "predicted_rank": 22,
+          "prediction": 0.1305182166,
+          "Next_Ret": 0.0267
+        },
+        {
+          "Date": "2022-06-30",
+          "Code": "002856",
+          "predicted_rank": 23,
+          "prediction": 0.1298739808,
+          "Next_Ret": 0.0499
+        },
+        {
+          "Date": "2022-06-30",
+          "Code": "300495",
+          "predicted_rank": 24,
+          "prediction": 0.129721366,
+          "Next_Ret": 0.2984
+        },
+        {
+          "Date": "2022-06-30",
+          "Code": "000159",
+          "predicted_rank": 25,
+          "prediction": 0.1289719348,
+          "Next_Ret": 0.1672
+        },
+        {
+          "Date": "2022-06-30",
+          "Code": "000892",
+          "predicted_rank": 26,
+          "prediction": 0.1288891999,
+          "Next_Ret": -0.0532
+        },
+        {
+          "Date": "2022-06-30",
+          "Code": "603585",
+          "predicted_rank": 27,
+          "prediction": 0.1278042111,
+          "Next_Ret": -0.0396
+        },
+        {
+          "Date": "2022-06-30",
+          "Code": "002869",
+          "predicted_rank": 28,
+          "prediction": 0.1267610789,
+          "Next_Ret": 0.2487
+        },
+        {
+          "Date": "2022-06-30",
+          "Code": "002718",
+          "predicted_rank": 29,
+          "prediction": 0.1259510615,
+          "Next_Ret": -0.024
+        },
+        {
+          "Date": "2022-06-30",
+          "Code": "603329",
+          "predicted_rank": 30,
+          "prediction": 0.1258770731,
+          "Next_Ret": 0.038
+        }
+      ],
+      "addon_models": [
+        {
+          "model": "逻辑回归",
+          "validation_auc": 0.6921921922,
+          "test_auc": 0.5201612903,
+          "accuracy": 0.5094339623,
+          "balanced_accuracy": 0.5179618768,
+          "f1": 0.5272727273,
+          "brier": 0.2548648277
+        },
+        {
+          "model": "决策树",
+          "validation_auc": 0.3828828829,
+          "test_auc": 0.508797654,
+          "accuracy": 0.4622641509,
+          "balanced_accuracy": 0.5205278592,
+          "f1": 0.2784810127,
+          "brier": 0.2566444857
+        },
+        {
+          "model": "随机森林",
+          "validation_auc": 0.4534534535,
+          "test_auc": 0.5593841642,
+          "accuracy": 0.5094339623,
+          "balanced_accuracy": 0.5542521994,
+          "f1": 0.4090909091,
+          "brier": 0.2492928974
+        }
+      ],
+      "addon_strategies": [
+        {
+          "strategy": "ML择时策略",
+          "total_return": 0.0050426709,
+          "volatility": 0.0209019492,
+          "sharpe": 0.56676061,
+          "max_drawdown": -0.0137439489,
+          "trade_count": 1,
+          "turnover": 1.4512157499
+        },
+        {
+          "strategy": "买入持有",
+          "total_return": 0.0992843395,
+          "volatility": 0.1788824481,
+          "sharpe": 1.3133872787,
+          "max_drawdown": -0.1060985798,
+          "trade_count": 1,
+          "turnover": 1.0
+        },
+        {
+          "strategy": "均线策略",
+          "total_return": 0.0968057004,
+          "volatility": 0.1183308231,
+          "sharpe": 1.8647361063,
+          "max_drawdown": -0.0378024496,
+          "trade_count": 3,
+          "turnover": 4.0
+        }
+      ],
+      "tuning_long": [
+        {
+          "round_label": "第1轮",
+          "sample": "验证集",
+          "auc": 0.756021756,
+          "design": "5日标签+9特征+静态随机森林"
+        },
+        {
+          "round_label": "第2轮",
+          "sample": "验证集",
+          "auc": 0.6921921922,
+          "design": "3日标签+4特征+静态逻辑回归"
+        },
+        {
+          "round_label": "第3轮",
+          "sample": "验证集",
+          "auc": 0.6313813814,
+          "design": "3日标签+4特征+180日滚动逻辑回归"
+        },
+        {
+          "round_label": "第1轮",
+          "sample": "测试集",
+          "auc": 0.3348873349,
+          "design": "5日标签+9特征+静态随机森林"
+        },
+        {
+          "round_label": "第2轮",
+          "sample": "测试集",
+          "auc": 0.5201612903,
+          "design": "3日标签+4特征+静态逻辑回归"
+        },
+        {
+          "round_label": "第3轮",
+          "sample": "测试集",
+          "auc": 0.5714809384,
+          "design": "3日标签+4特征+180日滚动逻辑回归"
+        }
+      ],
+      "auc_long": [
+        {
+          "candidate_label": "网格验证冠军",
+          "sample": "验证集",
+          "auc": 0.7518796992
+        },
+        {
+          "candidate_label": "原滚动逻辑回归",
+          "sample": "验证集",
+          "auc": 0.6233082707
+        },
+        {
+          "candidate_label": "网格验证冠军",
+          "sample": "测试集",
+          "auc": 0.5383755589
+        },
+        {
+          "candidate_label": "原滚动逻辑回归",
+          "sample": "测试集",
+          "auc": 0.5711624441
+        }
+      ]
+    },
+    "accessIssues": []
+  },
+  "sources": [
+    {
+      "id": "main_model_source",
+      "label": "主任务模型评估",
+      "path": "data/task6/main/processed/main_model_metrics.csv",
+      "query": {
+        "engine": "duckdb",
+        "language": "sql",
+        "sql": "SELECT * FROM read_csv_auto('data/task6/main/processed/main_model_metrics.csv')",
+        "description": "读取已复核的CSV结果：主任务模型评估",
+        "executed_at": "2026-07-18T20:53:19.308581+08:00"
+      }
+    },
+    {
+      "id": "main_strategy_source",
+      "label": "主任务策略指标",
+      "path": "data/task6/main/processed/main_strategy_metrics.csv",
+      "query": {
+        "engine": "duckdb",
+        "language": "sql",
+        "sql": "SELECT * FROM read_csv_auto('data/task6/main/processed/main_strategy_metrics.csv')",
+        "description": "读取已复核的CSV结果：主任务策略指标",
+        "executed_at": "2026-07-18T20:53:19.308581+08:00"
+      }
+    },
+    {
+      "id": "main_return_source",
+      "label": "主任务季度收益",
+      "path": "data/task6/main/processed/main_quarterly_returns.csv",
+      "query": {
+        "engine": "duckdb",
+        "language": "sql",
+        "sql": "SELECT * FROM read_csv_auto('data/task6/main/processed/main_quarterly_returns.csv')",
+        "description": "读取已复核的CSV结果：主任务季度收益",
+        "executed_at": "2026-07-18T20:53:19.308581+08:00"
+      }
+    },
+    {
+      "id": "main_holding_source",
+      "label": "主任务选股明细",
+      "path": "data/task6/main/processed/main_portfolio_holdings.csv",
+      "query": {
+        "engine": "duckdb",
+        "language": "sql",
+        "sql": "SELECT * FROM read_csv_auto('data/task6/main/processed/main_portfolio_holdings.csv')",
+        "description": "读取已复核的CSV结果：主任务选股明细",
+        "executed_at": "2026-07-18T20:53:19.308581+08:00"
+      }
+    },
+    {
+      "id": "weighted_source",
+      "label": "EW/PW组合评估",
+      "path": "data/task6/enhanced/processed/main_weighted_strategy_metrics.csv",
+      "query": {
+        "engine": "duckdb",
+        "language": "sql",
+        "sql": "SELECT * FROM read_csv_auto('data/task6/enhanced/processed/main_weighted_strategy_metrics.csv')",
+        "description": "读取已复核的CSV结果：EW/PW组合评估",
+        "executed_at": "2026-07-18T20:53:19.308581+08:00"
+      }
+    },
+    {
+      "id": "weighted_return_source",
+      "label": "EW/PW季度收益",
+      "path": "data/task6/enhanced/processed/main_weighted_quarterly_returns.csv",
+      "query": {
+        "engine": "duckdb",
+        "language": "sql",
+        "sql": "SELECT * FROM read_csv_auto('data/task6/enhanced/processed/main_weighted_quarterly_returns.csv')",
+        "description": "读取已复核的CSV结果：EW/PW季度收益",
+        "executed_at": "2026-07-18T20:53:19.308581+08:00"
+      }
+    },
+    {
+      "id": "addon_model_source",
+      "label": "附加题模型评估",
+      "path": "data/task6/additional/processed/additional_model_metrics.csv",
+      "query": {
+        "engine": "duckdb",
+        "language": "sql",
+        "sql": "SELECT * FROM read_csv_auto('data/task6/additional/processed/additional_model_metrics.csv')",
+        "description": "读取已复核的CSV结果：附加题模型评估",
+        "executed_at": "2026-07-18T20:53:19.308581+08:00"
+      }
+    },
+    {
+      "id": "addon_strategy_source",
+      "label": "附加题策略指标",
+      "path": "data/task6/additional/processed/additional_strategy_metrics.csv",
+      "query": {
+        "engine": "duckdb",
+        "language": "sql",
+        "sql": "SELECT * FROM read_csv_auto('data/task6/additional/processed/additional_strategy_metrics.csv')",
+        "description": "读取已复核的CSV结果：附加题策略指标",
+        "executed_at": "2026-07-18T20:53:19.308581+08:00"
+      }
+    },
+    {
+      "id": "auc_source",
+      "label": "附加题AUC受控网格",
+      "path": "data/task6/enhanced/processed/additional_guarded_auc_grid.csv",
+      "query": {
+        "engine": "duckdb",
+        "language": "sql",
+        "sql": "SELECT * FROM read_csv_auto('data/task6/enhanced/processed/additional_guarded_auc_grid.csv')",
+        "description": "读取已复核的CSV结果：附加题AUC受控网格",
+        "executed_at": "2026-07-18T20:53:19.308581+08:00"
+      }
+    },
+    {
+      "id": "tuning_source",
+      "label": "附加题三轮调参",
+      "path": "data/task6/additional/processed/additional_tuning_rounds.csv",
+      "query": {
+        "engine": "duckdb",
+        "language": "sql",
+        "sql": "SELECT * FROM read_csv_auto('data/task6/additional/processed/additional_tuning_rounds.csv')",
+        "description": "读取已复核的CSV结果：附加题三轮调参",
+        "executed_at": "2026-07-18T20:53:19.308581+08:00"
+      }
+    },
+    {
+      "id": "main_run_source",
+      "label": "主任务方法配置",
+      "path": "data/task6/main/metadata/model_run.json",
+      "query": {
+        "engine": "duckdb",
+        "language": "sql",
+        "sql": "SELECT * FROM read_json_auto('data/task6/main/metadata/model_run.json')",
+        "description": "读取已复核的JSON结果：主任务方法配置",
+        "executed_at": "2026-07-18T20:53:19.308581+08:00"
+      }
+    },
+    {
+      "id": "addon_run_source",
+      "label": "附加题方法配置",
+      "path": "data/task6/additional/metadata/model_run.json",
+      "query": {
+        "engine": "duckdb",
+        "language": "sql",
+        "sql": "SELECT * FROM read_json_auto('data/task6/additional/metadata/model_run.json')",
+        "description": "读取已复核的JSON结果：附加题方法配置",
+        "executed_at": "2026-07-18T20:53:19.308581+08:00"
+      }
+    },
+    {
+      "id": "quality_source",
+      "label": "主任务数据质量报告",
+      "path": "data/task6/main/metadata/data_quality_report.json",
+      "query": {
+        "engine": "duckdb",
+        "language": "sql",
+        "sql": "SELECT * FROM read_json_auto('data/task6/main/metadata/data_quality_report.json')",
+        "description": "读取已复核的JSON结果：主任务数据质量报告",
+        "executed_at": "2026-07-18T20:53:19.308581+08:00"
+      }
+    }
+  ],
+  "package_info": {
+    "originUrl": "artifact://task6-dashboard",
+    "controls": {
+      "edit": false,
+      "refresh": false
+    }
+  }
+}

@@ -1,0 +1,13 @@
+﻿model,model_label,feature,importance,absolute_importance,importance_type
+logistic_regression,逻辑回归,return_5d,0.12558672657819345,0.12558672657819345,standardized_coefficient
+logistic_regression,逻辑回归,ma20_gap,-0.2065902530803132,0.2065902530803132,standardized_coefficient
+logistic_regression,逻辑回归,rsi14,-0.30150339107677687,0.30150339107677687,standardized_coefficient
+logistic_regression,逻辑回归,volume_ratio20,0.0838524906377815,0.0838524906377815,standardized_coefficient
+decision_tree,决策树,return_5d,0.0,0.0,impurity_importance
+decision_tree,决策树,ma20_gap,0.7428810840596678,0.7428810840596678,impurity_importance
+decision_tree,决策树,rsi14,0.1261306649241664,0.1261306649241664,impurity_importance
+decision_tree,决策树,volume_ratio20,0.13098825101616568,0.13098825101616568,impurity_importance
+random_forest,随机森林,return_5d,0.16361308774052322,0.16361308774052322,impurity_importance
+random_forest,随机森林,ma20_gap,0.3520199921911179,0.3520199921911179,impurity_importance
+random_forest,随机森林,rsi14,0.31125378347629407,0.31125378347629407,impurity_importance
+random_forest,随机森林,volume_ratio20,0.17311313659206476,0.17311313659206476,impurity_importance

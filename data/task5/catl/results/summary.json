@@ -1,0 +1,52 @@
+{
+  "daily_rows": 1837,
+  "weekly_samples": 370,
+  "development_samples": 322,
+  "final_train_samples_after_purge": 318,
+  "test_samples": 48,
+  "approx_independent_20d_windows": 91.03737166324434,
+  "positive_rate_overall": 0.5594594594594594,
+  "positive_rate_test": 0.5208333333333334,
+  "selected_features": [
+    "return_1d",
+    "rsi14",
+    "return_10d",
+    "return_20d",
+    "amount_ratio20",
+    "return_5d",
+    "intraday_range",
+    "benchmark_volatility20"
+  ],
+  "best_params": {
+    "logistic_regression": {
+      "C": 1.0
+    },
+    "decision_tree": {
+      "max_depth": 3,
+      "min_samples_leaf": 15,
+      "class_weight": "balanced"
+    },
+    "random_forest": {
+      "max_depth": 3,
+      "min_samples_leaf": 10,
+      "max_features": "sqrt"
+    },
+    "gradient_boosting": {
+      "n_estimators": 80,
+      "learning_rate": 0.05,
+      "max_depth": 1,
+      "min_samples_leaf": 8
+    }
+  },
+  "controls": {
+    "sklearn_auc": 0.3686956521739131,
+    "mann_whitney_auc": 0.36869565217391304,
+    "auc_formula_absolute_difference": 5.551115123125783e-17,
+    "permuted_label_auc_mean": 0.4969391304347826,
+    "permuted_label_auc_std": 0.10228412413882618,
+    "synthetic_predictable_label_auc": 0.9964726631393299,
+    "synthetic_feature": "return_1d"
+  },
+  "best_test_model": "decision_tree",
+  "best_test_auc": 0.5243478260869565
+}

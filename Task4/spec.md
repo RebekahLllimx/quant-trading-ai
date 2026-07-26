@@ -307,7 +307,7 @@ function turtle_backtest(df, ...):
 
 **一张图回答一个独立问题**。两张图回答同一问题 → 合并或删掉一张。不是"一个指标一张图"。
 
-### 6.2 报告图表（6 张 PNG → `data/charts/task4/`）
+### 6.2 报告图表（6 张 PNG → `artifacts/charts/task4/`）
 
 | # | 名称 | 回答的问题 | 内容 |
 |---|------|-----------|------|
@@ -413,7 +413,7 @@ Task4/
 | Phase | 产出 | 关键点 |
 |-------|------|--------|
 | **1. 核心策略** | `turtle_strategy.py` | ★ 仓位公式用严格推导版 `RiskAmt/(k×N)`；Wilder 平滑 α=1/N；参数扫描函数 |
-| **2. 静态图表** | 6 张 PNG → `data/charts/task4/` | 每张图回答一个独立问题；资产曲线三线对比（+双均线）；ATR 图加波动率底色 |
+| **2. 静态图表** | 6 张 PNG → `artifacts/charts/task4/` | 每张图回答一个独立问题；资产曲线三线对比（+双均线）；ATR 图加波动率底色 |
 | **3. 交互看板** | `dashboard/index.html` | JS 引擎实现完整海龟回测；看板含数据更新入口 |
 | **4. GitHub Actions** | `.github/workflows/update-data.yml` | 交易日自动更新数据并 rebuild 看板 |
 | **5. .docx 报告** | `Rebecca+Task4.docx` | 7 章（新增实验设计章）；嵌入 6 张 PNG + 交易明细表 |

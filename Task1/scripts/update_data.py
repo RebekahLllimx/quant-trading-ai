@@ -13,12 +13,12 @@ import matplotlib.dates as mdates
 from datetime import datetime, timedelta
 
 # ==================== 配置区域 ====================
-# 从 config.py 读取 Tushare Token（config.py 已被 gitignore 排除）
-# 复制 config.example.py 为 config.py 并填入真实 Token
+# CI 从 TUSHARE_TOKEN 环境变量读取；本地可回退到被 gitignore 排除的 config.py。
 try:
-    from config import TUSHARE_TOKEN
+    from config import TUSHARE_TOKEN as _CONFIG_TOKEN
 except ImportError:
-    TUSHARE_TOKEN = ""  # 未配置则仅使用 AKShare
+    _CONFIG_TOKEN = ""
+TUSHARE_TOKEN = os.environ.get("TUSHARE_TOKEN", _CONFIG_TOKEN).strip()
 
 # 股票代码（示例：000001.SZ = 平安银行, 600519.SH = 贵州茅台）
 STOCK_CODE = "000001"       # 股票代码（不带交易所后缀）
@@ -28,10 +28,10 @@ STOCK_NAME = "平安银行"     # 股票名称
 END_DATE = datetime.now().strftime("%Y%m%d")
 START_DATE = (datetime.now() - timedelta(days=365)).strftime("%Y%m%d")
 
-# 输出文件路径（输出到 ../data/ 和 ../data/charts/）
+# 输出文件路径（输出到 ../data/ 和 ../artifacts/charts/）
 OUTPUT_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR  = os.path.join(OUTPUT_DIR, '..', '..', 'data', 'csv')
-CHART_DIR = os.path.join(OUTPUT_DIR, '..', '..', 'data', 'charts', 'task1')
+CHART_DIR = os.path.join(OUTPUT_DIR, '..', '..', 'artifacts', 'charts', 'task1')
 os.makedirs(DATA_DIR, exist_ok=True)
 os.makedirs(CHART_DIR, exist_ok=True)
 CSV_FILE = os.path.join(DATA_DIR, f"{STOCK_CODE}_{STOCK_NAME}_A股_daily.csv")
@@ -43,8 +43,6 @@ def fetch_data_tushare():
     try:
         import tushare as ts
         ts.set_token(TUSHARE_TOKEN)
-        pro = ts.pro_api()
-
         # 拼接交易所后缀：深交所 .SZ，上交所 .SH
         if STOCK_CODE.startswith(('6', '9')):
             ts_code = f"{STOCK_CODE}.SH"
@@ -54,8 +52,9 @@ def fetch_data_tushare():
         print(f"[Tushare] 正在获取 {ts_code} ({STOCK_NAME}) 的数据...")
         print(f"[Tushare] 时间范围: {START_DATE} ~ {END_DATE}")
 
-        # 获取日线行情数据
-        df = pro.daily(ts_code=ts_code, start_date=START_DATE, end_date=END_DATE)
+        # 使用前复权日线，与现有 CSV 和回测价格口径保持一致。
+        df = ts.pro_bar(ts_code=ts_code, start_date=START_DATE,
+                        end_date=END_DATE, adj="qfq", freq="D")
 
         if df is None or df.empty:
             raise ValueError("Tushare 返回空数据，请检查 Token 是否有效")
@@ -75,13 +74,14 @@ def fetch_data_tushare():
             'change': '涨跌额',
             'pct_chg': '涨跌幅',
             'vol': '成交量(手)',
-            'amount': '成交额(千元)',
+            'amount': '成交额',
         })
 
         # 数据类型转换
         df['日期'] = pd.to_datetime(df['日期'])
         df['成交量(手)'] = df['成交量(手)'].astype(float)
-        df['成交额(千元)'] = df['成交额(千元)'].astype(float)
+        # Tushare A 股成交额为千元，转为与 AKShare 一致的元。
+        df['成交额'] = df['成交额'].astype(float) * 1000
 
         print(f"[Tushare] 成功获取 {len(df)} 条交易数据")
         return df
@@ -282,9 +282,7 @@ def print_summary(df):
     print(f"  最高价范围: {df['最高价'].min():.2f} ~ {df['最高价'].max():.2f}")
     print(f"  最低价范围: {df['最低价'].min():.2f} ~ {df['最低价'].max():.2f}")
     print(f"  日成交量均值: {df['成交量(手)'].mean():,.0f} 手")
-    # 找到成交额列（Tushare: '成交额(千元)', AKShare: '成交额'）
-    amount_col = '成交额(千元)' if '成交额(千元)' in df.columns else '成交额'
-    print(f"  日成交额均值: {df[amount_col].mean():,.0f} 元")
+    print(f"  日成交额均值: {df['成交额'].mean():,.0f} 元")
     print("=" * 60)
 
     # 展示前5行和后5行

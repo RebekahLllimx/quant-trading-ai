@@ -1,0 +1,54 @@
+{
+  "models": [
+    {
+      "family": "main",
+      "file": "artifacts/models/task6/main/decision_tree.pkl",
+      "sha256": "64cdfb4ae2541b9a82510dedb578b8ae5fbdfd6e11245f1504de20b3bae4ad92"
+    },
+    {
+      "family": "main",
+      "file": "artifacts/models/task6/main/hist_gradient_boosting.pkl",
+      "sha256": "25ed63c317622ee938c5956257e5c2d54f9058c15a09389c049901ffe3a17df9"
+    },
+    {
+      "family": "main",
+      "file": "artifacts/models/task6/main/linear_regression.pkl",
+      "sha256": "76f0407ea52da581518084131f55ac793b076bc37d774198b1c384671584bd5d"
+    },
+    {
+      "family": "main",
+      "file": "artifacts/models/task6/main/logistic_regression.pkl",
+      "sha256": "4853d82f28d97626dac836349c152e36772a724404d66715ee9708504a470e4f"
+    },
+    {
+      "family": "main",
+      "file": "artifacts/models/task6/main/random_forest.pkl",
+      "sha256": "3560bcf5621092f83148e90bd0474957ab80706ddd5b910c9b080c72a84b1f1d"
+    },
+    {
+      "family": "main",
+      "file": "artifacts/models/task6/main/ridge.pkl",
+      "sha256": "74b97e35ddbefcc2abb8df2a38d109cec698f4f74ff540be8c810184df805406"
+    },
+    {
+      "family": "additional",
+      "file": "artifacts/models/task6/additional/decision_tree.pkl",
+      "sha256": "5fda57c91cd18f84eb5cdff68647b588adf644e52c35bde291f1f799161eb47a"
+    },
+    {
+      "family": "additional",
+      "file": "artifacts/models/task6/additional/logistic_regression.pkl",
+      "sha256": "e8a0e51fbcc9c7c7073326df19d7a9c646473173ca29db1bd35e818179a8bb23"
+    },
+    {
+      "family": "additional",
+      "file": "artifacts/models/task6/additional/random_forest.pkl",
+      "sha256": "5f3dedcde63c6c4cdcca197a60175068c112bae956d813de28a070fc1999afdd"
+    },
+    {
+      "family": "enhanced",
+      "file": "artifacts/models/task6/enhanced/additional_rolling_logistic.pkl",
+      "sha256": "e7733179068788ef6e617df2e9308dde7a1897093fed57d1ed15530af796d711"
+    }
+  ]
+}

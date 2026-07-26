@@ -11,10 +11,12 @@ import json
 import pandas as pd
 import numpy as np
 from datetime import datetime
+from pathlib import Path
 
-OUTPUT_DIR = "/Users/rebecca/Desktop/量化交易/Task1"
-DATA_DIR = "/Users/rebecca/Desktop/量化交易/data/csv"
-HTML_FILE = os.path.join(OUTPUT_DIR, "stock_dashboard.html")
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+OUTPUT_DIR = PROJECT_ROOT / "Task1"
+DATA_DIR = PROJECT_ROOT / "data" / "csv"
+HTML_FILE = OUTPUT_DIR / "stock_dashboard.html"
 
 # 读取所有CSV数据
 STOCKS = []

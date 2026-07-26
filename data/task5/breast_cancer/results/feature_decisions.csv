@@ -1,0 +1,31 @@
+﻿feature,feature_cn,keep_initial,reason,selected_final
+worst perimeter,较大值周长,True,五折区分度和方向稳定性靠前，且未与已选变量高度重复,True
+worst area,较大值面积,False,与已保留的较大值周长高度相关,False
+worst radius,较大值半径,False,与已保留的较大值周长高度相关,False
+mean concave points,平均凹点数,False,训练集VIF=14.09，迭代删除,False
+worst concave points,较大值凹点数,False,与已保留的平均凹点数高度相关,False
+mean perimeter,平均周长,False,与已保留的较大值周长高度相关,False
+mean area,平均面积,False,与已保留的较大值周长高度相关,False
+mean radius,平均半径,False,与已保留的较大值周长高度相关,False
+mean concavity,平均凹度,False,与已保留的平均凹点数高度相关,False
+area error,面积标准误,True,五折区分度和方向稳定性靠前，且未与已选变量高度重复,True
+worst concavity,较大值凹度,True,五折区分度和方向稳定性靠前，且未与已选变量高度重复,True
+perimeter error,周长标准误,False,与已保留的面积标准误高度相关,False
+mean compactness,平均紧密度,True,五折区分度和方向稳定性靠前，且未与已选变量高度重复,True
+radius error,半径标准误,False,与已保留的面积标准误高度相关,False
+worst compactness,较大值紧密度,False,训练集VIF=9.54，迭代删除,False
+concave points error,凹点数标准误,True,五折区分度和方向稳定性靠前，且未与已选变量高度重复,True
+worst texture,较大值纹理,True,五折区分度和方向稳定性靠前，且未与已选变量高度重复,True
+concavity error,凹度标准误,False,超过预设的8项复杂度上限,False
+mean texture,平均纹理,False,与已保留的较大值纹理高度相关,False
+worst smoothness,较大值光滑度,False,超过预设的8项复杂度上限,False
+mean smoothness,平均光滑度,False,超过预设的8项复杂度上限,False
+worst symmetry,较大值对称度,False,超过预设的8项复杂度上限,False
+compactness error,紧密度标准误,False,超过预设的8项复杂度上限,False
+mean symmetry,平均对称度,False,超过预设的8项复杂度上限,False
+worst fractal dimension,较大值分形维数,False,超过预设的8项复杂度上限,False
+fractal dimension error,分形维数标准误,False,超过预设的8项复杂度上限,False
+symmetry error,对称度标准误,False,超过预设的8项复杂度上限,False
+smoothness error,光滑度标准误,False,超过预设的8项复杂度上限,False
+mean fractal dimension,平均分形维数,False,超过预设的8项复杂度上限,False
+texture error,纹理标准误,False,超过预设的8项复杂度上限,False

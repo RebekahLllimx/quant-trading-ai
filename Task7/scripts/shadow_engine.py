@@ -276,6 +276,12 @@ def main() -> int:
         "joinquant_backtest_settings": jq_settings,
         "joinquant_backtests": joinquant_summary.get("backtests", []),
         "joinquant_shadow_comparison": comparable_shadow,
+        "joinquant_short_window_settings": joinquant_summary.get(
+            "short_window_settings", {}
+        ),
+        "joinquant_short_window_backtests": joinquant_summary.get(
+            "short_window_backtests", []
+        ),
         "simulation_deployments": joinquant_summary.get(
             "simulation_deployments", []
         ),

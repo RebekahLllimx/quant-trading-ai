@@ -32,7 +32,7 @@ END_DATE = datetime.now().strftime("%Y%m%d")
 START_DATE = (datetime.now() - timedelta(days=365)).strftime("%Y%m%d")
 
 OUTPUT_DIR = os.path.dirname(os.path.abspath(__file__))
-CHART_DIR = os.path.join(OUTPUT_DIR, '..', '..', 'data', 'charts', 'task1')
+CHART_DIR = os.path.join(OUTPUT_DIR, '..', '..', 'artifacts', 'charts', 'task1')
 DATA_DIR  = os.path.join(OUTPUT_DIR, '..', '..', 'data', 'csv')
 os.makedirs(CHART_DIR, exist_ok=True)
 os.makedirs(DATA_DIR, exist_ok=True)

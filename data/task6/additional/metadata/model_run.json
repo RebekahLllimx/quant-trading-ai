@@ -1,0 +1,58 @@
+{
+  "created_at": "2026-07-18T22:46:54.687925+08:00",
+  "random_seed": 42,
+  "security": "平安银行 000001.SZ",
+  "split": "chronological 70% train / 30% test with a 3-trading-day purge",
+  "selected_strategy_model": "logistic_regression",
+  "selected_strategy_model_label": "逻辑回归",
+  "model_selection": "highest validation AUC after the second tuning round",
+  "final_training": "walk-forward logistic regression with a 180-row rolling window",
+  "final_validation_auc": 0.6313813813813813,
+  "final_test_auc": 0.5714809384164223,
+  "strategy_parameter_selection": "27 combinations ranked by validation-period Sharpe; test labels were not used",
+  "signal": {
+    "buy_threshold": 0.6,
+    "sell_threshold": 0.35,
+    "rsi_entry_filter": "RSI14 < 70",
+    "trend_entry_filter": "not used after the third tuning round",
+    "max_position": 0.8,
+    "position_formula": "min(max_position, max(0, (probability - 0.5) * 2 * max_position))",
+    "stop_loss": 0.08,
+    "take_profit": 0.15,
+    "transaction_cost": 0.002
+  },
+  "pipeline_diagnostics": {
+    "label_definition": "future_return_3d > 0",
+    "label_mismatch_count": 0,
+    "date_is_monotonic": true,
+    "latest_train_label_end": "2025-02-07",
+    "test_start": "2025-02-10",
+    "random_label_auc_mean": 0.5079362170087975,
+    "random_label_auc_std": 0.05168201494430532,
+    "synthetic_label_auc": 0.9674044265593562,
+    "interpretation": "Positive-class mapping and AUC calculation are correct. Reversing probabilities after seeing the test labels would be test leakage."
+  },
+  "strategy_audit": {
+    "entry_count": 1,
+    "model_exit_count": 1,
+    "stop_loss_count": 0,
+    "take_profit_count": 0,
+    "total_ml_turnover": 1.4512157499239295,
+    "days_in_market_ratio": 0.3944954128440367,
+    "buy_threshold": 0.6,
+    "sell_threshold": 0.35,
+    "max_position": 0.8
+  },
+  "environment": {
+    "python": "3.10.9",
+    "pandas": "2.3.3",
+    "numpy": "1.26.4",
+    "scikit_learn": "1.2.1"
+  },
+  "required_caveats": [
+    "附加题只使用单只股票约1.5年日线，市场状态覆盖有限。",
+    "3日未来标签按日滚动且彼此重叠，实际独立信息量低于样本行数。",
+    "分类概率未进行充分的样本外概率校准。阈值和最大仓位从课程方法给出的27组网格中按训练期内部验证选择，但验证窗口较短，结果可能不稳定。",
+    "该策略是教学性回测，不构成投资建议。"
+  ]
+}

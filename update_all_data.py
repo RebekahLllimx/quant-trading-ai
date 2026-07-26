@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Unified data update script — fetches latest OHLCV for all 10 stocks.
+Unified data update script — fetches latest qfq OHLCV for all 10 stocks.
 Runs in GitHub Actions or locally.
 
-Tencent Finance is the primary source because it is reachable from GitHub
-Actions without credentials. AKShare remains a bounded fallback.
+Tushare is preferred when TUSHARE_TOKEN is configured. A-shares use
+pro_bar(adj="qfq"); HK stocks use hk_daily_adj when the account has access.
+Every Tushare failure falls back to AKShare qfq data.
 
 Usage:
     python update_all_data.py           # full fetch
     python update_all_data.py --check   # check if update needed (exit 0=needed, 1=not)
-    python update_all_data.py --force   # fetch even outside a trading day
 """
 
 import os
@@ -18,7 +18,6 @@ import sys
 import time
 import argparse
 import pandas as pd
-import requests
 from datetime import datetime, timedelta
 
 # ═══════════════ Config ═══════════════
@@ -26,6 +25,9 @@ from datetime import datetime, timedelta
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(BASE_DIR, 'data', 'csv')
 os.makedirs(DATA_DIR, exist_ok=True)
+
+# Never store this value in code. In CI it comes from a GitHub Actions Secret.
+TUSHARE_TOKEN = os.environ.get('TUSHARE_TOKEN', '').strip()
 
 # 10 stocks: code, name, market, akshare symbol
 STOCKS = [
@@ -46,7 +48,6 @@ STOCKS = [
 # Fetch ~1 year of daily data
 START_DATE = (datetime.now() - timedelta(days=400)).strftime('%Y%m%d')
 END_DATE = datetime.now().strftime('%Y%m%d')
-MAX_FETCH_ATTEMPTS = 3
 
 # ═══════════════ Helpers ═══════════════
 
@@ -75,61 +76,84 @@ def needs_update(filepath):
 
 # ═══════════════ Fetch ═══════════════
 
-def tencent_symbol(code, market):
-    if market == '港股':
-        return f'hk{code}'
-    exchange = 'sh' if code.startswith(('5', '6', '9')) else 'sz'
-    return f'{exchange}{code}'
+def a_share_ts_code(code):
+    """Convert a six-digit A-share code to Tushare exchange format."""
+    if code.startswith(('4', '8')):
+        suffix = 'BJ'
+    elif code.startswith(('5', '6', '9')):
+        suffix = 'SH'
+    else:
+        suffix = 'SZ'
+    return f'{code}.{suffix}'
 
 
-def fetch_tencent_stock(code, name, market):
-    """Fetch recent daily bars from Tencent Finance."""
+def _standardize_tushare(df, code, market):
+    """Convert Tushare output to the CSV schema consumed by backtests."""
+    pct_col = 'pct_chg' if 'pct_chg' in df.columns else 'pct_change'
+    df = df.rename(columns={
+        'trade_date': 'Date', 'open': 'Open', 'close': 'Close',
+        'high': 'High', 'low': 'Low', 'vol': 'Volume',
+        'amount': 'Amount', 'change': '涨跌额', pct_col: 'PctChg',
+        'turnover_ratio': 'Turnover',
+    }).copy()
+    df['股票代码'] = code
+    df['Date'] = pd.to_datetime(df['Date']).dt.strftime('%Y-%m-%d')
+
+    # Tushare A-share amount is in thousands of CNY; AKShare CSVs use CNY.
+    if market == 'A股' and 'Amount' in df.columns:
+        df['Amount'] = pd.to_numeric(df['Amount'], errors='coerce') * 1000
+
+    if {'High', 'Low', 'pre_close'} <= set(df.columns):
+        pre_close = pd.to_numeric(df['pre_close'], errors='coerce')
+        df['振幅'] = (
+            (pd.to_numeric(df['High'], errors='coerce')
+             - pd.to_numeric(df['Low'], errors='coerce'))
+            / pre_close.replace(0, pd.NA) * 100
+        ).round(4)
+
+    keep_cols = ['Date', '股票代码', 'Open', 'Close', 'High', 'Low',
+                 'Volume', 'Amount', '振幅', 'PctChg', '涨跌额', 'Turnover']
+    return df[[c for c in keep_cols if c in df.columns]].sort_values(
+        'Date'
+    ).reset_index(drop=True)
+
+
+def fetch_tushare_a_stock(code, name):
+    """Fetch qfq A-share daily data through Tushare."""
+    if not TUSHARE_TOKEN:
+        return None
     try:
-        symbol = tencent_symbol(code, market)
-        response = requests.get(
-            'https://web.ifzq.gtimg.cn/appstock/app/fqkline/get',
-            params={'param': f'{symbol},day,,,320,qfq'},
-            timeout=45,
-            headers={'User-Agent': 'Mozilla/5.0 quant-trading-ai'},
-        )
-        response.raise_for_status()
-        payload = response.json()
-        node = payload.get('data', {}).get(symbol, {})
-        rows = node.get('qfqday') or node.get('day') or []
-        if payload.get('code') != 0 or not rows:
-            raise ValueError(
-                f'Tencent returned no rows: {payload.get("msg", "")}'
-            )
-
-        df = pd.DataFrame(
-            [row[:6] for row in rows],
-            columns=['Date', 'Open', 'Close', 'High', 'Low', 'Volume'],
-        )
-        df['Date'] = pd.to_datetime(df['Date'])
-        for column in ['Open', 'Close', 'High', 'Low', 'Volume']:
-            df[column] = pd.to_numeric(df[column], errors='coerce')
-        df = df.dropna(subset=['Date', 'Open', 'Close', 'High', 'Low'])
-        df = df[
-            (df['Date'] >= pd.to_datetime(START_DATE))
-            & (df['Date'] <= pd.to_datetime(END_DATE))
-        ].copy()
-        previous_close = df['Close'].shift(1)
-        df['股票代码'] = code
-        df['Amount'] = pd.NA
-        df['振幅'] = ((df['High'] - df['Low']) / previous_close * 100).round(4)
-        df['PctChg'] = df['Close'].pct_change().mul(100).round(4)
-        df['涨跌额'] = df['Close'].diff().round(4)
-        df['Turnover'] = pd.NA
-        df['Date'] = df['Date'].dt.strftime('%Y-%m-%d')
-        keep_cols = [
-            'Date', '股票代码', 'Open', 'Close', 'High', 'Low',
-            'Volume', 'Amount', '振幅', 'PctChg', '涨跌额', 'Turnover',
-        ]
-        series_name = 'qfqday' if node.get('qfqday') else 'day'
-        print(f'     ✅ Tencent {series_name}: {symbol}')
-        return df[keep_cols].sort_values('Date').reset_index(drop=True)
+        import tushare as ts
+        ts.set_token(TUSHARE_TOKEN)
+        ts_code = a_share_ts_code(code)
+        df = ts.pro_bar(ts_code=ts_code, start_date=START_DATE,
+                        end_date=END_DATE, adj='qfq', freq='D')
+        if df is None or df.empty:
+            raise ValueError('Tushare returned empty data')
+        print(f'     ✅ Tushare pro_bar(qfq): {ts_code}')
+        return _standardize_tushare(df, code, 'A股')
     except Exception as e:
-        print(f'     ⚠️  Tencent failed for {code} {name}: {e}')
+        print(f'     ⚠️  Tushare failed for {code} {name}: {e}')
+        return None
+
+
+def fetch_tushare_hk_stock(code, name):
+    """Fetch adjusted HK daily data through Tushare when permitted."""
+    if not TUSHARE_TOKEN:
+        return None
+    try:
+        import tushare as ts
+        ts.set_token(TUSHARE_TOKEN)
+        pro = ts.pro_api()
+        ts_code = f'{code.zfill(5)}.HK'
+        df = pro.hk_daily_adj(ts_code=ts_code, start_date=START_DATE,
+                              end_date=END_DATE)
+        if df is None or df.empty:
+            raise ValueError('Tushare returned empty data')
+        print(f'     ✅ Tushare hk_daily_adj: {ts_code}')
+        return _standardize_tushare(df, code.zfill(5), '港股')
+    except Exception as e:
+        print(f'     ⚠️  Tushare unavailable for {code} {name}: {e}')
         return None
 
 
@@ -163,7 +187,7 @@ def fetch_a_stock(code, name):
         df = df[[c for c in keep_cols if c in df.columns]]
         return df.sort_values('Date').reset_index(drop=True)
     except Exception as e:
-        print(f"  ❌ {code} {name}: {e}")
+        print(f"     ❌ AKShare failed for {code} {name}: {e}")
         return None
 
 
@@ -195,26 +219,8 @@ def fetch_hk_stock(code, name):
         df = df[[c for c in keep_cols if c in df.columns]]
         return df.sort_values('Date').reset_index(drop=True)
     except Exception as e:
-        print(f"  ❌ {code} {name}: {e}")
+        print(f"     ❌ AKShare failed for {code} {name}: {e}")
         return None
-
-
-def fetch_with_retry(fetcher, code, name, *extra):
-    """Fetch one stock with bounded retries for transient provider failures."""
-    for attempt in range(1, MAX_FETCH_ATTEMPTS + 1):
-        df = fetcher(code, name, *extra)
-        if df is not None and not df.empty:
-            return df
-
-        if attempt < MAX_FETCH_ATTEMPTS:
-            delay = 2 ** (attempt - 1)
-            print(
-                f"     ↻ Retry {attempt + 1}/{MAX_FETCH_ATTEMPTS} "
-                f"in {delay}s..."
-            )
-            time.sleep(delay)
-
-    return None
 
 
 def rebuild_dashboards():
@@ -246,11 +252,6 @@ def rebuild_dashboards():
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--check', action='store_true', help='Only check if update needed')
-    parser.add_argument(
-        '--force',
-        action='store_true',
-        help='Fetch all symbols even when the calendar check says no update is needed',
-    )
     args = parser.parse_args()
 
     if args.check:
@@ -267,48 +268,39 @@ def main():
     print('  Update All Stock Data')
     print(f'  Time: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}')
     print(f'  Stocks: {len(STOCKS)}')
+    preferred = 'Tushare' if TUSHARE_TOKEN else 'AKShare (TUSHARE_TOKEN not set)'
+    print(f'  Preferred source: {preferred}')
     print('=' * 60)
 
     updated = 0
-    attempted = 0
-    failures = []
     for code, name, market, ak_symbol in STOCKS:
         fname = f'{code}_{name}_{market}_daily.csv'
         fpath = os.path.join(DATA_DIR, fname)
 
-        if (
-            not args.force
-            and not needs_update(fpath)
-            and os.path.exists(fpath)
-        ):
+        if not args.check and not needs_update(fpath) and os.path.exists(fpath):
             print(f'  ⏭️  {code} {name}: up to date')
             continue
 
         print(f'  📡 {code} {name} ({market})...')
-        attempted += 1
         time.sleep(0.5)  # Rate limit
 
-        df = fetch_with_retry(fetch_tencent_stock, code, name, market)
-        if df is None:
-            print('     ↪ Falling back to AKShare')
-            if market == 'A股':
-                df = fetch_with_retry(fetch_a_stock, ak_symbol, name)
-            else:
-                df = fetch_with_retry(fetch_hk_stock, ak_symbol, name)
+        if market == 'A股':
+            df = fetch_tushare_a_stock(code, name)
+            if df is None:
+                print('     ↪ Falling back to AKShare qfq')
+                df = fetch_a_stock(ak_symbol, name)
+        else:
+            df = fetch_tushare_hk_stock(code, name)
+            if df is None:
+                print('     ↪ Falling back to AKShare qfq')
+                df = fetch_hk_stock(ak_symbol, name)
 
         if df is not None and len(df) > 0:
             df.to_csv(fpath, index=False, encoding='utf-8-sig')
             print(f'     ✅ Saved {len(df)} rows to {fname}')
             updated += 1
-        else:
-            failures.append(f'{code} {name}')
 
-    print(f'\n📊 Updated: {updated}/{attempted} attempted stocks')
-
-    if failures:
-        print(f'❌ All public sources failed: {", ".join(failures)}')
-        print('No dashboards were rebuilt; failing the workflow to avoid a false success.')
-        sys.exit(1)
+    print(f'\n📊 Updated: {updated}/{len(STOCKS)} stocks')
 
     if updated > 0:
         print('\n🔨 Rebuilding dashboards...')

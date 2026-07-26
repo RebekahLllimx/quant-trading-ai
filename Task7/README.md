@@ -14,7 +14,9 @@
 | Dashboard | 已完成数据校验、桌面与移动端检查 | 见 [`dashboard/index.html`](dashboard/index.html) |
 | JoinQuant平台回测 | 已完成 | 统一区间2019-01-01至2026-07-23，证据见`output/` |
 | 三个私有模拟盘 | 已部署、等待数据 | 部署状态由用户在已登录页面确认，不创建公开分享链接 |
-| 正式报告 | 已完成 | 见`Rebecca+Task7.docx`与`Rebecca+Task7.pdf` |
+| 正式报告 | 已完成 | 见 [`Rebecca+Task7.docx`](Rebecca+Task7.docx) 与 [`李沐晓+TASK7.pdf`](李沐晓+TASK7.pdf) |
+
+正式PDF在项目级 [`output/submissions/Rebecca+Task7.pdf`](../output/submissions/Rebecca+Task7.pdf) 保留内容一致的集中镜像。
 
 ## 三个策略
 

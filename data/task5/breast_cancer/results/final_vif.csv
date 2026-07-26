@@ -1,0 +1,7 @@
+﻿feature,vif,feature_cn
+worst perimeter,3.5338141369348497,较大值周长
+area error,2.613378572734154,面积标准误
+worst concavity,3.6474828653699674,较大值凹度
+mean compactness,3.8431342213827837,平均紧密度
+concave points error,1.8241039580407,凹点数标准误
+worst texture,1.2426213682869471,较大值纹理

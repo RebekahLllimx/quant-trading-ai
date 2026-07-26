@@ -1,0 +1,644 @@
+{
+  "surface": "dashboard",
+  "manifest": {
+    "version": 1,
+    "surface": "dashboard",
+    "title": "TASK5 金融市场分类尝试",
+    "description": "对比三种股票分类定义、样本外AUC及其研究边界。",
+    "generatedAt": "2026-07-18T20:10:23+08:00",
+    "filters": [],
+    "cards": [
+      {
+        "id": "attempts",
+        "description": "分别改变了Y、观察频率或股票范围。",
+        "dataset": "summary",
+        "sourceId": "summary_source",
+        "metrics": [
+          {
+            "label": "任务定义",
+            "field": "attempts",
+            "format": "compact"
+          }
+        ]
+      },
+      {
+        "id": "first",
+        "description": "月末截面的60日收益排名。",
+        "dataset": "summary",
+        "sourceId": "summary_source",
+        "metrics": [
+          {
+            "label": "第一次最佳AUC",
+            "field": "first_auc",
+            "format": "number"
+          }
+        ]
+      },
+      {
+        "id": "second",
+        "description": "月末未来20日绝对涨跌。",
+        "dataset": "summary",
+        "sourceId": "summary_source",
+        "metrics": [
+          {
+            "label": "第二次最佳AUC",
+            "field": "second_auc",
+            "format": "number"
+          }
+        ]
+      },
+      {
+        "id": "catl",
+        "description": "宁德时代未来20日超额收益。",
+        "dataset": "summary",
+        "sourceId": "summary_source",
+        "metrics": [
+          {
+            "label": "单股案例最佳AUC",
+            "field": "catl_auc",
+            "format": "number"
+          }
+        ]
+      }
+    ],
+    "charts": [
+      {
+        "id": "best_auc",
+        "title": "三次金融分类的最佳测试AUC",
+        "subtitle": "任务口径不同，数值用于观察可学习性，不直接排名",
+        "type": "bar",
+        "intent": "comparison",
+        "dataset": "best_results",
+        "sourceId": "attempts_source",
+        "encodings": {
+          "x": {
+            "field": "attempt",
+            "type": "nominal",
+            "label": "任务定义"
+          },
+          "y": {
+            "field": "roc_auc",
+            "type": "quantitative",
+            "label": "ROC-AUC"
+          },
+          "tooltip": [
+            {
+              "field": "model_cn",
+              "type": "text",
+              "label": "最佳模型"
+            },
+            {
+              "field": "auc_ci",
+              "type": "text",
+              "label": "95%区间"
+            }
+          ]
+        },
+        "referenceLines": [
+          {
+            "axis": "y",
+            "value": 0.5,
+            "label": "随机排序",
+            "color": "neutral",
+            "lineStyle": "dashed"
+          }
+        ],
+        "palette": {
+          "kind": "semantic"
+        },
+        "layout": "full"
+      },
+      {
+        "id": "all_models",
+        "title": "各任务中的模型AUC",
+        "subtitle": "复杂模型并未在三个样本外测试中持续领先",
+        "type": "bar",
+        "intent": "comparison",
+        "dataset": "model_results",
+        "sourceId": "models_source",
+        "encodings": {
+          "x": {
+            "field": "attempt",
+            "type": "nominal",
+            "label": "任务定义"
+          },
+          "y": {
+            "field": "roc_auc",
+            "type": "quantitative",
+            "label": "ROC-AUC"
+          },
+          "color": {
+            "field": "model_cn",
+            "type": "nominal",
+            "label": "模型"
+          },
+          "tooltip": [
+            {
+              "field": "auc_ci",
+              "type": "text",
+              "label": "95%区间"
+            }
+          ]
+        },
+        "settings": {
+          "grouped": true
+        },
+        "referenceLines": [
+          {
+            "axis": "y",
+            "value": 0.5,
+            "label": "随机排序",
+            "color": "neutral",
+            "lineStyle": "dashed"
+          }
+        ],
+        "palette": {
+          "kind": "categorical"
+        },
+        "layout": "full"
+      }
+    ],
+    "tables": [
+      {
+        "id": "attempt_table",
+        "title": "三次任务的口径与结果",
+        "subtitle": "样本量必须结合观察频率和标签重叠程度解释",
+        "dataset": "attempts",
+        "sourceId": "attempts_source",
+        "defaultSort": {
+          "field": "order",
+          "direction": "asc"
+        },
+        "density": "spacious",
+        "layout": "full",
+        "columns": [
+          {
+            "field": "order",
+            "label": "序号",
+            "format": "number"
+          },
+          {
+            "field": "attempt",
+            "label": "任务",
+            "type": "text"
+          },
+          {
+            "field": "stock_scope",
+            "label": "股票范围",
+            "type": "text"
+          },
+          {
+            "field": "observation",
+            "label": "观察单位",
+            "type": "text"
+          },
+          {
+            "field": "target",
+            "label": "Y定义",
+            "type": "text"
+          },
+          {
+            "field": "fit_samples",
+            "label": "拟合样本",
+            "format": "compact"
+          },
+          {
+            "field": "test_samples",
+            "label": "测试样本",
+            "format": "compact"
+          },
+          {
+            "field": "best_model",
+            "label": "最高AUC模型",
+            "type": "text"
+          },
+          {
+            "field": "best_auc",
+            "label": "AUC",
+            "format": "number"
+          },
+          {
+            "field": "auc_ci",
+            "label": "95%区间",
+            "type": "text"
+          },
+          {
+            "field": "reading",
+            "label": "解读",
+            "type": "text"
+          }
+        ]
+      },
+      {
+        "id": "model_table",
+        "title": "全部模型的样本外AUC",
+        "subtitle": "每一行对应一个任务定义和一个锁定模型",
+        "dataset": "model_results",
+        "sourceId": "models_source",
+        "defaultSort": {
+          "field": "roc_auc",
+          "direction": "desc"
+        },
+        "density": "spacious",
+        "layout": "full",
+        "columns": [
+          {
+            "field": "attempt",
+            "label": "任务",
+            "type": "text"
+          },
+          {
+            "field": "model_cn",
+            "label": "模型",
+            "type": "text"
+          },
+          {
+            "field": "roc_auc",
+            "label": "AUC",
+            "format": "number"
+          },
+          {
+            "field": "auc_ci",
+            "label": "95%区间",
+            "type": "text"
+          }
+        ]
+      }
+    ],
+    "sources": [
+      {
+        "id": "attempts_source",
+        "label": "三次金融分类设计",
+        "path": "Task5/dashboard/data/finance_attempts.csv",
+        "query": {
+          "engine": "duckdb",
+          "language": "sql",
+          "sql": "SELECT * FROM read_csv_auto('Task5/dashboard/data/finance_attempts.csv', header=true)",
+          "description": "由三组冻结模型结果整理的任务口径、样本和最佳测试AUC。",
+          "tables_used": [
+            "Task5/dashboard/data/finance_attempts.csv"
+          ],
+          "filters": [
+            "2025年样本外测试",
+            "按时间划分",
+            "AUC使用预测概率"
+          ],
+          "metric_definitions": [
+            "第一次Y为未来60日截面前30%与后30%。",
+            "第二次Y为未来20日绝对收益是否为正。",
+            "第三次Y为宁德时代未来20日收益是否超过沪深300。"
+          ]
+        }
+      },
+      {
+        "id": "models_source",
+        "label": "三次金融尝试的模型指标",
+        "path": "Task5/dashboard/data/finance_model_results.csv",
+        "query": {
+          "engine": "duckdb",
+          "language": "sql",
+          "sql": "SELECT * FROM read_csv_auto('Task5/dashboard/data/finance_model_results.csv', header=true)",
+          "description": "整理各次尝试中锁定模型的2025年样本外AUC。",
+          "tables_used": [
+            "Task5/dashboard/data/finance_model_results.csv"
+          ],
+          "filters": [
+            "2025年样本外测试",
+            "按时间划分",
+            "AUC使用预测概率"
+          ],
+          "metric_definitions": [
+            "ROC-AUC使用正类概率计算。",
+            "置信区间使用时间块Bootstrap。"
+          ]
+        }
+      },
+      {
+        "id": "summary_source",
+        "label": "金融页摘要指标",
+        "path": "Task5/dashboard/data/finance_summary.csv",
+        "query": {
+          "engine": "duckdb",
+          "language": "sql",
+          "sql": "SELECT * FROM read_csv_auto('Task5/dashboard/data/finance_summary.csv', header=true)",
+          "description": "三次尝试的最佳AUC摘要。",
+          "tables_used": [
+            "Task5/dashboard/data/finance_summary.csv"
+          ],
+          "filters": [
+            "2025年样本外测试",
+            "按时间划分",
+            "AUC使用预测概率"
+          ],
+          "metric_definitions": [
+            "各次最佳AUC按对应测试集中的最高模型值计算。"
+          ]
+        }
+      }
+    ],
+    "blocks": [
+      {
+        "id": "opening",
+        "type": "markdown",
+        "body": "## 问题如何变化\n\n金融数据部分没有反复修饰同一个模型，而是先后改变了截面排名、绝对涨跌和单股相对基准三种Y。三个任务的样本外AUC都接近0.5，说明当前技术特征没有在对应预测目标下形成稳定的排序能力。"
+      },
+      {
+        "id": "cards",
+        "type": "metric-strip",
+        "cardIds": [
+          "attempts",
+          "first",
+          "second",
+          "catl"
+        ]
+      },
+      {
+        "id": "best_auc_block",
+        "type": "chart",
+        "chartId": "best_auc",
+        "layout": "full"
+      },
+      {
+        "id": "models_block",
+        "type": "chart",
+        "chartId": "all_models",
+        "layout": "full"
+      },
+      {
+        "id": "attempt_table_block",
+        "type": "table",
+        "tableId": "attempt_table",
+        "layout": "full"
+      },
+      {
+        "id": "model_table_block",
+        "type": "table",
+        "tableId": "model_table",
+        "layout": "full"
+      },
+      {
+        "id": "takeaways",
+        "type": "markdown",
+        "body": "## 为什么结果接近随机\n\n**AUC的含义。** AUC为0.53，表示随机抽取一组正负样本时，模型约有53%的概率把正类排在前面，只比随机排序高约3个百分点。三个时间块置信区间均覆盖0.5，现有差距不足以确认稳定信号。\n\n**计算排查。** 标签复算、日期边界、Mann-Whitney秩公式和同一测试标签检查没有发现错误。随机标签平均AUC为0.497，人工可预测标签为0.996，说明管线能够在有信息时学习。\n\n**跨期变化。** 60日截面排名中，逻辑回归AUC由2023年的0.752降到2024年的0.575和2025年的0.509，随机森林也由0.726降到0.594和0.533。训练期关系没有稳定延续到最终测试期。\n\n**信息边界。** 20余项变量大多由同一价格和成交量序列变换而来，不能覆盖估值、财报、行业景气、政策和公司事件。20日与60日标签还存在重叠，记录数明显多于独立市场状态数。\n\n**结论边界。** 当前结果不能推出机器学习无效；能够支持的结论是，现有价量特征、目标定义和时间范围尚不足以形成稳定的样本外排序能力。改进顺序应为交易决策与Y、信息覆盖、样本和验证，最后才是模型复杂度。"
+      }
+    ]
+  },
+  "snapshot": {
+    "version": 1,
+    "generatedAt": "2026-07-18T20:10:23+08:00",
+    "status": "ready",
+    "datasets": {
+      "summary": [
+        {
+          "attempts": 3,
+          "highest_auc": 0.532764277211625,
+          "first_auc": 0.532764277211625,
+          "second_auc": 0.5289815875817598,
+          "catl_auc": 0.5243478260869565
+        }
+      ],
+      "attempts": [
+        {
+          "order": 1,
+          "attempt": "截面60日排名",
+          "stock_scope": "冻结沪深A股股票池",
+          "observation": "股票×月末",
+          "target": "未来60交易日收益位于同期前30%或后30%",
+          "fit_samples": 4349,
+          "test_samples": 525,
+          "test_period": "2025年，9个月末",
+          "best_model": "随机森林",
+          "best_auc": 0.532764277211625,
+          "auc_ci": "0.298—0.684",
+          "reading": "对应截面选股，但区间跨过0.5"
+        },
+        {
+          "order": 2,
+          "attempt": "20日绝对涨跌",
+          "stock_scope": "冻结沪深A股股票池",
+          "observation": "股票×月末",
+          "target": "未来20交易日收益是否大于0",
+          "fit_samples": 7867,
+          "test_samples": 1065,
+          "test_period": "2025年，11个月末",
+          "best_model": "逻辑回归",
+          "best_auc": 0.5289815875817598,
+          "auc_ci": "0.499—0.587",
+          "reading": "样本增加，但只保留很弱的线性信号"
+        },
+        {
+          "order": 3,
+          "attempt": "宁德时代20日超额收益",
+          "stock_scope": "300750.SZ与沪深300",
+          "observation": "单股×周末",
+          "target": "未来20交易日收益是否超过沪深300",
+          "fit_samples": 318,
+          "test_samples": 48,
+          "test_period": "2025年，48个周度样本",
+          "best_model": "决策树",
+          "best_auc": 0.5243478260869565,
+          "auc_ci": "0.349—0.691",
+          "reading": "单股差异更小，但有效时间窗口太少"
+        }
+      ],
+      "best_results": [
+        {
+          "attempt": "截面60日排名",
+          "model": "random_forest",
+          "model_cn": "随机森林",
+          "roc_auc": 0.532764277211625,
+          "auc_ci_low": 0.2977150924912118,
+          "auc_ci_high": 0.6842206689312766,
+          "auc_ci": "0.298—0.684",
+          "order": 1
+        },
+        {
+          "attempt": "20日绝对涨跌",
+          "model": "logistic_regression",
+          "model_cn": "逻辑回归",
+          "roc_auc": 0.5289815875817598,
+          "auc_ci_low": 0.4993168843734881,
+          "auc_ci_high": 0.5867838790504099,
+          "auc_ci": "0.499—0.587",
+          "order": 2
+        },
+        {
+          "attempt": "宁德时代20日超额收益",
+          "model": "decision_tree",
+          "model_cn": "决策树",
+          "roc_auc": 0.5243478260869565,
+          "auc_ci_low": 0.34918430335097,
+          "auc_ci_high": 0.6913313094429347,
+          "auc_ci": "0.349—0.691",
+          "order": 3
+        }
+      ],
+      "model_results": [
+        {
+          "attempt": "截面60日排名",
+          "model": "logistic_regression",
+          "model_cn": "逻辑回归",
+          "roc_auc": 0.5086519757280143,
+          "auc_ci_low": 0.2638404346582785,
+          "auc_ci_high": 0.6789590708288229,
+          "auc_ci": "0.264—0.679"
+        },
+        {
+          "attempt": "截面60日排名",
+          "model": "decision_tree",
+          "model_cn": "决策树",
+          "roc_auc": 0.4771433963359753,
+          "auc_ci_low": 0.3073027718550106,
+          "auc_ci_high": 0.5723151293441338,
+          "auc_ci": "0.307—0.572"
+        },
+        {
+          "attempt": "截面60日排名",
+          "model": "random_forest",
+          "model_cn": "随机森林",
+          "roc_auc": 0.532764277211625,
+          "auc_ci_low": 0.2977150924912118,
+          "auc_ci_high": 0.6842206689312766,
+          "auc_ci": "0.298—0.684"
+        },
+        {
+          "attempt": "20日绝对涨跌",
+          "model": "logistic_regression",
+          "model_cn": "逻辑回归",
+          "roc_auc": 0.5289815875817598,
+          "auc_ci_low": 0.4993168843734881,
+          "auc_ci_high": 0.5867838790504099,
+          "auc_ci": "0.499—0.587"
+        },
+        {
+          "attempt": "20日绝对涨跌",
+          "model": "decision_tree",
+          "model_cn": "决策树",
+          "roc_auc": 0.4903525191632918,
+          "auc_ci_low": 0.4087363494539781,
+          "auc_ci_high": 0.5762649560207188,
+          "auc_ci": "0.409—0.576"
+        },
+        {
+          "attempt": "20日绝对涨跌",
+          "model": "random_forest",
+          "model_cn": "随机森林",
+          "roc_auc": 0.4920393158864935,
+          "auc_ci_low": 0.4166056698489391,
+          "auc_ci_high": 0.6193399217653388,
+          "auc_ci": "0.417—0.619"
+        },
+        {
+          "attempt": "宁德时代20日超额收益",
+          "model": "logistic_regression",
+          "model_cn": "逻辑回归",
+          "roc_auc": 0.368695652173913,
+          "auc_ci_low": 0.1562065972222222,
+          "auc_ci_high": 0.5856778996865204,
+          "auc_ci": "0.156—0.586"
+        },
+        {
+          "attempt": "宁德时代20日超额收益",
+          "model": "decision_tree",
+          "model_cn": "决策树",
+          "roc_auc": 0.5243478260869565,
+          "auc_ci_low": 0.34918430335097,
+          "auc_ci_high": 0.6913313094429347,
+          "auc_ci": "0.349—0.691"
+        },
+        {
+          "attempt": "宁德时代20日超额收益",
+          "model": "random_forest",
+          "model_cn": "随机森林",
+          "roc_auc": 0.4,
+          "auc_ci_low": 0.1781120312859443,
+          "auc_ci_high": 0.6206409801136363,
+          "auc_ci": "0.178—0.621"
+        },
+        {
+          "attempt": "宁德时代20日超额收益",
+          "model": "gradient_boosting",
+          "model_cn": "梯度提升",
+          "roc_auc": 0.4495652173913043,
+          "auc_ci_low": 0.2315996503496503,
+          "auc_ci_high": 0.6574184303350968,
+          "auc_ci": "0.232—0.657"
+        }
+      ]
+    }
+  },
+  "sources": [
+    {
+      "id": "attempts_source",
+      "label": "三次金融分类设计",
+      "path": "Task5/dashboard/data/finance_attempts.csv",
+      "query": {
+        "engine": "duckdb",
+        "language": "sql",
+        "sql": "SELECT * FROM read_csv_auto('Task5/dashboard/data/finance_attempts.csv', header=true)",
+        "description": "由三组冻结模型结果整理的任务口径、样本和最佳测试AUC。",
+        "tables_used": [
+          "Task5/dashboard/data/finance_attempts.csv"
+        ],
+        "filters": [
+          "2025年样本外测试",
+          "按时间划分",
+          "AUC使用预测概率"
+        ],
+        "metric_definitions": [
+          "第一次Y为未来60日截面前30%与后30%。",
+          "第二次Y为未来20日绝对收益是否为正。",
+          "第三次Y为宁德时代未来20日收益是否超过沪深300。"
+        ]
+      }
+    },
+    {
+      "id": "models_source",
+      "label": "三次金融尝试的模型指标",
+      "path": "Task5/dashboard/data/finance_model_results.csv",
+      "query": {
+        "engine": "duckdb",
+        "language": "sql",
+        "sql": "SELECT * FROM read_csv_auto('Task5/dashboard/data/finance_model_results.csv', header=true)",
+        "description": "整理各次尝试中锁定模型的2025年样本外AUC。",
+        "tables_used": [
+          "Task5/dashboard/data/finance_model_results.csv"
+        ],
+        "filters": [
+          "2025年样本外测试",
+          "按时间划分",
+          "AUC使用预测概率"
+        ],
+        "metric_definitions": [
+          "ROC-AUC使用正类概率计算。",
+          "置信区间使用时间块Bootstrap。"
+        ]
+      }
+    },
+    {
+      "id": "summary_source",
+      "label": "金融页摘要指标",
+      "path": "Task5/dashboard/data/finance_summary.csv",
+      "query": {
+        "engine": "duckdb",
+        "language": "sql",
+        "sql": "SELECT * FROM read_csv_auto('Task5/dashboard/data/finance_summary.csv', header=true)",
+        "description": "三次尝试的最佳AUC摘要。",
+        "tables_used": [
+          "Task5/dashboard/data/finance_summary.csv"
+        ],
+        "filters": [
+          "2025年样本外测试",
+          "按时间划分",
+          "AUC使用预测概率"
+        ],
+        "metric_definitions": [
+          "各次最佳AUC按对应测试集中的最高模型值计算。"
+        ]
+      }
+    }
+  ],
+  "package_info": {
+    "originUrl": "artifact://task5-finance-attempts"
+  }
+}

@@ -1,0 +1,5 @@
+﻿model,model_cn,best_params,cv_auc_mean,cv_auc_std,candidate_count
+logistic_regression,逻辑回归,"{""model__C"": 10.0, ""model__class_weight"": null}",0.9918472652218782,0.007047831198746702,6
+decision_tree,决策树,"{""model__class_weight"": null, ""model__max_depth"": 5, ""model__min_samples_leaf"": 10}",0.9696594427244584,0.011543324728081545,24
+random_forest,随机森林,"{""model__class_weight"": ""balanced_subsample"", ""model__max_depth"": null, ""model__max_features"": ""sqrt"", ""model__min_samples_leaf"": 2}",0.9890608875128999,0.005133056807201587,18
+gradient_boosting,梯度提升,"{""model__learning_rate"": 0.05, ""model__max_depth"": 2, ""model__min_samples_leaf"": 5, ""model__n_estimators"": 120}",0.9900412796697626,0.004596709484276581,24

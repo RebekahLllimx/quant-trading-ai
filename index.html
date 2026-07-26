@@ -123,11 +123,6 @@ body {
 .card .link:hover {
   background: #0773c5;
 }
-.card.coming .link {
-  background: #b2bec3;
-  cursor: not-allowed;
-  pointer-events: none;
-}
 .footer {
   text-align: center;
   padding: 20px;
@@ -156,9 +151,9 @@ body {
     <h2>关于本项目</h2>
     <p>
       本项目为北京大学光华管理学院商业分析工作坊《量化交易：AI大模型辅助的金融交易策略》的八个阶段性任务集合，
-      涵盖数据引擎搭建、技术指标构造、均线交叉策略、海龟交易法则、机器学习预测、智能交易策略、模拟实盘部署、以及最终策略路演。
-      数据源采用 AKShare 与 Tushare Pro 双通道，覆盖 A 股（沪深）与港股（联交所）共 10 只标的，
-      使用前复权（qfq）价格确保回测严谨性。看板均为自包含 HTML，无需后端即可在浏览器中交互使用。
+      涵盖数据引擎搭建、技术指标构造、均线交叉策略、海龟交易法则、机器学习预测、智能交易策略、模拟实盘部署，以及最终专业学习报告。
+      数据源采用 AKShare 与 Tushare Pro 双通道：前序任务覆盖 A 股与港股标的，TASK5 使用乳腺癌诊断数据完成分类流程，并把此前股票预测的低AUC结果留在总结反思中。
+      前七项任务的看板均为自包含 HTML，无需后端即可在浏览器中交互使用；TASK8以完整报告综合呈现前序学习成果。
     </p>
   </div>
 
@@ -201,35 +196,35 @@ body {
     </div>
 
     <!-- Task 5 -->
-    <div class="card coming">
+    <div class="card">
       <div class="num">Task 5</div>
       <div class="title">机器学习算法应用</div>
-      <div class="desc">线性回归、决策树、KNN等基础模型，scikit-learn训练与评估，RMSE、准确率、混淆矩阵分析。</div>
-      <span class="link">即将发布</span>
+      <div class="desc">根据细胞核形态特征判断恶性或良性。比较逻辑回归、决策树、随机森林与梯度提升，展示标签分布、特征筛选、ROC/AUC、混淆矩阵和特征解释。</div>
+      <a class="link" href="Task5/dashboard/index.html">进入看板</a>
     </div>
 
     <!-- Task 6 -->
-    <div class="card coming">
+    <div class="card">
       <div class="num">Task 6</div>
       <div class="title">ML驱动交易策略</div>
       <div class="desc">扩展特征工程，训练模型预测涨跌概率，结合模型信号设计交易规则，与买入持有等朴素策略比较。</div>
-      <span class="link">即将发布</span>
+      <a class="link" href="Task6/dashboard/index.html">进入看板</a>
     </div>
 
     <!-- Task 7 -->
     <div class="card">
       <div class="num">Task 7</div>
       <div class="title">三策略模拟部署</div>
-      <div class="desc">平台模板、MA+ATR风控与宽基ETF轮动并行比较；展示聚宽平台回测，并在工作日收盘后更新影子净值、回撤、仓位与订单。</div>
+      <div class="desc">平台模板、MA+ATR风控与宽基ETF轮动并行对比；工作日收盘后自动更新影子净值、回撤、仓位、成本与订单。</div>
       <a class="link" href="Task7/dashboard/index.html">进入看板</a>
     </div>
 
     <!-- Task 8 -->
-    <div class="card coming">
+    <div class="card">
       <div class="num">Task 8</div>
-      <div class="title">报告撰写与策略路演</div>
-      <div class="desc">整合前序任务成果，撰写包含背景、方法论、代码片段、回测结果和结论反思的综合实习报告。</div>
-      <span class="link">即将发布</span>
+      <div class="title">专业学习报告</div>
+      <div class="desc">综合前七项任务，讨论量化交易的系统性、策略互补关系、机器学习的证据边界、部署经验与后续研究方向。</div>
+      <a class="link" href="output/submissions/Rebecca+Task8.pdf">阅读报告</a>
     </div>
 
   </div>

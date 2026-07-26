@@ -69,26 +69,46 @@ def fetch_akshare(code, market, start, end):
 def fetch_tushare(code, market, start, end):
     import tushare as ts
     token = DATA_SOURCES['tushare']['token']
+    if not token:
+        raise RuntimeError('TUSHARE_TOKEN 未配置')
     ts.set_token(token)
-    pro = ts.pro_api()
-    suffix = '.SH' if code.startswith(('6','9')) else '.SZ'
-    ts_code = code + suffix
-
-    df = pro.daily(ts_code=ts_code, start_date=start, end_date=end)
+    if market == '港股':
+        pro = ts.pro_api()
+        ts_code = code.zfill(5) + '.HK'
+        df = pro.hk_daily_adj(ts_code=ts_code, start_date=start, end_date=end)
+        pct_col = 'pct_change'
+    else:
+        suffix = '.SH' if code.startswith(('5','6','9')) else '.SZ'
+        ts_code = code + suffix
+        df = ts.pro_bar(ts_code=ts_code, start_date=start, end_date=end,
+                        adj='qfq', freq='D')
+        pct_col = 'pct_chg'
+    if df is None or df.empty:
+        raise ValueError('Tushare 未返回数据')
     df = df.rename(columns={'trade_date': 'date', 'ts_code': 'ts_code',
                             'open': 'open', 'high': 'high', 'low': 'low',
                             'close': 'close', 'pre_close': 'pre_close',
-                            'change': 'change', 'pct_chg': 'pct_chg',
+                            'change': 'change', pct_col: 'pct_chg',
                             'vol': 'volume', 'amount': 'amount'})
     df['date'] = pd.to_datetime(df['date'])
     df = df.sort_values('date')
     return df
 
+
+def fetch_with_fallback(code, market, start, end, source):
+    """Use Tushare when requested and fall back to AKShare on any failure."""
+    if source in ('tushare', 'auto'):
+        try:
+            return fetch_tushare(code, market, start, end), 'tushare'
+        except Exception as exc:
+            app.logger.warning('Tushare failed for %s: %s; using AKShare', code, exc)
+    return fetch_akshare(code, market, start, end), 'akshare'
+
 # ── API 路由 ──
 
 @app.route('/')
 def index():
-    return send_file('dashboard.html')
+    return send_file(os.path.join(os.path.dirname(__file__), 'index.html'))
 
 @app.route('/api/sources')
 def get_sources():
@@ -110,7 +130,7 @@ def fetch_data():
     """拉取股票数据"""
     code = request.args.get('code', '000001')
     market = request.args.get('market', 'A股')
-    source = request.args.get('source', 'akshare')
+    source = request.args.get('source', 'auto')
     start = request.args.get('start', (datetime.now() - timedelta(days=365)).strftime('%Y%m%d'))
     end = request.args.get('end', datetime.now().strftime('%Y%m%d'))
 
@@ -127,10 +147,7 @@ def fetch_data():
             if not code.isdigit() or len(code) != 5:
                 return jsonify({'error': f'⚠️ 港股代码需5位数字，您输入了「{code}」。请确认市场是否选错。'}), 400
 
-        if source == 'tushare' and is_a:
-            df = fetch_tushare(code, market, start, end)
-        else:
-            df = fetch_akshare(code, market, start, end)
+        df, actual_source = fetch_with_fallback(code, market, start, end, source)
 
         if df.empty:
             return jsonify({'error': '未获取到数据，请检查代码'}), 400
@@ -158,7 +175,7 @@ def fetch_data():
         return jsonify({
             'code': code,
             'market': market,
-            'source': source,
+            'source': actual_source,
             'records': len(df),
             'start_date': df['date'].min().strftime('%Y-%m-%d'),
             'end_date': df['date'].max().strftime('%Y-%m-%d'),
@@ -184,15 +201,12 @@ def export_csv():
     """导出CSV"""
     code = request.args.get('code', '000001')
     market = request.args.get('market', 'A股')
-    source = request.args.get('source', 'akshare')
+    source = request.args.get('source', 'auto')
     start = request.args.get('start', (datetime.now() - timedelta(days=365)).strftime('%Y%m%d'))
     end = request.args.get('end', datetime.now().strftime('%Y%m%d'))
 
     try:
-        if source == 'tushare' and market == 'A股':
-            df = fetch_tushare(code, market, start, end)
-        else:
-            df = fetch_akshare(code, market, start, end)
+        df, actual_source = fetch_with_fallback(code, market, start, end, source)
 
         buf = io.StringIO()
         df.to_csv(buf, index=False, encoding='utf-8-sig')
@@ -201,7 +215,7 @@ def export_csv():
             io.BytesIO(buf.getvalue().encode('utf-8-sig')),
             mimetype='text/csv',
             as_attachment=True,
-            download_name=f'{code}_{market}_{source}_daily.csv',
+            download_name=f'{code}_{market}_{actual_source}_daily.csv',
         )
     except Exception as e:
         return jsonify({'error': str(e)}), 500

@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>CSV回归小工具</title>
+  <style>
+    :root{--ink:#172033;--muted:#667085;--line:#dce3ec;--blue:#245ec7;--blue2:#eaf2ff;--green:#147d64;--orange:#c65d21;--bg:#f4f7fb;--card:#fff;--danger:#aa2e25}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;line-height:1.55}
+    header{background:linear-gradient(135deg,#173d81,#2569d8);color:white;padding:36px 20px}header>div,main{max-width:1080px;margin:auto}h1{font-size:30px;margin:0 0 6px}header p{margin:0;opacity:.88}
+    main{padding:22px 18px 54px}.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px;margin:16px 0;box-shadow:0 8px 28px rgba(32,54,86,.06)}
+    .privacy{display:flex;gap:10px;align-items:flex-start;background:#eef9f5;border-color:#bee7d8}.privacy strong{color:var(--green)}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:22px}.three{grid-template-columns:1fr 1fr 1fr}label{display:block;font-weight:650;margin:12px 0 6px}
+    input[type=file],select,button{font:inherit}input[type=file],select{width:100%;border:1px solid #b8c4d3;border-radius:8px;padding:9px;background:white}select[multiple]{min-height:210px}
+    button,.button{border:0;border-radius:8px;padding:10px 16px;background:var(--blue);color:white;cursor:pointer;font-weight:650}button:hover{filter:brightness(.96)}button.secondary{background:#e7edf7;color:#253552}button:disabled{opacity:.45;cursor:not-allowed}
+    .muted{color:var(--muted);font-size:14px}.hidden{display:none!important}.error{background:#fff0ef;color:var(--danger);padding:11px 13px;border-radius:8px;margin-top:12px}
+    .metrics{display:grid;grid-template-columns:repeat(4,minmax(130px,1fr));gap:12px}.metric{background:var(--blue2);border-radius:10px;padding:14px}.metric span{display:block;color:var(--muted);font-size:13px}.metric b{font-size:22px}
+    .toolbar{display:flex;gap:10px;flex-wrap:wrap;margin:15px 0}.table-wrap{overflow:auto;max-height:360px;border:1px solid var(--line);border-radius:9px}table{border-collapse:collapse;width:100%;font-size:13px;background:white}th,td{padding:8px 10px;border-bottom:1px solid #e9edf2;text-align:right;white-space:nowrap}th{position:sticky;top:0;background:#f1f5fa;color:#3e4d61}th:first-child,td:first-child{text-align:left}
+    canvas{width:100%;height:340px;border:1px solid var(--line);border-radius:10px;background:white}.status{padding:8px 0;color:var(--green);font-weight:600}
+    footer{color:var(--muted);text-align:center;padding-top:20px;font-size:13px}@media(max-width:760px){.grid,.three{grid-template-columns:1fr}.metrics{grid-template-columns:1fr 1fr}h1{font-size:25px}}
+  </style>
+</head>
+<body>
+  <header><div><h1>CSV自动回归小工具</h1><p>上传CSV，选择X和Y，在浏览器中完成线性回归或逻辑回归。</p></div></header>
+  <main>
+    <section class="card privacy"><div>🔒</div><div><strong>纯前端、无上传</strong><div class="muted">CSV只在当前浏览器页面的内存中读取，不发送到服务器，不使用后端或数据库。刷新或关闭页面即清除数据。</div></div></section>
+
+    <section class="card">
+      <h2>1. 读取数据</h2>
+      <div class="grid"><div><label for="file">CSV文件</label><input id="file" type="file" accept=".csv,text/csv"></div><div><label>&nbsp;</label><button id="demo" class="secondary">加载演示数据</button></div></div>
+      <div id="fileStatus" class="status"></div><div id="error" class="error hidden"></div>
+    </section>
+
+    <section id="config" class="card hidden">
+      <h2>2. 选择模型和变量</h2>
+      <div class="grid">
+        <div><label for="kind">模型</label><select id="kind"><option value="linear">线性回归（Y为连续数值）</option><option value="logistic">逻辑回归（Y必须只有两类）</option></select><label for="y">Y（应变量）</label><select id="y"></select><label for="time">时间列（可选）</label><select id="time"><option value="">无：按固定种子随机划分</option></select><p class="muted">选择时间列后，先按时间排序，再按70%训练、30%测试；不选时间列时使用可复现的随机划分。</p></div>
+        <div><label for="x">X（自变量，可多选）</label><select id="x" multiple></select><p class="muted">仅显示可转换为数值的列。缺失的X使用训练集中位数填补，随后按训练集均值和标准差标准化。</p></div>
+      </div>
+      <button id="run">开始分析</button>
+    </section>
+
+    <section id="results" class="card hidden">
+      <h2>3. 测试集结果</h2><div id="summary" class="muted"></div><div id="metrics" class="metrics"></div>
+      <h3>系数</h3><div id="coefTable" class="table-wrap"></div>
+      <h3>预测图</h3><canvas id="chart" width="1000" height="420" aria-label="预测结果图"></canvas>
+      <h3>预测明细</h3><div id="preview" class="table-wrap"></div>
+      <div class="toolbar"><button id="downloadPred">下载预测CSV</button><button id="downloadModel" class="secondary">下载模型JSON</button></div>
+      <p class="muted">浏览器无法原生生成与scikit-learn兼容的Python `.pkl`，因此本页下载可读的模型JSON。TASK6正式建模脚本仍会另行保存`.pkl`。</p>
+    </section>
+    <footer>TASK6 教学小工具 · 分析结果不构成投资建议</footer>
+  </main>
+<script>
+"use strict";
+let sourceRows=[], columns=[], outputRows=[], modelBundle=null;
+const $=id=>document.getElementById(id);
+function fail(message){$("error").textContent=message;$("error").classList.remove("hidden")}
+function clearError(){$("error").classList.add("hidden")}
+function parseCSV(text){
+  const rows=[];let row=[],cell="",quoted=false;
+  for(let i=0;i<text.length;i++){const ch=text[i],next=text[i+1];if(ch==='"'){if(quoted&&next==='"'){cell+='"';i++}else quoted=!quoted}else if(ch===','&&!quoted){row.push(cell);cell=""}else if((ch==='\n'||ch==='\r')&&!quoted){if(ch==='\r'&&next==='\n')i++;row.push(cell);if(row.some(v=>v!==""))rows.push(row);row=[];cell=""}else cell+=ch}
+  row.push(cell);if(row.some(v=>v!==""))rows.push(row);if(rows.length<2)throw Error("CSV没有足够的数据行。");
+  const head=rows[0].map((v,i)=>v.trim()||`column_${i+1}`);return rows.slice(1).map(r=>Object.fromEntries(head.map((h,i)=>[h,(r[i]??"").trim()])));
+}
+function numericColumns(rows){return Object.keys(rows[0]).filter(c=>{const vals=rows.map(r=>Number(r[c])).filter(Number.isFinite);return vals.length>=Math.max(10,Math.floor(rows.length*.6))})}
+function setData(rows,name){if(rows.length<20)throw Error("数据至少需20行。");sourceRows=rows;columns=Object.keys(rows[0]);const nums=numericColumns(rows);if(nums.length<2)throw Error("至少需要两列可转换的数值。");
+  $("y").innerHTML=nums.map(c=>`<option>${escapeHTML(c)}</option>`).join("");$("x").innerHTML=nums.map(c=>`<option>${escapeHTML(c)}</option>`).join("");$("time").innerHTML='<option value="">无：按固定种子随机划分</option>'+columns.map(c=>`<option>${escapeHTML(c)}</option>`).join("");
+  $("fileStatus").textContent=`已读取 ${name}：${rows.length} 行，${columns.length} 列，其中 ${nums.length} 列可用于建模。`;$("config").classList.remove("hidden");$("results").classList.add("hidden");clearError();
+}
+function escapeHTML(v){return String(v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function seededShuffle(items){let seed=42,arr=[...items];const rand=()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296};for(let i=arr.length-1;i>0;i--){const j=Math.floor(rand()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]]}return arr}
+function median(v){const a=[...v].sort((x,y)=>x-y),m=Math.floor(a.length/2);return a.length%2?a[m]:(a[m-1]+a[m])/2}
+function transpose(A){return A[0].map((_,j)=>A.map(r=>r[j]))}function matMul(A,B){return A.map(r=>B[0].map((_,j)=>r.reduce((s,v,k)=>s+v*B[k][j],0)))}
+function solve(A,b){A=A.map((r,i)=>[...r,b[i]]);for(let i=0;i<A.length;i++){let p=i;for(let j=i+1;j<A.length;j++)if(Math.abs(A[j][i])>Math.abs(A[p][i]))p=j;[A[i],A[p]]=[A[p],A[i]];if(Math.abs(A[i][i])<1e-10)A[i][i]=1e-10;const d=A[i][i];for(let k=i;k<=A.length;k++)A[i][k]/=d;for(let j=0;j<A.length;j++)if(j!==i){const f=A[j][i];for(let k=i;k<=A.length;k++)A[j][k]-=f*A[i][k]}}return A.map(r=>r[A.length])}
+function aucScore(y,p){let pairs=y.map((v,i)=>({y:v,p:p[i]})).sort((a,b)=>a.p-b.p),rank=1,sum=0,pos=y.reduce((s,v)=>s+v,0),neg=y.length-pos;for(let i=0;i<pairs.length;){let j=i;while(j+1<pairs.length&&pairs[j+1].p===pairs[i].p)j++;const avg=(rank+rank+j-i)/2;for(let k=i;k<=j;k++)if(pairs[k].y===1)sum+=avg;rank+=j-i+1;i=j+1}return (sum-pos*(pos+1)/2)/(pos*neg)}
+function analyze(){clearError();try{const kind=$("kind").value,yName=$("y").value,xNames=[...$("x").selectedOptions].map(o=>o.value),time=$("time").value;if(!xNames.length)throw Error("请至少选择一个X。");if(xNames.includes(yName))throw Error("Y不能同时作为X。");
+  let rows=sourceRows.map((r,i)=>({...r,__index:i,__y:Number(r[yName])})).filter(r=>Number.isFinite(r.__y));if(time)rows.sort((a,b)=>new Date(a[time])-new Date(b[time]));else rows=seededShuffle(rows);const cut=Math.floor(rows.length*.7),train=rows.slice(0,cut),test=rows.slice(cut);if(train.length<10||test.length<5)throw Error("有效样本不足。");
+  let classMap=null;if(kind==="logistic"){const vals=[...new Set(rows.map(r=>r.__y))].sort((a,b)=>a-b);if(vals.length!==2)throw Error("逻辑回归要求Y恰好有两个取值。");classMap=vals;rows.forEach(r=>r.__y=r.__y===vals[1]?1:0)}
+  const med=xNames.map(c=>median(train.map(r=>Number(r[c])).filter(Number.isFinite))),means=[],stds=[];const vector=r=>xNames.map((c,j)=>{const v=Number(r[c]);return Number.isFinite(v)?v:med[j]});const rawTrain=train.map(vector);for(let j=0;j<xNames.length;j++){const m=rawTrain.reduce((s,r)=>s+r[j],0)/rawTrain.length;means.push(m);const sd=Math.sqrt(rawTrain.reduce((s,r)=>s+(r[j]-m)**2,0)/rawTrain.length)||1;stds.push(sd)}const design=r=>[1,...vector(r).map((v,j)=>(v-means[j])/stds[j])],X=train.map(design),Xt=transpose(X),yt=train.map(r=>r.__y);let beta,pred,prob=null;
+  if(kind==="linear"){const XtX=matMul(Xt,X);for(let j=1;j<XtX.length;j++)XtX[j][j]+=1e-8;beta=solve(XtX,matMul(Xt,yt.map(v=>[v])).map(r=>r[0]));pred=test.map(r=>design(r).reduce((s,v,j)=>s+v*beta[j],0))}
+  else{beta=Array(X[0].length).fill(0);const lr=.08,lambda=.001;for(let iter=0;iter<1800;iter++){const grad=Array(beta.length).fill(0);for(let i=0;i<X.length;i++){const z=Math.max(-30,Math.min(30,X[i].reduce((s,v,j)=>s+v*beta[j],0))),p=1/(1+Math.exp(-z));for(let j=0;j<beta.length;j++)grad[j]+=(p-yt[i])*X[i][j]}for(let j=0;j<beta.length;j++)beta[j]-=lr*(grad[j]/X.length+(j?lambda*beta[j]:0))}prob=test.map(r=>{const z=Math.max(-30,Math.min(30,design(r).reduce((s,v,j)=>s+v*beta[j],0)));return 1/(1+Math.exp(-z))});pred=prob.map(p=>p>=.5?1:0)}
+  const actual=test.map(r=>r.__y);let metrics;if(kind==="linear"){const mse=actual.reduce((s,v,i)=>s+(v-pred[i])**2,0)/actual.length,mae=actual.reduce((s,v,i)=>s+Math.abs(v-pred[i]),0)/actual.length,mean=actual.reduce((s,v)=>s+v,0)/actual.length,sst=actual.reduce((s,v)=>s+(v-mean)**2,0);metrics={"R²":1-actual.reduce((s,v,i)=>s+(v-pred[i])**2,0)/sst,"RMSE":Math.sqrt(mse),"MAE":mae}}
+  else{const acc=actual.filter((v,i)=>v===pred[i]).length/actual.length,auc=aucScore(actual,prob);metrics={"AUC":auc,"准确率":acc,"正类比例":actual.reduce((s,v)=>s+v,0)/actual.length}}
+  outputRows=test.map((r,i)=>({
+    ...Object.fromEntries(columns.map(c=>[c,r[c]])),
+    prediction:pred[i],
+    ...(prob?{probability_positive:prob[i]}:{})
+  }));
+  modelBundle={
+    format:"TASK6 browser regression model v1",modelType:kind,features:xNames,target:yName,classMap,
+    coefficients:{intercept:beta[0],standardized:Object.fromEntries(xNames.map((c,j)=>[c,beta[j+1]]))},
+    preprocessing:{
+      median:Object.fromEntries(xNames.map((c,j)=>[c,med[j]])),
+      mean:Object.fromEntries(xNames.map((c,j)=>[c,means[j]])),
+      std:Object.fromEntries(xNames.map((c,j)=>[c,stds[j]]))
+    },
+    split:time?"chronological 70/30":"seeded random 70/30",timeColumn:time||null,metrics
+  };
+  renderResults(metrics,train.length,test.length,xNames,beta,actual,prob||pred,kind)
+  }catch(e){fail(e.message)}
+}
+function renderResults(metrics,nTrain,nTest,xNames,beta,actual,pred,kind){$("summary").textContent=`训练集 ${nTrain} 行，测试集 ${nTest} 行。`;$("metrics").innerHTML=Object.entries(metrics).map(([k,v])=>`<div class="metric"><span>${escapeHTML(k)}</span><b>${Number(v).toFixed(3)}</b></div>`).join("");const coef=[{name:"截距",value:beta[0]},...xNames.map((x,i)=>({name:x,value:beta[i+1]}))];$("coefTable").innerHTML=tableHTML(coef.map(r=>({"变量":r.name,"标准化系数":r.value.toFixed(6)})));$("preview").innerHTML=tableHTML(outputRows.slice(0,100));drawChart(actual,pred,kind);$("results").classList.remove("hidden");$("results").scrollIntoView({behavior:"smooth"})}
+function tableHTML(rows){if(!rows.length)return"";const h=Object.keys(rows[0]);return`<table><thead><tr>${h.map(x=>`<th>${escapeHTML(x)}</th>`).join("")}</tr></thead><tbody>${rows.map(r=>`<tr>${h.map(x=>`<td>${escapeHTML(r[x])}</td>`).join("")}</tr>`).join("")}</tbody></table>`}
+function drawChart(actual,pred,kind){const c=$("chart"),ctx=c.getContext("2d"),W=c.width,H=c.height,p=55;ctx.clearRect(0,0,W,H);ctx.strokeStyle="#cfd8e5";ctx.beginPath();ctx.moveTo(p,15);ctx.lineTo(p,H-p);ctx.lineTo(W-15,H-p);ctx.stroke();const xs=kind==="linear"?actual:actual.map((_,i)=>i),ys=pred,minX=Math.min(...xs),maxX=Math.max(...xs),minY=Math.min(...ys),maxY=Math.max(...ys),sx=x=>p+(x-minX)/(maxX-minX||1)*(W-p-30),sy=y=>H-p-(y-minY)/(maxY-minY||1)*(H-p-30);ctx.fillStyle="#245ec7";for(let i=0;i<xs.length;i++){ctx.beginPath();ctx.arc(sx(xs[i]),sy(ys[i]),4,0,Math.PI*2);ctx.fill()}ctx.fillStyle="#4b5a6e";ctx.font="16px sans-serif";ctx.fillText(kind==="linear"?"横轴：实际Y；纵轴：预测Y":"横轴：测试样本顺序；纵轴：正类概率",p,405)}
+function csvEscape(v){v=String(v??"");return /[",\n]/.test(v)?`"${v.replaceAll('"','""')}"`:v}function download(name,data,type){const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([data],{type}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+$("file").addEventListener("change",async e=>{try{const f=e.target.files[0];if(!f)return;setData(parseCSV((await f.text()).replace(/^\uFEFF/,' ')),f.name)}catch(err){fail(err.message)}});
+$("demo").addEventListener("click",()=>{const rows=[];for(let i=0;i<120;i++){const x1=i/10,x2=Math.sin(i/8),noise=((i*37)%17-8)/20;rows.push({date:`2025-${String(Math.floor(i/30)+1).padStart(2,'0')}-${String(i%28+1).padStart(2,'0')}`,x1:String(x1),x2:String(x2),continuous_y:String(2.3*x1-1.4*x2+noise),binary_y:String(2.3*x1-1.4*x2+noise>12?1:0)})}setData(rows,"演示数据")});
+$("run").addEventListener("click",analyze);$("downloadPred").addEventListener("click",()=>{const h=Object.keys(outputRows[0]),text=[h.join(','),...outputRows.map(r=>h.map(c=>csvEscape(r[c])).join(','))].join('\n');download("predictions.csv","\uFEFF"+text,"text/csv;charset=utf-8")});$("downloadModel").addEventListener("click",()=>download("browser_regression_model.json",JSON.stringify(modelBundle,null,2),"application/json"));
+</script>
+</body>
+</html>

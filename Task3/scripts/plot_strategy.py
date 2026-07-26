@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 Task3 Phase 3: 生成报告用静态图表 (matplotlib)
-输出 5 张 PNG 到 data/charts/task3/
+输出 5 张 PNG 到 artifacts/charts/task3/
 """
 
 import os
@@ -25,7 +25,7 @@ plt.rcParams['axes.unicode_minus'] = False
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_DIR = os.path.join(BASE_DIR, '..', 'data', 'csv')
-CHART_DIR = os.path.join(BASE_DIR, '..', 'data', 'charts', 'task3')
+CHART_DIR = os.path.join(BASE_DIR, '..', 'artifacts', 'charts', 'task3')
 os.makedirs(CHART_DIR, exist_ok=True)
 
 # ═══════════════════════════════════════════════════

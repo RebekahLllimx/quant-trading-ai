@@ -1,0 +1,22 @@
+((*- extends 'index.tex.j2' -*))
+
+((*- block docclass -*))
+\documentclass[UTF8,zihao=5]{ctexart}
+((*- endblock docclass -*))
+
+((*- block margins -*))
+\geometry{a4paper,tmargin=2.2cm,bmargin=2.2cm,lmargin=2.5cm,rmargin=2.5cm}
+((*- endblock margins -*))
+
+((*- block commands -*))
+((( super() )))
+\setmainfont{Times New Roman}
+\setCJKmainfont{Songti SC}
+\setCJKsansfont{Heiti SC}
+\setCJKmonofont{Songti SC}
+\linespread{1.35}
+\setlength{\parindent}{2em}
+\setlength{\parskip}{0pt}
+\setlength{\fboxsep}{3pt}
+\hypersetup{colorlinks=false,pdfborder={0 0 0}}
+((*- endblock commands -*))

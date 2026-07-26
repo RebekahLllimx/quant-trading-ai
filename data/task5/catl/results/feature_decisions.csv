@@ -1,0 +1,21 @@
+﻿feature,feature_cn,keep_initial,reason,selected_final
+return_1d,1日收益,True,通过滚动验证与相关性去冗余,True
+rsi14,RSI(14),True,通过滚动验证与相关性去冗余,True
+open_close_return,开收盘收益,False,与已保留 return_1d 高相关,False
+ma20_gap,20日均线偏离,False,与已保留 rsi14 高相关,False
+return_10d,10日收益,True,通过滚动验证与相关性去冗余,True
+return_20d,20日收益,True,通过滚动验证与相关性去冗余,True
+amount_ratio20,20日额比,True,通过滚动验证与相关性去冗余,True
+return_5d,5日收益,True,通过滚动验证与相关性去冗余,True
+volume_ratio20,20日量比,False,与已保留 amount_ratio20 高相关,False
+intraday_range,日内振幅,True,通过滚动验证与相关性去冗余,True
+benchmark_volatility20,沪深300 20日波动率,True,通过滚动验证与相关性去冗余,True
+ma5_gap,5日均线偏离,False,超过8个特征的预设复杂度上限,False
+benchmark_return_20d,沪深300 20日收益,False,超过8个特征的预设复杂度上限,False
+excess_return_5d,5日超额收益,False,与已保留 return_5d 高相关,False
+excess_return_20d,20日超额收益,False,与已保留 return_20d 高相关,False
+macd_pct,MACD/价格,False,与已保留 return_20d 高相关,False
+volatility20,20日波动率,False,超过8个特征的预设复杂度上限,False
+atr14_pct,ATR(14)/价格,False,超过8个特征的预设复杂度上限,False
+ma60_gap,60日均线偏离,False,滚动验证中少于2年AUC高于0.5,False
+beta60,60日贝塔,False,滚动验证中少于2年AUC高于0.5,False

@@ -1,0 +1,5 @@
+﻿model,model_label,actual_label,predicted_label,count,row_rate
+decision_tree,决策树,实际未跑赢 0,预测未跑赢 0,20,0.8695652173913043
+decision_tree,决策树,实际未跑赢 0,预测跑赢 1,3,0.13043478260869565
+decision_tree,决策树,实际跑赢 1,预测未跑赢 0,17,0.68
+decision_tree,决策树,实际跑赢 1,预测跑赢 1,8,0.32

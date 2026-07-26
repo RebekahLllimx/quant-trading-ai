@@ -1,0 +1,36 @@
+{
+  "created_at": "2026-07-17T16:01:05.061620+08:00",
+  "charts": [
+    {
+      "file": "time_split.png",
+      "question": "样本如何按时间隔离？",
+      "family": "trend/comparison",
+      "takeaway": "参数选择和测试期被严格隔离。"
+    },
+    {
+      "file": "label_distribution.png",
+      "question": "类别比例是否随市场阶段变化？",
+      "family": "composition/comparison",
+      "takeaway": "上涨比例存在年度状态变化。"
+    },
+    {
+      "file": "roc_curves.png",
+      "question": "模型能否跨阈值区分涨跌？",
+      "family": "uncertainty/benchmark",
+      "takeaway": "三模型仅略高于随机排序。"
+    },
+    {
+      "file": "confusion_matrices.png",
+      "question": "0.5阈值下错误来自哪里？",
+      "family": "matrix",
+      "takeaway": "弱信号使模型倾向预测不涨，召回率较低。"
+    },
+    {
+      "file": "feature_importance.png",
+      "question": "模型依赖哪些历史变量？",
+      "family": "ranking",
+      "takeaway": "重要性用于解释模型依赖，不是因果证据。"
+    }
+  ],
+  "palette": "muted blue, orange, green and gray on a white background"
+}
