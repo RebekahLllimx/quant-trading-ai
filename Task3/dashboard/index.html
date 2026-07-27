@@ -22202,7 +22202,7 @@ function init() {
 
 document.addEventListener('DOMContentLoaded', init);
 // 备用：window.load 再次触发渲染（防止 DOMContentLoaded 时布局未完成）
-window.addEventListener('load', () => { setTimeout(() => { Object.values(charts).forEach(c => { if (c) c.resize(); }); redrawAll(); }, 100); });
+window.addEventListener('load', () => { setTimeout(() => { Object.values(charts).forEach(c => { if (c) c.resize(); }); runAll(); }, 100); });
 </script>
 </body>
 </html>
