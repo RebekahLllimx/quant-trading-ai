@@ -1,6 +1,6 @@
 {
-  "generated_at_utc": "2026-08-06T12:05:10.597273+00:00",
-  "latest_common_date": "2026-08-06",
+  "generated_at_utc": "2026-08-07T10:56:15.117001+00:00",
+  "latest_common_date": "2026-08-07",
   "adjustment": {
     "etfs": "Tencent qfq daily data; Yahoo adjusted data is used only when Tencent is unavailable",
     "benchmark": "Price index; no adjustment required"
@@ -9,9 +9,9 @@
   "sources": [
     {
       "symbol": "510300",
-      "rows": 2814,
+      "rows": 2815,
       "first_date": "2015-01-05",
-      "last_date": "2026-08-06",
+      "last_date": "2026-08-07",
       "duplicate_dates": 0,
       "missing_ohlc": 0,
       "nonpositive_ohlc": 0,
@@ -19,17 +19,17 @@
       "monotonic_dates": true,
       "source_counts": {
         "Yahoo Finance chart API (adjusted)": 2804,
-        "Tencent Finance qfq daily API": 9,
+        "Tencent Finance qfq daily API": 10,
         "Yahoo adjusted close + Sina OHLC repair": 1
       },
       "status": "pass",
-      "sha256": "a28b816477e5b6de9e2ab52f11b5dd27166a6468525a1f16325f7ee42ebcbd5f"
+      "sha256": "6433411fb97b633205d6de539f13411c621df90d70bd1e2d9954b4817c9c0a30"
     },
     {
       "symbol": "510500",
-      "rows": 2814,
+      "rows": 2815,
       "first_date": "2015-01-05",
-      "last_date": "2026-08-06",
+      "last_date": "2026-08-07",
       "duplicate_dates": 0,
       "missing_ohlc": 0,
       "nonpositive_ohlc": 0,
@@ -37,17 +37,17 @@
       "monotonic_dates": true,
       "source_counts": {
         "Yahoo Finance chart API (adjusted)": 2804,
-        "Tencent Finance qfq daily API": 9,
+        "Tencent Finance qfq daily API": 10,
         "Yahoo adjusted close + Sina OHLC repair": 1
       },
       "status": "pass",
-      "sha256": "bd1d5c4b2b7a9328741f40119fe0f21df9a737cea939e968f763c4d5248e160e"
+      "sha256": "c1697efef18befece7f2312ba9174c6f3721cc107ad34e617032d3d278231e4c"
     },
     {
       "symbol": "159915",
-      "rows": 2814,
+      "rows": 2815,
       "first_date": "2015-01-05",
-      "last_date": "2026-08-06",
+      "last_date": "2026-08-07",
       "duplicate_dates": 0,
       "missing_ohlc": 0,
       "nonpositive_ohlc": 0,
@@ -55,17 +55,17 @@
       "monotonic_dates": true,
       "source_counts": {
         "Yahoo Finance chart API (adjusted)": 2804,
-        "Tencent Finance qfq daily API": 9,
+        "Tencent Finance qfq daily API": 10,
         "Yahoo adjusted close + Sina OHLC repair": 1
       },
       "status": "pass",
-      "sha256": "741464b0a9b43a40802bcfe25c4cc543e4539283fa42513c396f9bb3516f79ab"
+      "sha256": "1fa0d55e0e7dc3c253aba66f47f67a7b2130854ab6a03f50065671e2e3b7115f"
     },
     {
       "symbol": "000300",
-      "rows": 2817,
+      "rows": 2818,
       "first_date": "2015-01-05",
-      "last_date": "2026-08-06",
+      "last_date": "2026-08-07",
       "duplicate_dates": 0,
       "missing_ohlc": 0,
       "nonpositive_ohlc": 0,
@@ -73,10 +73,10 @@
       "monotonic_dates": true,
       "source_counts": {
         "Sina via AKShare (unadjusted index); Eastmoney unavailable: ProxyError": 2808,
-        "Tencent Finance daily index API (unadjusted)": 9
+        "Tencent Finance daily index API (unadjusted)": 10
       },
       "status": "pass",
-      "sha256": "9425a0667ac708e4ce251b169c5af451b6933da99836315d23f7e8a3ee8d54ba"
+      "sha256": "c3f2e217fa8cc302ad3b35f162d5872e98e34eaf060c4607e7bfd73310a6e0b3"
     }
   ]
 }
