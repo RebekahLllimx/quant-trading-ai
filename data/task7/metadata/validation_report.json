@@ -4,60 +4,60 @@
     {
       "check": "raw_510300",
       "status": "pass",
-      "rows": 2815,
+      "rows": 2816,
       "duplicates": 0,
       "missing_ohlc": 0,
       "invalid_high_low": 0,
-      "latest": "2026-08-07"
+      "latest": "2026-08-10"
     },
     {
       "check": "raw_510500",
       "status": "pass",
-      "rows": 2815,
+      "rows": 2816,
       "duplicates": 0,
       "missing_ohlc": 0,
       "invalid_high_low": 0,
-      "latest": "2026-08-07"
+      "latest": "2026-08-10"
     },
     {
       "check": "raw_159915",
       "status": "pass",
-      "rows": 2815,
+      "rows": 2816,
       "duplicates": 0,
       "missing_ohlc": 0,
       "invalid_high_low": 0,
-      "latest": "2026-08-07"
+      "latest": "2026-08-10"
     },
     {
       "check": "raw_000300",
       "status": "pass",
-      "rows": 2818,
+      "rows": 2819,
       "duplicates": 0,
       "missing_ohlc": 0,
       "invalid_high_low": 0,
-      "latest": "2026-08-07"
+      "latest": "2026-08-10"
     },
     {
       "check": "strategy_a",
       "status": "pass",
-      "rows": 2571,
-      "latest": "2026-08-07",
+      "rows": 2572,
+      "latest": "2026-08-10",
       "min_nav": 305713.3183022,
       "max_exposure": 0.99997518
     },
     {
       "check": "strategy_b",
       "status": "pass",
-      "rows": 2571,
-      "latest": "2026-08-07",
+      "rows": 2572,
+      "latest": "2026-08-10",
       "min_nav": 471511.61441519,
       "max_exposure": 0.52573632
     },
     {
       "check": "strategy_c",
       "status": "pass",
-      "rows": 2571,
-      "latest": "2026-08-07",
+      "rows": 2572,
+      "latest": "2026-08-10",
       "min_nav": 420374.61062854,
       "max_exposure": 0.62241372
     },
