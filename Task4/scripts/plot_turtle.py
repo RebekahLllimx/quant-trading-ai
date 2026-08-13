@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 Task4: 海龟策略报告图表生成 (matplotlib)
-输出 5 张 PNG 到 data/charts/task4/
+输出 5 张 PNG 到 artifacts/charts/task4/
 """
 
 import os
@@ -31,7 +31,7 @@ from turtle_strategy import (
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_DIR = os.path.join(BASE_DIR, '..', 'data', 'csv')
-CHART_DIR = os.path.join(BASE_DIR, '..', 'data', 'charts', 'task4')
+CHART_DIR = os.path.join(BASE_DIR, '..', 'artifacts', 'charts', 'task4')
 os.makedirs(CHART_DIR, exist_ok=True)
 
 

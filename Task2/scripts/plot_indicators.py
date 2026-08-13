@@ -30,7 +30,7 @@ from indicators import (
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_DIR = os.path.join(BASE_DIR, '..', 'data', 'csv')
-CHART_DIR = os.path.join(BASE_DIR, '..', 'data', 'charts', 'task2')
+CHART_DIR = os.path.join(BASE_DIR, '..', 'artifacts', 'charts', 'task2')
 os.makedirs(CHART_DIR, exist_ok=True)
 
 # 中文字体

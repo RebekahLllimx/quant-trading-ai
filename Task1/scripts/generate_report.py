@@ -30,7 +30,7 @@ from src.report_utils import (
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 TASK_DIR = os.path.join(BASE_DIR, '..')
 ROOT_DIR = os.path.join(BASE_DIR, '..', '..')
-CHART_DIR = os.path.join(ROOT_DIR, 'data', 'charts', 'task1')
+CHART_DIR = os.path.join(ROOT_DIR, 'artifacts', 'charts', 'task1')
 CSV_DIR = os.path.join(ROOT_DIR, 'data', 'csv')
 OUTPUT_FILE = os.path.join(TASK_DIR, 'Rebecca+Task1.docx')
 

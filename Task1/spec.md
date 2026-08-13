@@ -136,7 +136,7 @@ AKShare / Tushare API
   plot_candlestick.py     ← A股+港股 K 线图（mplfinance）
   plot_multi_stock.py     ← 5 只 A 股对比分析（mplfinance）
         │
-        ├──► data/charts/task1/*.png
+        ├──► artifacts/charts/task1/*.png
         │
         ▼
   build_dashboard.py      ← CSV → JSON 嵌入 → 自包含 HTML
@@ -160,7 +160,7 @@ AKShare / Tushare API
 | 看板 | ECharts 5.5 自包含 HTML | 无需后端部署，GitHub Pages 兼容 |
 | 报告 | python-docx | CJK 字体精确控制，程序化生成 |
 | CSV 编码 | utf-8-sig | Excel 直接打开不乱码 |
-| 图表路径 | data/charts/task1/ | 与 Task2 等共享 data/ 根目录结构 |
+| 图表路径 | artifacts/charts/task1/ | 与 Task2 等共享 data/ 根目录结构 |
 
 ---
 
@@ -193,7 +193,7 @@ AKShare / Tushare API
 | 阶段 | 脚本 | 输入 | 输出 |
 |------|------|------|------|
 | Data | `scripts/update_data.py` | AKShare/Tushare API | `data/csv/*.csv` + 收盘价 PNG |
-| Charts | `scripts/plot_candlestick.py` | CSV | `data/charts/task1/*_candle.png` |
-| Charts | `scripts/plot_multi_stock.py` | CSV | `data/charts/task1/*.png` |
+| Charts | `scripts/plot_candlestick.py` | CSV | `artifacts/charts/task1/*_candle.png` |
+| Charts | `scripts/plot_multi_stock.py` | CSV | `artifacts/charts/task1/*.png` |
 | Dashboard | `scripts/build_dashboard.py` | CSV | `dashboard/index.html` |
 | Report | `scripts/generate_report.py` | CSV + PNG | `Rebecca+Task1.docx` |
