@@ -7,6 +7,12 @@ on:
     - cron: '0 10 * * 1-5'
   workflow_dispatch:
     # 手动触发入口：GitHub 仓库 → Actions → Update Market Data → Run workflow
+    inputs:
+      prefer_tushare:
+        description: 'Prefer Tushare for this manual run (falls back automatically)'
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: write
@@ -37,10 +43,18 @@ jobs:
       - name: Install dependencies
         run: |
           pip install --upgrade pip
-          pip install akshare numpy pandas requests openpyxl
+          pip install tushare akshare pandas numpy requests openpyxl
 
       - name: Fetch latest market data
-        run: python update_all_data.py
+        env:
+          TUSHARE_TOKEN: ${{ secrets.TUSHARE_TOKEN }}
+          PREFER_TUSHARE: ${{ inputs.prefer_tushare || false }}
+        run: |
+          if [ "$PREFER_TUSHARE" = "true" ]; then
+            python update_all_data.py --prefer-tushare
+          else
+            python update_all_data.py
+          fi
 
       - name: Update TASK7 shadow portfolios
         run: |
