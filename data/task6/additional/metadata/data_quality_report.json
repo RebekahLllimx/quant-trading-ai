@@ -1,0 +1,31 @@
+{
+  "source_file": "Task6/inputs/平安集团行情数据.csv",
+  "source_sha256": "dfb46ede090aa4e7eef775fca5b5323ad98601ccc02dbd9f668b3713cc42a038",
+  "security_code": "000001.SZ",
+  "security_name_used_in_report": "平安银行",
+  "rows": 372,
+  "date_min": "2024-01-02",
+  "date_max": "2025-07-17",
+  "duplicate_dates": 0,
+  "missing_source_cells": 0,
+  "nonpositive_close_rows": 0,
+  "negative_volume_rows": 0,
+  "ohlc_inconsistent_rows": 0,
+  "usable_model_rows": 350,
+  "train_rows": 241,
+  "purged_boundary_rows": 3,
+  "test_rows": 106,
+  "train_start": "2024-01-29",
+  "train_end": "2025-01-27",
+  "test_start": "2025-02-10",
+  "test_end": "2025-07-14",
+  "features": [
+    "return_5d",
+    "ma20_gap",
+    "rsi14",
+    "volume_ratio20"
+  ],
+  "label": "future 3-trading-day close return > 0",
+  "target_return_column": "future_return_3d",
+  "overlap_caveat": "日频观察的3日未来标签相互重叠，样本行数大于近似独立市场窗口数。"
+}

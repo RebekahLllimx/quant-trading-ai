@@ -1,0 +1,11 @@
+{
+  "label_definition": "future_return_3d > 0",
+  "label_mismatch_count": 0,
+  "date_is_monotonic": true,
+  "latest_train_label_end": "2025-02-07",
+  "test_start": "2025-02-10",
+  "random_label_auc_mean": 0.5079362170087975,
+  "random_label_auc_std": 0.05168201494430532,
+  "synthetic_label_auc": 0.9674044265593562,
+  "interpretation": "Positive-class mapping and AUC calculation are correct. Reversing probabilities after seeing the test labels would be test leakage."
+}

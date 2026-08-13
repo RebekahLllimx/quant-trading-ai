@@ -1,0 +1,730 @@
+{
+  "validated_at": "2026-07-26T23:19:21.895068+08:00",
+  "overall_assessment": "ready_to_share_with_caveats",
+  "checks_passed": 119,
+  "checks_total": 119,
+  "failed_checks": [],
+  "checks": [
+    {
+      "check": "main_key_unique",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "duplicate keys=0"
+    },
+    {
+      "check": "main_no_missing_model_cells",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "missing cells=0"
+    },
+    {
+      "check": "main_split_values",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "splits=['test', 'train']"
+    },
+    {
+      "check": "main_7_3_quarter_split",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "train quarters=7, test quarters=3"
+    },
+    {
+      "check": "main_chronological_split",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "train end=2021-09-30 00:00:00, test start=2021-12-31 00:00:00"
+    },
+    {
+      "check": "main_rank_feature_bounds",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "range=[-0.499765,0.500000]"
+    },
+    {
+      "check": "main_rank_target_bounds",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "range=[-0.499765,0.500000]"
+    },
+    {
+      "check": "main_class_target_binary",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "values=[0, 1]"
+    },
+    {
+      "check": "main_prediction_grain_decision_tree",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "rows=12663, expected=12663, duplicates=0"
+    },
+    {
+      "check": "main_ic_recompute_decision_tree",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "mean=0.235410542725, min=0.195191787291"
+    },
+    {
+      "check": "main_rank_r2_recompute_decision_tree",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "rank-target R2=0.049923184571"
+    },
+    {
+      "check": "main_prediction_grain_hist_gradient_boosting",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "rows=12663, expected=12663, duplicates=0"
+    },
+    {
+      "check": "main_ic_recompute_hist_gradient_boosting",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "mean=0.257628515680, min=0.225102949917"
+    },
+    {
+      "check": "main_rank_r2_recompute_hist_gradient_boosting",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "rank-target R2=0.064950684043"
+    },
+    {
+      "check": "main_prediction_grain_linear_regression",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "rows=12663, expected=12663, duplicates=0"
+    },
+    {
+      "check": "main_ic_recompute_linear_regression",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "mean=0.273277927868, min=0.237683585231"
+    },
+    {
+      "check": "main_rank_r2_recompute_linear_regression",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "rank-target R2=0.067614612664"
+    },
+    {
+      "check": "main_prediction_grain_logistic_regression",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "rows=12663, expected=12663, duplicates=0"
+    },
+    {
+      "check": "main_ic_recompute_logistic_regression",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "mean=0.262521309302, min=0.253295598329"
+    },
+    {
+      "check": "main_auc_recompute_logistic_regression",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "AUC=0.633212806464"
+    },
+    {
+      "check": "main_prediction_grain_random_forest",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "rows=12663, expected=12663, duplicates=0"
+    },
+    {
+      "check": "main_ic_recompute_random_forest",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "mean=0.259546119825, min=0.234970257164"
+    },
+    {
+      "check": "main_rank_r2_recompute_random_forest",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "rank-target R2=0.061507848505"
+    },
+    {
+      "check": "main_prediction_grain_ridge",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "rows=12663, expected=12663, duplicates=0"
+    },
+    {
+      "check": "main_ic_recompute_ridge",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "mean=0.274054856639, min=0.240487925059"
+    },
+    {
+      "check": "main_rank_r2_recompute_ridge",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "rank-target R2=0.068085693124"
+    },
+    {
+      "check": "main_top30_return_decision_tree_2021-12-31",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "stored=0.088863333333, recomputed=0.088863333333"
+    },
+    {
+      "check": "main_cost_identity_decision_tree_2021-12-31",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "gross=0.08886333, turnover=1.00000000, net=0.08686333"
+    },
+    {
+      "check": "main_top30_return_decision_tree_2022-03-31",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "stored=0.093616666667, recomputed=0.093616666667"
+    },
+    {
+      "check": "main_cost_identity_decision_tree_2022-03-31",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "gross=0.09361667, turnover=0.70000000, net=0.09221667"
+    },
+    {
+      "check": "main_top30_return_decision_tree_2022-06-30",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "stored=0.003510000000, recomputed=0.003510000000"
+    },
+    {
+      "check": "main_cost_identity_decision_tree_2022-06-30",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "gross=0.00351000, turnover=0.50000000, net=0.00251000"
+    },
+    {
+      "check": "main_top30_return_hist_gradient_boosting_2021-12-31",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "stored=0.121190000000, recomputed=0.121190000000"
+    },
+    {
+      "check": "main_cost_identity_hist_gradient_boosting_2021-12-31",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "gross=0.12119000, turnover=1.00000000, net=0.11919000"
+    },
+    {
+      "check": "main_top30_return_hist_gradient_boosting_2022-03-31",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "stored=0.106376666667, recomputed=0.106376666667"
+    },
+    {
+      "check": "main_cost_identity_hist_gradient_boosting_2022-03-31",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "gross=0.10637667, turnover=0.93333333, net=0.10451000"
+    },
+    {
+      "check": "main_top30_return_hist_gradient_boosting_2022-06-30",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "stored=0.073286666667, recomputed=0.073286666667"
+    },
+    {
+      "check": "main_cost_identity_hist_gradient_boosting_2022-06-30",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "gross=0.07328667, turnover=0.83333333, net=0.07162000"
+    },
+    {
+      "check": "main_top30_return_linear_regression_2021-12-31",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "stored=0.151740000000, recomputed=0.151740000000"
+    },
+    {
+      "check": "main_cost_identity_linear_regression_2021-12-31",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "gross=0.15174000, turnover=1.00000000, net=0.14974000"
+    },
+    {
+      "check": "main_top30_return_linear_regression_2022-03-31",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "stored=0.162463333333, recomputed=0.162463333333"
+    },
+    {
+      "check": "main_cost_identity_linear_regression_2022-03-31",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "gross=0.16246333, turnover=0.93333333, net=0.16059667"
+    },
+    {
+      "check": "main_top30_return_linear_regression_2022-06-30",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "stored=0.061240000000, recomputed=0.061240000000"
+    },
+    {
+      "check": "main_cost_identity_linear_regression_2022-06-30",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "gross=0.06124000, turnover=0.56666667, net=0.06010667"
+    },
+    {
+      "check": "main_top30_return_logistic_regression_2021-12-31",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "stored=0.172246666667, recomputed=0.172246666667"
+    },
+    {
+      "check": "main_cost_identity_logistic_regression_2021-12-31",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "gross=0.17224667, turnover=1.00000000, net=0.17024667"
+    },
+    {
+      "check": "main_top30_return_logistic_regression_2022-03-31",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "stored=0.151190000000, recomputed=0.151190000000"
+    },
+    {
+      "check": "main_cost_identity_logistic_regression_2022-03-31",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "gross=0.15119000, turnover=0.93333333, net=0.14932333"
+    },
+    {
+      "check": "main_top30_return_logistic_regression_2022-06-30",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "stored=0.039996666667, recomputed=0.039996666667"
+    },
+    {
+      "check": "main_cost_identity_logistic_regression_2022-06-30",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "gross=0.03999667, turnover=0.56666667, net=0.03886333"
+    },
+    {
+      "check": "main_top30_return_random_forest_2021-12-31",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "stored=0.275713333333, recomputed=0.275713333333"
+    },
+    {
+      "check": "main_cost_identity_random_forest_2021-12-31",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "gross=0.27571333, turnover=1.00000000, net=0.27371333"
+    },
+    {
+      "check": "main_top30_return_random_forest_2022-03-31",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "stored=0.125923333333, recomputed=0.125923333333"
+    },
+    {
+      "check": "main_cost_identity_random_forest_2022-03-31",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "gross=0.12592333, turnover=0.93333333, net=0.12405667"
+    },
+    {
+      "check": "main_top30_return_random_forest_2022-06-30",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "stored=0.054006666667, recomputed=0.054006666667"
+    },
+    {
+      "check": "main_cost_identity_random_forest_2022-06-30",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "gross=0.05400667, turnover=0.80000000, net=0.05240667"
+    },
+    {
+      "check": "main_top30_return_ridge_2021-12-31",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "stored=0.133160000000, recomputed=0.133160000000"
+    },
+    {
+      "check": "main_cost_identity_ridge_2021-12-31",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "gross=0.13316000, turnover=1.00000000, net=0.13116000"
+    },
+    {
+      "check": "main_top30_return_ridge_2022-03-31",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "stored=0.162413333333, recomputed=0.162413333333"
+    },
+    {
+      "check": "main_cost_identity_ridge_2022-03-31",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "gross=0.16241333, turnover=0.90000000, net=0.16061333"
+    },
+    {
+      "check": "main_top30_return_ridge_2022-06-30",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "stored=0.061990000000, recomputed=0.061990000000"
+    },
+    {
+      "check": "main_cost_identity_ridge_2022-06-30",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "gross=0.06199000, turnover=0.56666667, net=0.06085667"
+    },
+    {
+      "check": "main_all_portfolios_hold_30",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "holding-count range=[30,30]"
+    },
+    {
+      "check": "main_one_strategy_model",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "strategy models=['linear_regression']"
+    },
+    {
+      "check": "main_strategy_total_return",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "stored=0.420847031550, recomputed=0.420847031550"
+    },
+    {
+      "check": "addon_date_unique",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "duplicate dates=0"
+    },
+    {
+      "check": "addon_price_valid",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "nonpositive close rows=0"
+    },
+    {
+      "check": "addon_label_purge",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "latest train label end=2025-02-07 00:00:00, test start=2025-02-10 00:00:00"
+    },
+    {
+      "check": "addon_metrics_recompute_decision_tree",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "test_auc=0.508797653959, accuracy=0.462264150943, precision=0.647058823529, recall=0.177419354839, f1=0.278481012658"
+    },
+    {
+      "check": "addon_probability_range_decision_tree",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "range=[0.271084,0.798669]"
+    },
+    {
+      "check": "addon_positive_class_mapping_decision_tree",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "classes=0/1, positive column=1"
+    },
+    {
+      "check": "addon_auc_formula_agreement_decision_tree",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "sklearn=0.508797653959, rank formula=0.508797653959"
+    },
+    {
+      "check": "addon_static_test_auc_above_random_decision_tree",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "test AUC=0.508797653959"
+    },
+    {
+      "check": "addon_metrics_recompute_logistic_regression",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "test_auc=0.520161290323, accuracy=0.509433962264, precision=0.604166666667, recall=0.467741935484, f1=0.527272727273"
+    },
+    {
+      "check": "addon_probability_range_logistic_regression",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "range=[0.328014,0.747226]"
+    },
+    {
+      "check": "addon_positive_class_mapping_logistic_regression",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "classes=0/1, positive column=1"
+    },
+    {
+      "check": "addon_auc_formula_agreement_logistic_regression",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "sklearn=0.520161290323, rank formula=0.520161290323"
+    },
+    {
+      "check": "addon_static_test_auc_above_random_logistic_regression",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "test AUC=0.520161290323"
+    },
+    {
+      "check": "addon_metrics_recompute_random_forest",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "test_auc=0.559384164223, accuracy=0.509433962264, precision=0.692307692308, recall=0.290322580645, f1=0.409090909091"
+    },
+    {
+      "check": "addon_probability_range_random_forest",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "range=[0.297214,0.788855]"
+    },
+    {
+      "check": "addon_positive_class_mapping_random_forest",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "classes=0/1, positive column=1"
+    },
+    {
+      "check": "addon_auc_formula_agreement_random_forest",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "sklearn=0.559384164223, rank formula=0.559384164223"
+    },
+    {
+      "check": "addon_static_test_auc_above_random_random_forest",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "test AUC=0.559384164223"
+    },
+    {
+      "check": "addon_target_column_present",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "target column=future_return_3d"
+    },
+    {
+      "check": "addon_label_matches_target",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "label definition=future_return_3d > 0"
+    },
+    {
+      "check": "addon_final_walk_forward_auc",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "recomputed=0.571480938416, stored=0.571480938416"
+    },
+    {
+      "check": "addon_three_tuning_rounds",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "round 1: test AUC=0.334887, selected=False; round 2: test AUC=0.520161, selected=False; round 3: test AUC=0.571481, selected=True"
+    },
+    {
+      "check": "addon_label_alignment",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "label mismatches=0"
+    },
+    {
+      "check": "addon_random_label_null",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "mean random-label AUC=0.507936"
+    },
+    {
+      "check": "addon_synthetic_label_learnable",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "synthetic-label AUC=0.967404"
+    },
+    {
+      "check": "addon_parameter_grid_27",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "grid rows=27"
+    },
+    {
+      "check": "addon_parameters_selected_on_validation",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "selected=(0.6000000000000001,0.35000000000000003,0.8)"
+    },
+    {
+      "check": "addon_strategy_return_ml_timing",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "stored=0.005042670907, recomputed=0.005042670907"
+    },
+    {
+      "check": "addon_strategy_return_buy_and_hold",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "stored=0.099284339458, recomputed=0.099284339458"
+    },
+    {
+      "check": "addon_strategy_return_moving_average",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "stored=0.096805700356, recomputed=0.096805700356"
+    },
+    {
+      "check": "addon_three_strategy_comparison",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "strategies=['buy_and_hold', 'ml_timing', 'moving_average']"
+    },
+    {
+      "check": "addon_strategy_comparison_fields",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "columns=['strategy_label', 'trade_count', 'total_turnover', 'days_in_market_ratio', 'total_return', 'annualized_return', 'annualized_volatility', 'sharpe', 'max_drawdown', 'win_rate', 'trading_days']"
+    },
+    {
+      "check": "addon_final_ml_return_positive",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "ML total return=0.005042670907"
+    },
+    {
+      "check": "enhanced_weight_sums",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "all portfolio-date weights sum to 1"
+    },
+    {
+      "check": "enhanced_weight_caps",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "maximum excess=0.000e+00"
+    },
+    {
+      "check": "enhanced_cost_identity",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "net = gross - 20bp * turnover"
+    },
+    {
+      "check": "enhanced_ew_pw_present",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "portfolios=['EW_Top30', 'PW_Top30', 'Validation_Selected']"
+    },
+    {
+      "check": "enhanced_pw_improves_test_return",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "PW=0.462775, EW=0.414590"
+    },
+    {
+      "check": "enhanced_grid_selected_on_validation",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "selected n=20, method=rank_pw"
+    },
+    {
+      "check": "enhanced_auc_baseline_retained",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "baseline=0.571162, grid winner=0.538376"
+    },
+    {
+      "check": "enhanced_pickle_bundles_loadable",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "loadable pickle count=10"
+    },
+    {
+      "check": "enhanced_dashboard_exists",
+      "passed": true,
+      "severity_if_failed": "medium",
+      "evidence": "dashboard bytes=491564"
+    },
+    {
+      "check": "enhanced_dashboard_is_explanatory",
+      "passed": true,
+      "severity_if_failed": "medium",
+      "evidence": "blocks=20, charts=6, tables=4, cards=7"
+    },
+    {
+      "check": "enhanced_dashboard_no_recording_reference",
+      "passed": true,
+      "severity_if_failed": "medium",
+      "evidence": "dashboard uses course-method wording"
+    },
+    {
+      "check": "enhanced_regression_tool_is_standalone_html",
+      "passed": true,
+      "severity_if_failed": "medium",
+      "evidence": "html bytes=15510"
+    },
+    {
+      "check": "enhanced_regression_tool_has_no_backend",
+      "passed": true,
+      "severity_if_failed": "medium",
+      "evidence": "no Flask file, network request, or browser database"
+    },
+    {
+      "check": "all_15_charts_exist",
+      "passed": true,
+      "severity_if_failed": "medium",
+      "evidence": "chart count=15, smallest bytes=43121"
+    },
+    {
+      "check": "notebook_executed_without_errors",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "code cells=12, unexecuted=0, errors=0"
+    },
+    {
+      "check": "notebook_chinese_assignment_headings",
+      "passed": true,
+      "severity_if_failed": "medium",
+      "evidence": "forbidden hits=[]"
+    },
+    {
+      "check": "notebook_no_name_line",
+      "passed": true,
+      "severity_if_failed": "medium",
+      "evidence": "no name or name field in markdown"
+    },
+    {
+      "check": "notebook_latest_holdings_stated",
+      "passed": true,
+      "severity_if_failed": "medium",
+      "evidence": "latest stated codes=30/30"
+    },
+    {
+      "check": "notebook_no_unicode_dashes",
+      "passed": true,
+      "severity_if_failed": "medium",
+      "evidence": "em/en dash count=0"
+    },
+    {
+      "check": "notebook_language_audit",
+      "passed": true,
+      "severity_if_failed": "medium",
+      "evidence": "score=46, target=42"
+    },
+    {
+      "check": "notebook_sha256_recorded",
+      "passed": true,
+      "severity_if_failed": "medium",
+      "evidence": "sha256=a7e31e153f85eee347a3316e8b0868ec3f2e9ca530f1aa7768e9fcc272531594"
+    }
+  ],
+  "required_caveats": [
+    "Main-test annualized statistics are based on only three quarterly observations.",
+    "The source panel does not include actual financial-statement publication timestamps.",
+    "The source universe lacks point-in-time membership and full tradability fields.",
+    "The additional case has overlapping 3-day labels and a short single-stock history.",
+    "Three tuning rounds inspected the same test window, so the final additional-case result is exploratory."
+  ]
+}

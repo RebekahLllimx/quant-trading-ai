@@ -1,0 +1,88 @@
+{
+  "weight_grid": {
+    "selected": {
+      "top_n": 20,
+      "weight_method": "rank_pw",
+      "power": 2.0,
+      "weight_cap": 0.08,
+      "validation_total_return": 0.2589099843754288,
+      "validation_sharpe": 5.077157820710705,
+      "validation_max_drawdown": 0.0,
+      "validation_average_turnover": 0.8578871794871796,
+      "selection_score": 5.077157820710705
+    },
+    "metrics": [
+      {
+        "portfolio_label": "EW_Top30",
+        "total_return": 0.41458981056256383,
+        "annualized_return": 0.5879641760198195,
+        "annualized_volatility": 0.11030334463214175,
+        "sharpe": 4.477873686348018,
+        "max_drawdown": 0.0,
+        "win_rate": 1.0,
+        "quarter_count": 3,
+        "average_turnover": 0.8333333333333338,
+        "top_n": 30,
+        "weight_method": "ew",
+        "power": 1.0,
+        "weight_cap": 0.1
+      },
+      {
+        "portfolio_label": "PW_Top30",
+        "total_return": 0.46277545457129454,
+        "annualized_return": 0.6604923750440064,
+        "annualized_volatility": 0.15683397653382936,
+        "sharpe": 3.4941335108492306,
+        "max_drawdown": 0.0,
+        "win_rate": 1.0,
+        "quarter_count": 3,
+        "average_turnover": 0.8594982078853047,
+        "top_n": 30,
+        "weight_method": "rank_pw",
+        "power": 1.0,
+        "weight_cap": 0.1
+      },
+      {
+        "portfolio_label": "Validation_Selected",
+        "total_return": 0.46342196086125464,
+        "annualized_return": 0.6614709693833962,
+        "annualized_volatility": 0.18751411955631112,
+        "sharpe": 2.9422936763940304,
+        "max_drawdown": 0.0,
+        "win_rate": 1.0,
+        "quarter_count": 3,
+        "average_turnover": 0.879548717948718,
+        "top_n": 20,
+        "weight_method": "rank_pw",
+        "power": 2.0,
+        "weight_cap": 0.08
+      }
+    ]
+  },
+  "auc_grid": {
+    "comparison": [
+      {
+        "candidate": "validation_winner",
+        "feature_set": "trend4",
+        "scaler": "standard",
+        "C": 0.001,
+        "class_weight_balanced": true,
+        "window": 60,
+        "validation_auc": 0.7518796992481204,
+        "test_auc": 0.5383755588673621
+      },
+      {
+        "candidate": "existing_baseline",
+        "feature_set": "compact4",
+        "scaler": "standard",
+        "C": 0.1,
+        "class_weight_balanced": false,
+        "window": 180,
+        "validation_auc": 0.6233082706766917,
+        "test_auc": 0.5711624441132637
+      }
+    ],
+    "grid_size": 144
+  },
+  "pickle_count": 10
+}
