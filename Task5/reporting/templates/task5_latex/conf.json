@@ -1,0 +1,9 @@
+{
+  "base_template": "latex",
+  "mimetypes": {
+    "text/latex": true,
+    "text/markdown": true,
+    "image/png": true,
+    "image/jpeg": true
+  }
+}

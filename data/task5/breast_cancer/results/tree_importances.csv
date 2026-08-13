@@ -1,0 +1,19 @@
+﻿model,model_cn,feature,feature_cn,importance
+decision_tree,决策树,worst perimeter,较大值周长,0.8879045424836639
+decision_tree,决策树,area error,面积标准误,0.0038480599550401967
+decision_tree,决策树,worst concavity,较大值凹度,0.0
+decision_tree,决策树,mean compactness,平均紧密度,0.06361878799125742
+decision_tree,决策树,concave points error,凹点数标准误,0.0
+decision_tree,决策树,worst texture,较大值纹理,0.04462860957003835
+random_forest,随机森林,worst perimeter,较大值周长,0.36583634297946016
+random_forest,随机森林,area error,面积标准误,0.2110131642187522
+random_forest,随机森林,worst concavity,较大值凹度,0.21873290094093514
+random_forest,随机森林,mean compactness,平均紧密度,0.10096040453549521
+random_forest,随机森林,concave points error,凹点数标准误,0.03228564187179641
+random_forest,随机森林,worst texture,较大值纹理,0.07117154545356089
+gradient_boosting,梯度提升,worst perimeter,较大值周长,0.7981482073639398
+gradient_boosting,梯度提升,area error,面积标准误,0.04416687244569054
+gradient_boosting,梯度提升,worst concavity,较大值凹度,0.0692770940486858
+gradient_boosting,梯度提升,mean compactness,平均紧密度,0.03936361538913205
+gradient_boosting,梯度提升,concave points error,凹点数标准误,0.001994066243114606
+gradient_boosting,梯度提升,worst texture,较大值纹理,0.047050144509437106

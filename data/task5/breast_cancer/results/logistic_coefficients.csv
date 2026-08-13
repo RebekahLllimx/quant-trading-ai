@@ -1,0 +1,7 @@
+﻿feature,feature_cn,coefficient
+worst perimeter,较大值周长,4.005393906359771
+area error,面积标准误,3.6837622924289284
+worst concavity,较大值凹度,1.4579917905312438
+mean compactness,平均紧密度,0.43686229470391313
+concave points error,凹点数标准误,-0.3739741913603868
+worst texture,较大值纹理,1.7841907720118186

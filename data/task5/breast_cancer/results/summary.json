@@ -1,0 +1,29 @@
+{
+  "source": "scikit-learn load_breast_cancer",
+  "samples": 569,
+  "features": 30,
+  "positive_class": "恶性",
+  "positive_rate": 0.37258347978910367,
+  "train_samples": 455,
+  "test_samples": 114,
+  "train_positive_rate": 0.37362637362637363,
+  "test_positive_rate": 0.3684210526315789,
+  "selected_features": [
+    "worst perimeter",
+    "area error",
+    "worst concavity",
+    "mean compactness",
+    "concave points error",
+    "worst texture"
+  ],
+  "best_model": "logistic_regression",
+  "best_auc": 0.9937169312169312,
+  "controls": {
+    "sklearn_auc": 0.9937169312169312,
+    "mann_whitney_auc": 0.9937169312169312,
+    "auc_formula_absolute_difference": 0.0,
+    "permuted_label_auc_mean": 0.5029656084656084,
+    "permuted_label_auc_std": 0.2225979654660151,
+    "train_test_sample_overlap": 0
+  }
+}

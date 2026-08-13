@@ -1,0 +1,101 @@
+{
+  "created_at": "2026-07-17T19:03:43.652184+08:00",
+  "experiment": "Task5 experiment 2",
+  "grain": "one stock at one global calendar-month-end observation date",
+  "target": "future 20-trading-day absolute return greater than zero",
+  "split_rule": "2018-2022 train, 2023 validation, 2024 development, 2025 final test; crossing year-end labels purged",
+  "horizon_trading_days": 20,
+  "feature_information_cutoff": "all features use data available on or before observation Date",
+  "pre_drop_rows": 9329,
+  "dropped_for_missing_or_low_coverage": 103,
+  "unassigned_or_purged_rows": 294,
+  "missing_by_feature_before_drop": {
+    "ma60_gap": 4,
+    "return_1d": 0,
+    "amount_ratio20": 0,
+    "market_breadth_20d": 0,
+    "market_median_return_20d": 0,
+    "market_median_return_5d": 0,
+    "return_20d_rank": 0,
+    "excess_return_20d": 0,
+    "excess_return_5d": 0,
+    "open_close_return": 0,
+    "intraday_range": 0,
+    "volume_ratio20": 0,
+    "return_5d": 0,
+    "volatility20": 0,
+    "atr14_pct": 0,
+    "macd_pct": 0,
+    "rsi14": 0,
+    "ma20_gap": 0,
+    "ma5_gap": 0,
+    "return_20d": 0,
+    "return_10d": 0,
+    "market_dispersion_20d": 0
+  },
+  "final_rows": 8932,
+  "symbols": 100,
+  "months": 91,
+  "duplicate_keys": 0,
+  "remaining_missing_cells": 0,
+  "label_values": [
+    0,
+    1
+  ],
+  "dataset_sha256": "f681151d565a0292f3e3806ce9f4517d062e3541dd434ad89937e641e9708b24",
+  "split_summary": [
+    {
+      "Split": "train",
+      "rows": 5726,
+      "positive": 2703,
+      "symbols": 100,
+      "months": 58,
+      "start": "2018-02-28",
+      "end": "2022-11-30",
+      "latest_label_end": "2022-12-28",
+      "positive_rate": 0.47205728257073
+    },
+    {
+      "Split": "validation",
+      "rows": 1074,
+      "positive": 424,
+      "symbols": 99,
+      "months": 11,
+      "start": "2023-01-31",
+      "end": "2023-11-30",
+      "latest_label_end": "2023-12-28",
+      "positive_rate": 0.3947858472998138
+    },
+    {
+      "Split": "development",
+      "rows": 1067,
+      "positive": 561,
+      "symbols": 97,
+      "months": 11,
+      "start": "2024-01-31",
+      "end": "2024-11-29",
+      "latest_label_end": "2024-12-27",
+      "positive_rate": 0.5257731958762887
+    },
+    {
+      "Split": "test",
+      "rows": 1065,
+      "positive": 583,
+      "symbols": 97,
+      "months": 11,
+      "start": "2025-01-27",
+      "end": "2025-11-28",
+      "latest_label_end": "2025-12-26",
+      "positive_rate": 0.5474178403755868
+    }
+  ],
+  "purged_train_boundary_rows": 100,
+  "purged_validation_boundary_rows": 97,
+  "purged_development_boundary_rows": 97,
+  "purged_test_boundary_rows": 0,
+  "environment": {
+    "python": "3.10.9",
+    "pandas": "2.3.3",
+    "numpy": "1.26.4"
+  }
+}

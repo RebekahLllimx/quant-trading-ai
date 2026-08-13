@@ -1,0 +1,2068 @@
+{
+  "surface": "dashboard",
+  "manifest": {
+    "version": 1,
+    "surface": "dashboard",
+    "title": "TASK5 AI交易引擎：乳腺癌分类模型评估",
+    "description": "用569例乳腺癌诊断样本完成特征筛选、四模型训练、ROC-AUC评价和模型解释。",
+    "generatedAt": "2026-07-18T20:10:23+08:00",
+    "filters": [],
+    "cards": [
+      {
+        "id": "best_auc",
+        "description": "四种模型在114例测试样本上的最高排序能力。",
+        "dataset": "summary",
+        "sourceId": "summary_source",
+        "metrics": [
+          {
+            "label": "最高测试AUC",
+            "field": "best_auc",
+            "format": "number"
+          }
+        ]
+      },
+      {
+        "id": "test_samples",
+        "description": "此前没有参与特征筛选或调参的患者样本。",
+        "dataset": "summary",
+        "sourceId": "summary_source",
+        "metrics": [
+          {
+            "label": "测试样本",
+            "field": "test_samples",
+            "format": "compact"
+          }
+        ]
+      },
+      {
+        "id": "selected_features",
+        "description": "经五折稳定性、相关性去重和VIF筛选后保留。",
+        "dataset": "summary",
+        "sourceId": "summary_source",
+        "metrics": [
+          {
+            "label": "最终特征",
+            "field": "selected_features",
+            "format": "compact"
+          }
+        ]
+      },
+      {
+        "id": "recall",
+        "description": "0.5阈值下四种模型中的最高恶性召回率。",
+        "dataset": "summary",
+        "sourceId": "summary_source",
+        "metrics": [
+          {
+            "label": "最高恶性召回率",
+            "field": "highest_malignant_recall",
+            "format": "percent"
+          }
+        ]
+      },
+      {
+        "id": "specificity",
+        "description": "0.5阈值下四种模型中的最高良性识别率。",
+        "dataset": "summary",
+        "sourceId": "summary_source",
+        "metrics": [
+          {
+            "label": "最高特异度",
+            "field": "highest_specificity",
+            "format": "percent"
+          }
+        ]
+      },
+      {
+        "id": "random_auc",
+        "description": "随机打乱训练标签500次后的平均测试AUC。",
+        "dataset": "summary",
+        "sourceId": "summary_source",
+        "metrics": [
+          {
+            "label": "随机标签AUC",
+            "field": "random_label_auc",
+            "format": "number"
+          }
+        ]
+      }
+    ],
+    "charts": [
+      {
+        "id": "model_auc",
+        "title": "四种模型的测试ROC-AUC",
+        "subtitle": "逻辑回归与随机森林并列约0.994，前三种模型区间高度重叠",
+        "type": "bar",
+        "intent": "comparison",
+        "dataset": "model_metrics",
+        "sourceId": "metrics_source",
+        "encodings": {
+          "x": {
+            "field": "model_label",
+            "type": "nominal",
+            "label": "模型"
+          },
+          "y": {
+            "field": "roc_auc",
+            "type": "quantitative",
+            "label": "ROC-AUC"
+          },
+          "tooltip": [
+            {
+              "field": "auc_ci",
+              "type": "text",
+              "label": "95%区间"
+            }
+          ]
+        },
+        "referenceLines": [
+          {
+            "axis": "y",
+            "value": 0.5,
+            "label": "随机排序",
+            "color": "neutral",
+            "lineStyle": "dashed"
+          }
+        ],
+        "palette": {
+          "kind": "semantic"
+        },
+        "layout": "full"
+      },
+      {
+        "id": "roc",
+        "title": "测试集ROC曲线",
+        "subtitle": "四种模型使用同一组114例患者样本",
+        "type": "line",
+        "intent": "comparison",
+        "dataset": "roc_points",
+        "sourceId": "roc_source",
+        "encodings": {
+          "x": {
+            "field": "fpr",
+            "type": "quantitative",
+            "label": "假阳性率FPR"
+          },
+          "y": {
+            "field": "tpr",
+            "type": "quantitative",
+            "label": "真阳性率TPR"
+          },
+          "color": {
+            "field": "model_label",
+            "type": "nominal",
+            "label": "模型"
+          },
+          "tooltip": [
+            {
+              "field": "model_label",
+              "type": "text",
+              "label": "模型"
+            },
+            {
+              "field": "threshold",
+              "type": "quantitative",
+              "label": "概率阈值"
+            },
+            {
+              "field": "roc_auc",
+              "type": "quantitative",
+              "label": "AUC"
+            }
+          ]
+        },
+        "palette": {
+          "kind": "categorical"
+        },
+        "layout": "half"
+      },
+      {
+        "id": "threshold",
+        "title": "0.5阈值下的分类指标",
+        "subtitle": "决策树的Balanced Accuracy和恶性召回率最高，梯度提升的F1更高",
+        "type": "bar",
+        "intent": "comparison",
+        "dataset": "threshold_metrics",
+        "sourceId": "metrics_source",
+        "encodings": {
+          "x": {
+            "field": "model_label",
+            "type": "nominal",
+            "label": "模型"
+          },
+          "y": {
+            "field": "value",
+            "type": "quantitative",
+            "label": "指标值",
+            "format": "percent"
+          },
+          "color": {
+            "field": "metric_label",
+            "type": "nominal",
+            "label": "指标"
+          }
+        },
+        "settings": {
+          "grouped": true
+        },
+        "palette": {
+          "kind": "categorical"
+        },
+        "layout": "half"
+      },
+      {
+        "id": "stability",
+        "title": "候选特征的五折稳定性",
+        "subtitle": "排序和方向仅根据训练集计算，显示前15项",
+        "type": "horizontalBar",
+        "intent": "comparison",
+        "dataset": "feature_stability",
+        "sourceId": "stability_source",
+        "encodings": {
+          "x": {
+            "field": "feature_cn",
+            "type": "nominal",
+            "label": "特征"
+          },
+          "y": {
+            "field": "cv_auc_mean",
+            "type": "quantitative",
+            "label": "五折平均AUC"
+          },
+          "tooltip": [
+            {
+              "field": "cv_auc_std",
+              "type": "quantitative",
+              "label": "折间标准差"
+            },
+            {
+              "field": "direction_consistency",
+              "type": "quantitative",
+              "label": "方向一致率",
+              "format": "percent"
+            }
+          ]
+        },
+        "settings": {
+          "sort": "ascending",
+          "showValues": true
+        },
+        "palette": {
+          "kind": "sequential"
+        },
+        "layout": "full"
+      },
+      {
+        "id": "lr_explanation",
+        "title": "逻辑回归标准化系数",
+        "subtitle": "正值把样本推向恶性，负值把样本推向良性",
+        "type": "horizontalBar",
+        "intent": "comparison",
+        "dataset": "lr_explanation",
+        "sourceId": "lr_source",
+        "encodings": {
+          "x": {
+            "field": "feature_cn",
+            "type": "nominal",
+            "label": "特征"
+          },
+          "y": {
+            "field": "value",
+            "type": "quantitative",
+            "label": "标准化系数"
+          }
+        },
+        "settings": {
+          "sort": "ascending",
+          "showValues": true
+        },
+        "palette": {
+          "kind": "diverging"
+        },
+        "layout": "half"
+      },
+      {
+        "id": "rf_explanation",
+        "title": "随机森林特征重要性",
+        "subtitle": "较大值周长使用最多，重要性不表示医学因果",
+        "type": "horizontalBar",
+        "intent": "comparison",
+        "dataset": "rf_explanation",
+        "sourceId": "rf_source",
+        "encodings": {
+          "x": {
+            "field": "feature_cn",
+            "type": "nominal",
+            "label": "特征"
+          },
+          "y": {
+            "field": "value",
+            "type": "quantitative",
+            "label": "不纯度重要性"
+          }
+        },
+        "settings": {
+          "sort": "ascending",
+          "showValues": true
+        },
+        "palette": {
+          "kind": "sequential"
+        },
+        "layout": "half"
+      }
+    ],
+    "tables": [
+      {
+        "id": "model_table",
+        "title": "四种模型结果汇总",
+        "subtitle": "AUC使用概率，其他分类指标使用0.5阈值",
+        "dataset": "model_metrics",
+        "sourceId": "metrics_source",
+        "defaultSort": {
+          "field": "roc_auc",
+          "direction": "desc"
+        },
+        "density": "spacious",
+        "layout": "full",
+        "columns": [
+          {
+            "field": "model_label",
+            "label": "模型",
+            "type": "text"
+          },
+          {
+            "field": "cv_auc_mean",
+            "label": "训练五折AUC",
+            "format": "number"
+          },
+          {
+            "field": "roc_auc",
+            "label": "测试AUC",
+            "format": "number"
+          },
+          {
+            "field": "auc_ci",
+            "label": "95%区间",
+            "type": "text"
+          },
+          {
+            "field": "balanced_accuracy",
+            "label": "Balanced Acc.",
+            "format": "percent"
+          },
+          {
+            "field": "precision",
+            "label": "Precision",
+            "format": "percent"
+          },
+          {
+            "field": "recall",
+            "label": "恶性Recall",
+            "format": "percent"
+          },
+          {
+            "field": "specificity",
+            "label": "Specificity",
+            "format": "percent"
+          },
+          {
+            "field": "f1",
+            "label": "F1",
+            "format": "percent"
+          }
+        ]
+      },
+      {
+        "id": "feature_table",
+        "title": "最终入选特征",
+        "subtitle": "特征在读取测试集结果前锁定",
+        "dataset": "selected_features",
+        "sourceId": "feature_source",
+        "defaultSort": {
+          "field": "cv_auc_mean",
+          "direction": "desc"
+        },
+        "density": "spacious",
+        "layout": "full",
+        "columns": [
+          {
+            "field": "feature_cn",
+            "label": "特征",
+            "type": "text"
+          },
+          {
+            "field": "cv_auc_mean",
+            "label": "五折AUC",
+            "format": "number"
+          },
+          {
+            "field": "cv_auc_std",
+            "label": "折间标准差",
+            "format": "number"
+          },
+          {
+            "field": "direction_consistency",
+            "label": "方向一致率",
+            "format": "percent"
+          },
+          {
+            "field": "vif",
+            "label": "VIF",
+            "format": "number"
+          },
+          {
+            "field": "direction",
+            "label": "样本方向",
+            "type": "text"
+          }
+        ]
+      }
+    ],
+    "sources": [
+      {
+        "id": "summary_source",
+        "label": "看板摘要指标",
+        "path": "data/task5/breast_cancer/results/dashboard_summary.csv",
+        "query": {
+          "engine": "duckdb",
+          "language": "sql",
+          "sql": "SELECT * FROM read_csv_auto('data/task5/breast_cancer/results/dashboard_summary.csv', header=true)",
+          "description": "由冻结测试指标、特征筛选和管线核对结果生成的一行摘要。",
+          "tables_used": [
+            "data/task5/breast_cancer/results/dashboard_summary.csv"
+          ],
+          "filters": [
+            "scikit-learn乳腺癌诊断数据",
+            "恶性重编码为1",
+            "分层80/20划分",
+            "随机种子42",
+            "测试集不参与特征筛选"
+          ],
+          "metric_definitions": [
+            "best_auc为四种模型测试ROC-AUC的最大值。",
+            "highest_malignant_recall使用恶性=1和0.5阈值。",
+            "random_label_auc为500次随机训练标签的平均测试AUC。"
+          ]
+        }
+      },
+      {
+        "id": "metrics_source",
+        "label": "四种模型测试指标",
+        "path": "data/task5/breast_cancer/results/dashboard_model_metrics.csv",
+        "query": {
+          "engine": "duckdb",
+          "language": "sql",
+          "sql": "SELECT * FROM read_csv_auto('data/task5/breast_cancer/results/dashboard_model_metrics.csv', header=true)",
+          "description": "四种锁定模型在114例测试样本上的分类指标。",
+          "tables_used": [
+            "data/task5/breast_cancer/results/dashboard_model_metrics.csv"
+          ],
+          "filters": [
+            "scikit-learn乳腺癌诊断数据",
+            "恶性重编码为1",
+            "分层80/20划分",
+            "随机种子42",
+            "测试集不参与特征筛选"
+          ],
+          "metric_definitions": [
+            "ROC-AUC和PR-AUC使用恶性概率计算。",
+            "混淆矩阵指标使用0.5阈值。",
+            "AUC区间使用普通样本Bootstrap。"
+          ]
+        }
+      },
+      {
+        "id": "roc_source",
+        "label": "测试集ROC曲线点",
+        "path": "data/task5/breast_cancer/results/roc_points.csv",
+        "query": {
+          "engine": "duckdb",
+          "language": "sql",
+          "sql": "SELECT * FROM read_csv_auto('data/task5/breast_cancer/results/roc_points.csv', header=true)",
+          "description": "移动概率阈值后得到的FPR和TPR。",
+          "tables_used": [
+            "data/task5/breast_cancer/results/roc_points.csv"
+          ],
+          "filters": [
+            "scikit-learn乳腺癌诊断数据",
+            "恶性重编码为1",
+            "分层80/20划分",
+            "随机种子42",
+            "测试集不参与特征筛选"
+          ],
+          "metric_definitions": [
+            "四种模型使用同一组114例测试样本。"
+          ]
+        }
+      },
+      {
+        "id": "feature_source",
+        "label": "训练集特征筛选",
+        "path": "data/task5/breast_cancer/results/dashboard_selected_features.csv",
+        "query": {
+          "engine": "duckdb",
+          "language": "sql",
+          "sql": "SELECT * FROM read_csv_auto('data/task5/breast_cancer/results/dashboard_selected_features.csv', header=true)",
+          "description": "仅使用455例训练样本得到的最终特征、五折稳定性与VIF。",
+          "tables_used": [
+            "data/task5/breast_cancer/results/dashboard_selected_features.csv"
+          ],
+          "filters": [
+            "scikit-learn乳腺癌诊断数据",
+            "恶性重编码为1",
+            "分层80/20划分",
+            "随机种子42",
+            "测试集不参与特征筛选"
+          ],
+          "metric_definitions": [
+            "五折方向先在折内训练部分确定。",
+            "绝对相关系数达到0.90的重复变量不重复保留。",
+            "最终VIF目标低于5。"
+          ]
+        }
+      },
+      {
+        "id": "stability_source",
+        "label": "候选特征稳定性",
+        "path": "data/task5/breast_cancer/results/dashboard_feature_stability.csv",
+        "query": {
+          "engine": "duckdb",
+          "language": "sql",
+          "sql": "SELECT * FROM read_csv_auto('data/task5/breast_cancer/results/dashboard_feature_stability.csv', header=true)",
+          "description": "训练集中五折定向单变量AUC靠前的15项特征。",
+          "tables_used": [
+            "data/task5/breast_cancer/results/dashboard_feature_stability.csv"
+          ],
+          "filters": [
+            "scikit-learn乳腺癌诊断数据",
+            "恶性重编码为1",
+            "分层80/20划分",
+            "随机种子42",
+            "测试集不参与特征筛选"
+          ],
+          "metric_definitions": [
+            "测试集不参与候选特征排序。"
+          ]
+        }
+      },
+      {
+        "id": "lr_source",
+        "label": "逻辑回归标准化系数",
+        "path": "data/task5/breast_cancer/results/dashboard_lr_coefficients.csv",
+        "query": {
+          "engine": "duckdb",
+          "language": "sql",
+          "sql": "SELECT * FROM read_csv_auto('data/task5/breast_cancer/results/dashboard_lr_coefficients.csv', header=true)",
+          "description": "锁定逻辑回归模型中6项标准化特征的系数。",
+          "tables_used": [
+            "data/task5/breast_cancer/results/dashboard_lr_coefficients.csv"
+          ],
+          "filters": [
+            "scikit-learn乳腺癌诊断数据",
+            "恶性重编码为1",
+            "分层80/20划分",
+            "随机种子42",
+            "测试集不参与特征筛选"
+          ],
+          "metric_definitions": [
+            "系数用于解释模型方向，不表示医学因果。"
+          ]
+        }
+      },
+      {
+        "id": "rf_source",
+        "label": "随机森林特征重要性",
+        "path": "data/task5/breast_cancer/results/dashboard_rf_importance.csv",
+        "query": {
+          "engine": "duckdb",
+          "language": "sql",
+          "sql": "SELECT * FROM read_csv_auto('data/task5/breast_cancer/results/dashboard_rf_importance.csv', header=true)",
+          "description": "锁定随机森林模型中6项特征的不纯度重要性。",
+          "tables_used": [
+            "data/task5/breast_cancer/results/dashboard_rf_importance.csv"
+          ],
+          "filters": [
+            "scikit-learn乳腺癌诊断数据",
+            "恶性重编码为1",
+            "分层80/20划分",
+            "随机种子42",
+            "测试集不参与特征筛选"
+          ],
+          "metric_definitions": [
+            "不纯度重要性用于解释模型使用方式，不表示医学因果。"
+          ]
+        }
+      },
+      {
+        "id": "class_source",
+        "label": "训练测试类别构成",
+        "path": "data/task5/breast_cancer/results/dashboard_class_counts.csv",
+        "query": {
+          "engine": "duckdb",
+          "language": "sql",
+          "sql": "SELECT * FROM read_csv_auto('data/task5/breast_cancer/results/dashboard_class_counts.csv', header=true)",
+          "description": "分层80/20划分后的良性与恶性样本数量。",
+          "tables_used": [
+            "data/task5/breast_cancer/results/dashboard_class_counts.csv"
+          ],
+          "filters": [
+            "scikit-learn乳腺癌诊断数据",
+            "恶性重编码为1",
+            "分层80/20划分",
+            "随机种子42",
+            "测试集不参与特征筛选"
+          ],
+          "metric_definitions": [
+            "原始569例样本按随机种子42划分，恶性重编码为1。"
+          ]
+        }
+      }
+    ],
+    "blocks": [
+      {
+        "id": "opening",
+        "type": "markdown",
+        "sourceId": "metrics_source",
+        "body": "## 分类结果\n\n逻辑回归与随机森林的测试AUC均约为0.994，梯度提升约为0.992，决策树约为0.972。前三种模型的区间高度重叠，千分位差别不足以形成稳定排名。阈值取0.5时，决策树的Balanced Accuracy和恶性召回率最高，梯度提升的F1和Brier更好。"
+      },
+      {
+        "id": "cards",
+        "type": "metric-strip",
+        "cardIds": [
+          "best_auc",
+          "test_samples",
+          "selected_features",
+          "recall",
+          "specificity",
+          "random_auc"
+        ]
+      },
+      {
+        "id": "model_auc_block",
+        "type": "chart",
+        "chartId": "model_auc",
+        "layout": "full"
+      },
+      {
+        "id": "roc_block",
+        "type": "chart",
+        "chartId": "roc",
+        "layout": "half"
+      },
+      {
+        "id": "threshold_block",
+        "type": "chart",
+        "chartId": "threshold",
+        "layout": "half"
+      },
+      {
+        "id": "stability_block",
+        "type": "chart",
+        "chartId": "stability",
+        "layout": "full"
+      },
+      {
+        "id": "lr_block",
+        "type": "chart",
+        "chartId": "lr_explanation",
+        "layout": "half"
+      },
+      {
+        "id": "rf_block",
+        "type": "chart",
+        "chartId": "rf_explanation",
+        "layout": "half"
+      },
+      {
+        "id": "model_table_block",
+        "type": "table",
+        "tableId": "model_table",
+        "layout": "full"
+      },
+      {
+        "id": "feature_table_block",
+        "type": "table",
+        "tableId": "feature_table",
+        "layout": "full"
+      },
+      {
+        "id": "caveats",
+        "type": "markdown",
+        "body": "## 阅读边界\n\n- 恶性统一编码为1，所有Recall和FN均按这一口径解释。\n- 特征筛选只使用455例训练样本，114例测试样本只用于最终评价。\n- 高AUC来自当前数据结构和X、Y之间较直接的形态联系，不代表算法在其他数据上同样有效。\n- 这是教学数据上的内部测试，没有外部医院、不同设备或不同人群验证。\n- 系数和树模型重要性解释模型依赖，不表示医学因果，也不能用于临床诊断。"
+      }
+    ]
+  },
+  "snapshot": {
+    "version": 1,
+    "generatedAt": "2026-07-18T20:10:23+08:00",
+    "status": "ready",
+    "datasets": {
+      "summary": [
+        {
+          "best_auc": 0.9937169312169312,
+          "test_samples": 114,
+          "selected_features": 6,
+          "highest_malignant_recall": 0.9523809523809524,
+          "highest_specificity": 0.9861111111111112,
+          "random_label_auc": 0.5029656084656084
+        }
+      ],
+      "model_metrics": [
+        {
+          "model": "logistic_regression",
+          "model_cn": "逻辑回归",
+          "roc_auc": 0.9937169312169312,
+          "auc_ci_low": 0.9831688281593012,
+          "auc_ci_high": 0.9996624194412232,
+          "pr_auc": 0.989665029897151,
+          "accuracy": 0.9473684210526316,
+          "balanced_accuracy": 0.933531746031746,
+          "precision": 0.9736842105263158,
+          "recall": 0.8809523809523809,
+          "specificity": 0.9861111111111112,
+          "f1": 0.925,
+          "brier": 0.0339430464230322,
+          "tn": 71,
+          "fp": 1,
+          "fn": 5,
+          "tp": 37,
+          "cv_auc_mean": 0.9918472652218782,
+          "cv_auc_std": 0.0070478311987467,
+          "best_params": "{\"model__C\": 10.0, \"model__class_weight\": null}",
+          "model_label": "逻辑回归",
+          "auc_ci": "0.983至1.000",
+          "display_order": 0
+        },
+        {
+          "model": "random_forest",
+          "model_cn": "随机森林",
+          "roc_auc": 0.9937169312169312,
+          "auc_ci_low": 0.9812479707792208,
+          "auc_ci_high": 1.0,
+          "pr_auc": 0.9908518494455296,
+          "accuracy": 0.9473684210526316,
+          "balanced_accuracy": 0.933531746031746,
+          "precision": 0.9736842105263158,
+          "recall": 0.8809523809523809,
+          "specificity": 0.9861111111111112,
+          "f1": 0.925,
+          "brier": 0.0347676371919917,
+          "tn": 71,
+          "fp": 1,
+          "fn": 5,
+          "tp": 37,
+          "cv_auc_mean": 0.9890608875129,
+          "cv_auc_std": 0.0051330568072015,
+          "best_params": "{\"model__class_weight\": \"balanced_subsample\", \"model__max_depth\": null, \"model__max_features\": \"sqrt\", \"model__min_samples_leaf\": 2}",
+          "model_label": "随机森林",
+          "auc_ci": "0.981至1.000",
+          "display_order": 1
+        },
+        {
+          "model": "gradient_boosting",
+          "model_cn": "梯度提升",
+          "roc_auc": 0.992063492063492,
+          "auc_ci_low": 0.9747143412569312,
+          "auc_ci_high": 1.0,
+          "pr_auc": 0.9896900403027024,
+          "accuracy": 0.956140350877193,
+          "balanced_accuracy": 0.945436507936508,
+          "precision": 0.9743589743589745,
+          "recall": 0.9047619047619048,
+          "specificity": 0.9861111111111112,
+          "f1": 0.9382716049382716,
+          "brier": 0.0322243992395009,
+          "tn": 71,
+          "fp": 1,
+          "fn": 4,
+          "tp": 38,
+          "cv_auc_mean": 0.9900412796697626,
+          "cv_auc_std": 0.0045967094842765,
+          "best_params": "{\"model__learning_rate\": 0.05, \"model__max_depth\": 2, \"model__min_samples_leaf\": 5, \"model__n_estimators\": 120}",
+          "model_label": "梯度提升",
+          "auc_ci": "0.975至1.000",
+          "display_order": 2
+        },
+        {
+          "model": "decision_tree",
+          "model_cn": "决策树",
+          "roc_auc": 0.9720568783068784,
+          "auc_ci_low": 0.934513865686602,
+          "auc_ci_high": 0.9957136489500564,
+          "pr_auc": 0.9544027933885556,
+          "accuracy": 0.9473684210526316,
+          "balanced_accuracy": 0.9484126984126984,
+          "precision": 0.9090909090909092,
+          "recall": 0.9523809523809524,
+          "specificity": 0.9444444444444444,
+          "f1": 0.9302325581395348,
+          "brier": 0.0547953216374269,
+          "tn": 68,
+          "fp": 4,
+          "fn": 2,
+          "tp": 40,
+          "cv_auc_mean": 0.9696594427244584,
+          "cv_auc_std": 0.0115433247280815,
+          "best_params": "{\"model__class_weight\": null, \"model__max_depth\": 5, \"model__min_samples_leaf\": 10}",
+          "model_label": "决策树",
+          "auc_ci": "0.935至0.996",
+          "display_order": 3
+        }
+      ],
+      "roc_points": [
+        {
+          "model": "logistic_regression",
+          "model_cn": "逻辑回归",
+          "fpr": 0.0,
+          "tpr": 0.0,
+          "threshold": 1.9999999997770452,
+          "model_label": "逻辑回归",
+          "roc_auc": 0.9937169312169312
+        },
+        {
+          "model": "logistic_regression",
+          "model_cn": "逻辑回归",
+          "fpr": 0.0,
+          "tpr": 0.0238095238095238,
+          "threshold": 0.9999999997770452,
+          "model_label": "逻辑回归",
+          "roc_auc": 0.9937169312169312
+        },
+        {
+          "model": "logistic_regression",
+          "model_cn": "逻辑回归",
+          "fpr": 0.0,
+          "tpr": 0.8333333333333334,
+          "threshold": 0.6541957713475198,
+          "model_label": "逻辑回归",
+          "roc_auc": 0.9937169312169312
+        },
+        {
+          "model": "logistic_regression",
+          "model_cn": "逻辑回归",
+          "fpr": 0.0138888888888888,
+          "tpr": 0.8333333333333334,
+          "threshold": 0.6490156449893544,
+          "model_label": "逻辑回归",
+          "roc_auc": 0.9937169312169312
+        },
+        {
+          "model": "logistic_regression",
+          "model_cn": "逻辑回归",
+          "fpr": 0.0138888888888888,
+          "tpr": 0.9047619047619048,
+          "threshold": 0.4673119655992729,
+          "model_label": "逻辑回归",
+          "roc_auc": 0.9937169312169312
+        },
+        {
+          "model": "logistic_regression",
+          "model_cn": "逻辑回归",
+          "fpr": 0.0416666666666666,
+          "tpr": 0.9047619047619048,
+          "threshold": 0.4300229526388002,
+          "model_label": "逻辑回归",
+          "roc_auc": 0.9937169312169312
+        },
+        {
+          "model": "logistic_regression",
+          "model_cn": "逻辑回归",
+          "fpr": 0.0416666666666666,
+          "tpr": 0.9523809523809524,
+          "threshold": 0.3926527015299466,
+          "model_label": "逻辑回归",
+          "roc_auc": 0.9937169312169312
+        },
+        {
+          "model": "logistic_regression",
+          "model_cn": "逻辑回归",
+          "fpr": 0.0555555555555555,
+          "tpr": 0.9523809523809524,
+          "threshold": 0.2560448768406332,
+          "model_label": "逻辑回归",
+          "roc_auc": 0.9937169312169312
+        },
+        {
+          "model": "logistic_regression",
+          "model_cn": "逻辑回归",
+          "fpr": 0.0555555555555555,
+          "tpr": 0.9761904761904762,
+          "threshold": 0.2052944908621499,
+          "model_label": "逻辑回归",
+          "roc_auc": 0.9937169312169312
+        },
+        {
+          "model": "logistic_regression",
+          "model_cn": "逻辑回归",
+          "fpr": 0.0833333333333333,
+          "tpr": 0.9761904761904762,
+          "threshold": 0.1422591442785243,
+          "model_label": "逻辑回归",
+          "roc_auc": 0.9937169312169312
+        },
+        {
+          "model": "logistic_regression",
+          "model_cn": "逻辑回归",
+          "fpr": 0.0833333333333333,
+          "tpr": 1.0,
+          "threshold": 0.0795825581365144,
+          "model_label": "逻辑回归",
+          "roc_auc": 0.9937169312169312
+        },
+        {
+          "model": "logistic_regression",
+          "model_cn": "逻辑回归",
+          "fpr": 1.0,
+          "tpr": 1.0,
+          "threshold": 6.254791918690461e-06,
+          "model_label": "逻辑回归",
+          "roc_auc": 0.9937169312169312
+        },
+        {
+          "model": "decision_tree",
+          "model_cn": "决策树",
+          "fpr": 0.0,
+          "tpr": 0.0,
+          "threshold": 2.0,
+          "model_label": "决策树",
+          "roc_auc": 0.9720568783068784
+        },
+        {
+          "model": "decision_tree",
+          "model_cn": "决策树",
+          "fpr": 0.0,
+          "tpr": 0.6428571428571429,
+          "threshold": 1.0,
+          "model_label": "决策树",
+          "roc_auc": 0.9720568783068784
+        },
+        {
+          "model": "decision_tree",
+          "model_cn": "决策树",
+          "fpr": 0.0416666666666666,
+          "tpr": 0.7619047619047619,
+          "threshold": 0.8,
+          "model_label": "决策树",
+          "roc_auc": 0.9720568783068784
+        },
+        {
+          "model": "decision_tree",
+          "model_cn": "决策树",
+          "fpr": 0.0555555555555555,
+          "tpr": 0.9523809523809524,
+          "threshold": 0.5,
+          "model_label": "决策树",
+          "roc_auc": 0.9720568783068784
+        },
+        {
+          "model": "decision_tree",
+          "model_cn": "决策树",
+          "fpr": 0.0833333333333333,
+          "tpr": 0.9761904761904762,
+          "threshold": 0.3,
+          "model_label": "决策树",
+          "roc_auc": 0.9720568783068784
+        },
+        {
+          "model": "decision_tree",
+          "model_cn": "决策树",
+          "fpr": 0.1111111111111111,
+          "tpr": 0.9761904761904762,
+          "threshold": 0.2,
+          "model_label": "决策树",
+          "roc_auc": 0.9720568783068784
+        },
+        {
+          "model": "decision_tree",
+          "model_cn": "决策树",
+          "fpr": 0.1944444444444444,
+          "tpr": 0.9761904761904762,
+          "threshold": 0.1333333333333333,
+          "model_label": "决策树",
+          "roc_auc": 0.9720568783068784
+        },
+        {
+          "model": "decision_tree",
+          "model_cn": "决策树",
+          "fpr": 0.2222222222222222,
+          "tpr": 0.9761904761904762,
+          "threshold": 0.1,
+          "model_label": "决策树",
+          "roc_auc": 0.9720568783068784
+        },
+        {
+          "model": "decision_tree",
+          "model_cn": "决策树",
+          "fpr": 1.0,
+          "tpr": 1.0,
+          "threshold": 0.0,
+          "model_label": "决策树",
+          "roc_auc": 0.9720568783068784
+        },
+        {
+          "model": "random_forest",
+          "model_cn": "随机森林",
+          "fpr": 0.0,
+          "tpr": 0.0,
+          "threshold": 2.0,
+          "model_label": "随机森林",
+          "roc_auc": 0.9937169312169312
+        },
+        {
+          "model": "random_forest",
+          "model_cn": "随机森林",
+          "fpr": 0.0,
+          "tpr": 0.0714285714285714,
+          "threshold": 1.0,
+          "model_label": "随机森林",
+          "roc_auc": 0.9937169312169312
+        },
+        {
+          "model": "random_forest",
+          "model_cn": "随机森林",
+          "fpr": 0.0,
+          "tpr": 0.119047619047619,
+          "threshold": 0.9991868131868132,
+          "model_label": "随机森林",
+          "roc_auc": 0.9937169312169312
+        },
+        {
+          "model": "random_forest",
+          "model_cn": "随机森林",
+          "fpr": 0.0,
+          "tpr": 0.8571428571428571,
+          "threshold": 0.6171410315699322,
+          "model_label": "随机森林",
+          "roc_auc": 0.9937169312169312
+        },
+        {
+          "model": "random_forest",
+          "model_cn": "随机森林",
+          "fpr": 0.0138888888888888,
+          "tpr": 0.8571428571428571,
+          "threshold": 0.5319675204747037,
+          "model_label": "随机森林",
+          "roc_auc": 0.9937169312169312
+        },
+        {
+          "model": "random_forest",
+          "model_cn": "随机森林",
+          "fpr": 0.0138888888888888,
+          "tpr": 0.9523809523809524,
+          "threshold": 0.4113403261555824,
+          "model_label": "随机森林",
+          "roc_auc": 0.9937169312169312
+        },
+        {
+          "model": "random_forest",
+          "model_cn": "随机森林",
+          "fpr": 0.0277777777777777,
+          "tpr": 0.9523809523809524,
+          "threshold": 0.330702755379019,
+          "model_label": "随机森林",
+          "roc_auc": 0.9937169312169312
+        },
+        {
+          "model": "random_forest",
+          "model_cn": "随机森林",
+          "fpr": 0.0277777777777777,
+          "tpr": 0.9761904761904762,
+          "threshold": 0.3157798348685937,
+          "model_label": "随机森林",
+          "roc_auc": 0.9937169312169312
+        },
+        {
+          "model": "random_forest",
+          "model_cn": "随机森林",
+          "fpr": 0.1805555555555555,
+          "tpr": 0.9761904761904762,
+          "threshold": 0.1445950174734125,
+          "model_label": "随机森林",
+          "roc_auc": 0.9937169312169312
+        },
+        {
+          "model": "random_forest",
+          "model_cn": "随机森林",
+          "fpr": 0.1805555555555555,
+          "tpr": 1.0,
+          "threshold": 0.1419233003305424,
+          "model_label": "随机森林",
+          "roc_auc": 0.9937169312169312
+        },
+        {
+          "model": "random_forest",
+          "model_cn": "随机森林",
+          "fpr": 0.8055555555555556,
+          "tpr": 1.0,
+          "threshold": 0.0012043956043956,
+          "model_label": "随机森林",
+          "roc_auc": 0.9937169312169312
+        },
+        {
+          "model": "random_forest",
+          "model_cn": "随机森林",
+          "fpr": 0.8333333333333334,
+          "tpr": 1.0,
+          "threshold": 0.0011780219780219,
+          "model_label": "随机森林",
+          "roc_auc": 0.9937169312169312
+        },
+        {
+          "model": "random_forest",
+          "model_cn": "随机森林",
+          "fpr": 0.8472222222222222,
+          "tpr": 1.0,
+          "threshold": 0.000912,
+          "model_label": "随机森林",
+          "roc_auc": 0.9937169312169312
+        },
+        {
+          "model": "random_forest",
+          "model_cn": "随机森林",
+          "fpr": 1.0,
+          "tpr": 1.0,
+          "threshold": 0.0,
+          "model_label": "随机森林",
+          "roc_auc": 0.9937169312169312
+        },
+        {
+          "model": "gradient_boosting",
+          "model_cn": "梯度提升",
+          "fpr": 0.0,
+          "tpr": 0.0,
+          "threshold": 1.993898121464966,
+          "model_label": "梯度提升",
+          "roc_auc": 0.992063492063492
+        },
+        {
+          "model": "gradient_boosting",
+          "model_cn": "梯度提升",
+          "fpr": 0.0,
+          "tpr": 0.0238095238095238,
+          "threshold": 0.993898121464966,
+          "model_label": "梯度提升",
+          "roc_auc": 0.992063492063492
+        },
+        {
+          "model": "gradient_boosting",
+          "model_cn": "梯度提升",
+          "fpr": 0.0,
+          "tpr": 0.0714285714285714,
+          "threshold": 0.9909606308006602,
+          "model_label": "梯度提升",
+          "roc_auc": 0.992063492063492
+        },
+        {
+          "model": "gradient_boosting",
+          "model_cn": "梯度提升",
+          "fpr": 0.0,
+          "tpr": 0.3333333333333333,
+          "threshold": 0.990316800957675,
+          "model_label": "梯度提升",
+          "roc_auc": 0.992063492063492
+        },
+        {
+          "model": "gradient_boosting",
+          "model_cn": "梯度提升",
+          "fpr": 0.0,
+          "tpr": 0.3809523809523809,
+          "threshold": 0.990129687156671,
+          "model_label": "梯度提升",
+          "roc_auc": 0.992063492063492
+        },
+        {
+          "model": "gradient_boosting",
+          "model_cn": "梯度提升",
+          "fpr": 0.0,
+          "tpr": 0.4285714285714285,
+          "threshold": 0.989226248036927,
+          "model_label": "梯度提升",
+          "roc_auc": 0.992063492063492
+        },
+        {
+          "model": "gradient_boosting",
+          "model_cn": "梯度提升",
+          "fpr": 0.0,
+          "tpr": 0.8809523809523809,
+          "threshold": 0.6181609134719191,
+          "model_label": "梯度提升",
+          "roc_auc": 0.992063492063492
+        },
+        {
+          "model": "gradient_boosting",
+          "model_cn": "梯度提升",
+          "fpr": 0.0138888888888888,
+          "tpr": 0.8809523809523809,
+          "threshold": 0.5898674259926704,
+          "model_label": "梯度提升",
+          "roc_auc": 0.992063492063492
+        },
+        {
+          "model": "gradient_boosting",
+          "model_cn": "梯度提升",
+          "fpr": 0.0138888888888888,
+          "tpr": 0.9523809523809524,
+          "threshold": 0.379272128408032,
+          "model_label": "梯度提升",
+          "roc_auc": 0.992063492063492
+        },
+        {
+          "model": "gradient_boosting",
+          "model_cn": "梯度提升",
+          "fpr": 0.0277777777777777,
+          "tpr": 0.9523809523809524,
+          "threshold": 0.2294420994384252,
+          "model_label": "梯度提升",
+          "roc_auc": 0.992063492063492
+        },
+        {
+          "model": "gradient_boosting",
+          "model_cn": "梯度提升",
+          "fpr": 0.0277777777777777,
+          "tpr": 0.9761904761904762,
+          "threshold": 0.2196321708352424,
+          "model_label": "梯度提升",
+          "roc_auc": 0.992063492063492
+        },
+        {
+          "model": "gradient_boosting",
+          "model_cn": "梯度提升",
+          "fpr": 0.2083333333333333,
+          "tpr": 0.9761904761904762,
+          "threshold": 0.043584733679035,
+          "model_label": "梯度提升",
+          "roc_auc": 0.992063492063492
+        },
+        {
+          "model": "gradient_boosting",
+          "model_cn": "梯度提升",
+          "fpr": 0.2361111111111111,
+          "tpr": 0.9761904761904762,
+          "threshold": 0.0392492730062345,
+          "model_label": "梯度提升",
+          "roc_auc": 0.992063492063492
+        },
+        {
+          "model": "gradient_boosting",
+          "model_cn": "梯度提升",
+          "fpr": 0.2638888888888889,
+          "tpr": 0.9761904761904762,
+          "threshold": 0.0319870320784049,
+          "model_label": "梯度提升",
+          "roc_auc": 0.992063492063492
+        },
+        {
+          "model": "gradient_boosting",
+          "model_cn": "梯度提升",
+          "fpr": 0.2638888888888889,
+          "tpr": 1.0,
+          "threshold": 0.0263856915736205,
+          "model_label": "梯度提升",
+          "roc_auc": 0.992063492063492
+        },
+        {
+          "model": "gradient_boosting",
+          "model_cn": "梯度提升",
+          "fpr": 0.3472222222222222,
+          "tpr": 1.0,
+          "threshold": 0.0152898715545663,
+          "model_label": "梯度提升",
+          "roc_auc": 0.992063492063492
+        },
+        {
+          "model": "gradient_boosting",
+          "model_cn": "梯度提升",
+          "fpr": 0.375,
+          "tpr": 1.0,
+          "threshold": 0.0135095392207763,
+          "model_label": "梯度提升",
+          "roc_auc": 0.992063492063492
+        },
+        {
+          "model": "gradient_boosting",
+          "model_cn": "梯度提升",
+          "fpr": 0.4444444444444444,
+          "tpr": 1.0,
+          "threshold": 0.0121000358114535,
+          "model_label": "梯度提升",
+          "roc_auc": 0.992063492063492
+        },
+        {
+          "model": "gradient_boosting",
+          "model_cn": "梯度提升",
+          "fpr": 0.4722222222222222,
+          "tpr": 1.0,
+          "threshold": 0.0113303349372789,
+          "model_label": "梯度提升",
+          "roc_auc": 0.992063492063492
+        },
+        {
+          "model": "gradient_boosting",
+          "model_cn": "梯度提升",
+          "fpr": 0.5,
+          "tpr": 1.0,
+          "threshold": 0.0112435193611804,
+          "model_label": "梯度提升",
+          "roc_auc": 0.992063492063492
+        },
+        {
+          "model": "gradient_boosting",
+          "model_cn": "梯度提升",
+          "fpr": 0.5694444444444444,
+          "tpr": 1.0,
+          "threshold": 0.00804486797403,
+          "model_label": "梯度提升",
+          "roc_auc": 0.992063492063492
+        },
+        {
+          "model": "gradient_boosting",
+          "model_cn": "梯度提升",
+          "fpr": 0.6111111111111112,
+          "tpr": 1.0,
+          "threshold": 0.0080432151297873,
+          "model_label": "梯度提升",
+          "roc_auc": 0.992063492063492
+        },
+        {
+          "model": "gradient_boosting",
+          "model_cn": "梯度提升",
+          "fpr": 0.6388888888888888,
+          "tpr": 1.0,
+          "threshold": 0.0058164041864967,
+          "model_label": "梯度提升",
+          "roc_auc": 0.992063492063492
+        },
+        {
+          "model": "gradient_boosting",
+          "model_cn": "梯度提升",
+          "fpr": 0.7222222222222222,
+          "tpr": 1.0,
+          "threshold": 0.0053689704668258,
+          "model_label": "梯度提升",
+          "roc_auc": 0.992063492063492
+        },
+        {
+          "model": "gradient_boosting",
+          "model_cn": "梯度提升",
+          "fpr": 0.75,
+          "tpr": 1.0,
+          "threshold": 0.005198695435899,
+          "model_label": "梯度提升",
+          "roc_auc": 0.992063492063492
+        },
+        {
+          "model": "gradient_boosting",
+          "model_cn": "梯度提升",
+          "fpr": 0.7916666666666666,
+          "tpr": 1.0,
+          "threshold": 0.0048453733568428,
+          "model_label": "梯度提升",
+          "roc_auc": 0.992063492063492
+        },
+        {
+          "model": "gradient_boosting",
+          "model_cn": "梯度提升",
+          "fpr": 0.8055555555555556,
+          "tpr": 1.0,
+          "threshold": 0.0047920871780872,
+          "model_label": "梯度提升",
+          "roc_auc": 0.992063492063492
+        },
+        {
+          "model": "gradient_boosting",
+          "model_cn": "梯度提升",
+          "fpr": 1.0,
+          "tpr": 1.0,
+          "threshold": 0.0045988288513162,
+          "model_label": "梯度提升",
+          "roc_auc": 0.992063492063492
+        }
+      ],
+      "threshold_metrics": [
+        {
+          "model": "logistic_regression",
+          "model_label": "逻辑回归",
+          "metric": "balanced_accuracy",
+          "value": 0.933531746031746,
+          "metric_label": "Balanced Accuracy"
+        },
+        {
+          "model": "random_forest",
+          "model_label": "随机森林",
+          "metric": "balanced_accuracy",
+          "value": 0.933531746031746,
+          "metric_label": "Balanced Accuracy"
+        },
+        {
+          "model": "gradient_boosting",
+          "model_label": "梯度提升",
+          "metric": "balanced_accuracy",
+          "value": 0.945436507936508,
+          "metric_label": "Balanced Accuracy"
+        },
+        {
+          "model": "decision_tree",
+          "model_label": "决策树",
+          "metric": "balanced_accuracy",
+          "value": 0.9484126984126984,
+          "metric_label": "Balanced Accuracy"
+        },
+        {
+          "model": "logistic_regression",
+          "model_label": "逻辑回归",
+          "metric": "precision",
+          "value": 0.9736842105263158,
+          "metric_label": "Precision"
+        },
+        {
+          "model": "random_forest",
+          "model_label": "随机森林",
+          "metric": "precision",
+          "value": 0.9736842105263158,
+          "metric_label": "Precision"
+        },
+        {
+          "model": "gradient_boosting",
+          "model_label": "梯度提升",
+          "metric": "precision",
+          "value": 0.9743589743589745,
+          "metric_label": "Precision"
+        },
+        {
+          "model": "decision_tree",
+          "model_label": "决策树",
+          "metric": "precision",
+          "value": 0.9090909090909092,
+          "metric_label": "Precision"
+        },
+        {
+          "model": "logistic_regression",
+          "model_label": "逻辑回归",
+          "metric": "recall",
+          "value": 0.8809523809523809,
+          "metric_label": "恶性召回率"
+        },
+        {
+          "model": "random_forest",
+          "model_label": "随机森林",
+          "metric": "recall",
+          "value": 0.8809523809523809,
+          "metric_label": "恶性召回率"
+        },
+        {
+          "model": "gradient_boosting",
+          "model_label": "梯度提升",
+          "metric": "recall",
+          "value": 0.9047619047619048,
+          "metric_label": "恶性召回率"
+        },
+        {
+          "model": "decision_tree",
+          "model_label": "决策树",
+          "metric": "recall",
+          "value": 0.9523809523809524,
+          "metric_label": "恶性召回率"
+        },
+        {
+          "model": "logistic_regression",
+          "model_label": "逻辑回归",
+          "metric": "specificity",
+          "value": 0.9861111111111112,
+          "metric_label": "特异度"
+        },
+        {
+          "model": "random_forest",
+          "model_label": "随机森林",
+          "metric": "specificity",
+          "value": 0.9861111111111112,
+          "metric_label": "特异度"
+        },
+        {
+          "model": "gradient_boosting",
+          "model_label": "梯度提升",
+          "metric": "specificity",
+          "value": 0.9861111111111112,
+          "metric_label": "特异度"
+        },
+        {
+          "model": "decision_tree",
+          "model_label": "决策树",
+          "metric": "specificity",
+          "value": 0.9444444444444444,
+          "metric_label": "特异度"
+        },
+        {
+          "model": "logistic_regression",
+          "model_label": "逻辑回归",
+          "metric": "f1",
+          "value": 0.925,
+          "metric_label": "F1"
+        },
+        {
+          "model": "random_forest",
+          "model_label": "随机森林",
+          "metric": "f1",
+          "value": 0.925,
+          "metric_label": "F1"
+        },
+        {
+          "model": "gradient_boosting",
+          "model_label": "梯度提升",
+          "metric": "f1",
+          "value": 0.9382716049382716,
+          "metric_label": "F1"
+        },
+        {
+          "model": "decision_tree",
+          "model_label": "决策树",
+          "metric": "f1",
+          "value": 0.9302325581395348,
+          "metric_label": "F1"
+        }
+      ],
+      "feature_stability": [
+        {
+          "feature": "worst perimeter",
+          "feature_cn": "较大值周长",
+          "cv_auc_mean": 0.97203302373581,
+          "cv_auc_std": 0.0165888861025722,
+          "cv_auc_min": 0.95562435500516,
+          "direction_consistency": 1.0
+        },
+        {
+          "feature": "worst area",
+          "feature_cn": "较大值面积",
+          "cv_auc_mean": 0.967905056759546,
+          "cv_auc_std": 0.0186345249268519,
+          "cv_auc_min": 0.9453044375644996,
+          "direction_consistency": 1.0
+        },
+        {
+          "feature": "worst radius",
+          "feature_cn": "较大值半径",
+          "cv_auc_mean": 0.9675438596491228,
+          "cv_auc_std": 0.0191174555614206,
+          "cv_auc_min": 0.946078431372549,
+          "direction_consistency": 1.0
+        },
+        {
+          "feature": "mean concave points",
+          "feature_cn": "平均凹点数",
+          "cv_auc_mean": 0.9639834881320948,
+          "cv_auc_std": 0.0301723043411428,
+          "cv_auc_min": 0.930340557275542,
+          "direction_consistency": 1.0
+        },
+        {
+          "feature": "worst concave points",
+          "feature_cn": "较大值凹点数",
+          "cv_auc_mean": 0.9635706914344686,
+          "cv_auc_std": 0.0335126309499148,
+          "cv_auc_min": 0.9285345717234262,
+          "direction_consistency": 1.0
+        },
+        {
+          "feature": "mean perimeter",
+          "feature_cn": "平均周长",
+          "cv_auc_mean": 0.9444272445820434,
+          "cv_auc_std": 0.028645672447242,
+          "cv_auc_min": 0.9099587203302372,
+          "direction_consistency": 1.0
+        },
+        {
+          "feature": "mean area",
+          "feature_cn": "平均面积",
+          "cv_auc_mean": 0.9364293085655314,
+          "cv_auc_std": 0.030432056837805,
+          "cv_auc_min": 0.8975748194014448,
+          "direction_consistency": 1.0
+        },
+        {
+          "feature": "mean radius",
+          "feature_cn": "平均半径",
+          "cv_auc_mean": 0.9363261093911248,
+          "cv_auc_std": 0.0312094335142088,
+          "cv_auc_min": 0.8975748194014447,
+          "direction_consistency": 1.0
+        },
+        {
+          "feature": "mean concavity",
+          "feature_cn": "平均凹度",
+          "cv_auc_mean": 0.93359133126935,
+          "cv_auc_std": 0.0505121481566852,
+          "cv_auc_min": 0.8681630546955624,
+          "direction_consistency": 1.0
+        },
+        {
+          "feature": "area error",
+          "feature_cn": "面积标准误",
+          "cv_auc_mean": 0.923374613003096,
+          "cv_auc_std": 0.0161429207543453,
+          "cv_auc_min": 0.9091847265221878,
+          "direction_consistency": 1.0
+        },
+        {
+          "feature": "worst concavity",
+          "feature_cn": "较大值凹度",
+          "cv_auc_mean": 0.9124871001031992,
+          "cv_auc_std": 0.0502465138615997,
+          "cv_auc_min": 0.8503611971104231,
+          "direction_consistency": 1.0
+        },
+        {
+          "feature": "perimeter error",
+          "feature_cn": "周长标准误",
+          "cv_auc_mean": 0.8726006191950464,
+          "cv_auc_std": 0.0315699245829634,
+          "cv_auc_min": 0.8498452012383901,
+          "direction_consistency": 1.0
+        },
+        {
+          "feature": "mean compactness",
+          "feature_cn": "平均紧密度",
+          "cv_auc_mean": 0.8717234262125902,
+          "cv_auc_std": 0.0742994638330687,
+          "cv_auc_min": 0.7791537667698658,
+          "direction_consistency": 1.0
+        },
+        {
+          "feature": "radius error",
+          "feature_cn": "半径标准误",
+          "cv_auc_mean": 0.8666150670794635,
+          "cv_auc_std": 0.0339235402489336,
+          "cv_auc_min": 0.8436532507739938,
+          "direction_consistency": 1.0
+        },
+        {
+          "feature": "worst compactness",
+          "feature_cn": "较大值紧密度",
+          "cv_auc_mean": 0.8618679050567597,
+          "cv_auc_std": 0.0670034100893473,
+          "cv_auc_min": 0.7899896800825593,
+          "direction_consistency": 1.0
+        }
+      ],
+      "selected_features": [
+        {
+          "feature": "worst perimeter",
+          "feature_cn": "较大值周长",
+          "cv_auc_mean": 0.97203302373581,
+          "cv_auc_std": 0.0165888861025722,
+          "cv_auc_min": 0.95562435500516,
+          "direction_consistency": 1.0,
+          "vif": 3.5338141369348497,
+          "direction": "值越大越偏恶性",
+          "reason": "五折区分度和方向稳定性靠前，且未与已选变量高度重复"
+        },
+        {
+          "feature": "area error",
+          "feature_cn": "面积标准误",
+          "cv_auc_mean": 0.923374613003096,
+          "cv_auc_std": 0.0161429207543453,
+          "cv_auc_min": 0.9091847265221878,
+          "direction_consistency": 1.0,
+          "vif": 2.613378572734154,
+          "direction": "值越大越偏恶性",
+          "reason": "五折区分度和方向稳定性靠前，且未与已选变量高度重复"
+        },
+        {
+          "feature": "worst concavity",
+          "feature_cn": "较大值凹度",
+          "cv_auc_mean": 0.9124871001031992,
+          "cv_auc_std": 0.0502465138615997,
+          "cv_auc_min": 0.8503611971104231,
+          "direction_consistency": 1.0,
+          "vif": 3.6474828653699674,
+          "direction": "值越大越偏恶性",
+          "reason": "五折区分度和方向稳定性靠前，且未与已选变量高度重复"
+        },
+        {
+          "feature": "mean compactness",
+          "feature_cn": "平均紧密度",
+          "cv_auc_mean": 0.8717234262125902,
+          "cv_auc_std": 0.0742994638330687,
+          "cv_auc_min": 0.7791537667698658,
+          "direction_consistency": 1.0,
+          "vif": 3.843134221382784,
+          "direction": "值越大越偏恶性",
+          "reason": "五折区分度和方向稳定性靠前，且未与已选变量高度重复"
+        },
+        {
+          "feature": "concave points error",
+          "feature_cn": "凹点数标准误",
+          "cv_auc_mean": 0.7918472652218783,
+          "cv_auc_std": 0.0780023383788839,
+          "cv_auc_min": 0.6754385964912281,
+          "direction_consistency": 1.0,
+          "vif": 1.8241039580407,
+          "direction": "值越大越偏恶性",
+          "reason": "五折区分度和方向稳定性靠前，且未与已选变量高度重复"
+        },
+        {
+          "feature": "worst texture",
+          "feature_cn": "较大值纹理",
+          "cv_auc_mean": 0.7867905056759545,
+          "cv_auc_std": 0.0342499426596274,
+          "cv_auc_min": 0.7512899896800825,
+          "direction_consistency": 1.0,
+          "vif": 1.2426213682869471,
+          "direction": "值越大越偏恶性",
+          "reason": "五折区分度和方向稳定性靠前，且未与已选变量高度重复"
+        }
+      ],
+      "lr_explanation": [
+        {
+          "model": "logistic_regression",
+          "model_label": "逻辑回归",
+          "feature": "worst perimeter",
+          "feature_cn": "较大值周长",
+          "value": 4.005393906359771,
+          "value_type": "标准化系数",
+          "absolute_value": 4.005393906359771,
+          "rank": 1
+        },
+        {
+          "model": "logistic_regression",
+          "model_label": "逻辑回归",
+          "feature": "area error",
+          "feature_cn": "面积标准误",
+          "value": 3.683762292428928,
+          "value_type": "标准化系数",
+          "absolute_value": 3.683762292428928,
+          "rank": 2
+        },
+        {
+          "model": "logistic_regression",
+          "model_label": "逻辑回归",
+          "feature": "worst concavity",
+          "feature_cn": "较大值凹度",
+          "value": 1.4579917905312438,
+          "value_type": "标准化系数",
+          "absolute_value": 1.4579917905312438,
+          "rank": 4
+        },
+        {
+          "model": "logistic_regression",
+          "model_label": "逻辑回归",
+          "feature": "mean compactness",
+          "feature_cn": "平均紧密度",
+          "value": 0.4368622947039131,
+          "value_type": "标准化系数",
+          "absolute_value": 0.4368622947039131,
+          "rank": 5
+        },
+        {
+          "model": "logistic_regression",
+          "model_label": "逻辑回归",
+          "feature": "concave points error",
+          "feature_cn": "凹点数标准误",
+          "value": -0.3739741913603868,
+          "value_type": "标准化系数",
+          "absolute_value": 0.3739741913603868,
+          "rank": 6
+        },
+        {
+          "model": "logistic_regression",
+          "model_label": "逻辑回归",
+          "feature": "worst texture",
+          "feature_cn": "较大值纹理",
+          "value": 1.7841907720118186,
+          "value_type": "标准化系数",
+          "absolute_value": 1.7841907720118186,
+          "rank": 3
+        }
+      ],
+      "rf_explanation": [
+        {
+          "model": "random_forest",
+          "model_label": "随机森林",
+          "feature": "worst perimeter",
+          "feature_cn": "较大值周长",
+          "value": 0.3658363429794601,
+          "value_type": "不纯度重要性",
+          "absolute_value": 0.3658363429794601,
+          "rank": 1
+        },
+        {
+          "model": "random_forest",
+          "model_label": "随机森林",
+          "feature": "area error",
+          "feature_cn": "面积标准误",
+          "value": 0.2110131642187522,
+          "value_type": "不纯度重要性",
+          "absolute_value": 0.2110131642187522,
+          "rank": 3
+        },
+        {
+          "model": "random_forest",
+          "model_label": "随机森林",
+          "feature": "worst concavity",
+          "feature_cn": "较大值凹度",
+          "value": 0.2187329009409351,
+          "value_type": "不纯度重要性",
+          "absolute_value": 0.2187329009409351,
+          "rank": 2
+        },
+        {
+          "model": "random_forest",
+          "model_label": "随机森林",
+          "feature": "mean compactness",
+          "feature_cn": "平均紧密度",
+          "value": 0.1009604045354952,
+          "value_type": "不纯度重要性",
+          "absolute_value": 0.1009604045354952,
+          "rank": 4
+        },
+        {
+          "model": "random_forest",
+          "model_label": "随机森林",
+          "feature": "concave points error",
+          "feature_cn": "凹点数标准误",
+          "value": 0.0322856418717964,
+          "value_type": "不纯度重要性",
+          "absolute_value": 0.0322856418717964,
+          "rank": 6
+        },
+        {
+          "model": "random_forest",
+          "model_label": "随机森林",
+          "feature": "worst texture",
+          "feature_cn": "较大值纹理",
+          "value": 0.0711715454535608,
+          "value_type": "不纯度重要性",
+          "absolute_value": 0.0711715454535608,
+          "rank": 5
+        }
+      ],
+      "class_counts": [
+        {
+          "split": "测试集",
+          "diagnosis": "恶性",
+          "samples": 42,
+          "class_rate": 0.3684210526315789
+        },
+        {
+          "split": "测试集",
+          "diagnosis": "良性",
+          "samples": 72,
+          "class_rate": 0.631578947368421
+        },
+        {
+          "split": "训练集",
+          "diagnosis": "恶性",
+          "samples": 170,
+          "class_rate": 0.37362637362637363
+        },
+        {
+          "split": "训练集",
+          "diagnosis": "良性",
+          "samples": 285,
+          "class_rate": 0.6263736263736264
+        }
+      ]
+    }
+  },
+  "sources": [
+    {
+      "id": "summary_source",
+      "label": "看板摘要指标",
+      "path": "data/task5/breast_cancer/results/dashboard_summary.csv",
+      "query": {
+        "engine": "duckdb",
+        "language": "sql",
+        "sql": "SELECT * FROM read_csv_auto('data/task5/breast_cancer/results/dashboard_summary.csv', header=true)",
+        "description": "由冻结测试指标、特征筛选和管线核对结果生成的一行摘要。",
+        "tables_used": [
+          "data/task5/breast_cancer/results/dashboard_summary.csv"
+        ],
+        "filters": [
+          "scikit-learn乳腺癌诊断数据",
+          "恶性重编码为1",
+          "分层80/20划分",
+          "随机种子42",
+          "测试集不参与特征筛选"
+        ],
+        "metric_definitions": [
+          "best_auc为四种模型测试ROC-AUC的最大值。",
+          "highest_malignant_recall使用恶性=1和0.5阈值。",
+          "random_label_auc为500次随机训练标签的平均测试AUC。"
+        ]
+      }
+    },
+    {
+      "id": "metrics_source",
+      "label": "四种模型测试指标",
+      "path": "data/task5/breast_cancer/results/dashboard_model_metrics.csv",
+      "query": {
+        "engine": "duckdb",
+        "language": "sql",
+        "sql": "SELECT * FROM read_csv_auto('data/task5/breast_cancer/results/dashboard_model_metrics.csv', header=true)",
+        "description": "四种锁定模型在114例测试样本上的分类指标。",
+        "tables_used": [
+          "data/task5/breast_cancer/results/dashboard_model_metrics.csv"
+        ],
+        "filters": [
+          "scikit-learn乳腺癌诊断数据",
+          "恶性重编码为1",
+          "分层80/20划分",
+          "随机种子42",
+          "测试集不参与特征筛选"
+        ],
+        "metric_definitions": [
+          "ROC-AUC和PR-AUC使用恶性概率计算。",
+          "混淆矩阵指标使用0.5阈值。",
+          "AUC区间使用普通样本Bootstrap。"
+        ]
+      }
+    },
+    {
+      "id": "roc_source",
+      "label": "测试集ROC曲线点",
+      "path": "data/task5/breast_cancer/results/roc_points.csv",
+      "query": {
+        "engine": "duckdb",
+        "language": "sql",
+        "sql": "SELECT * FROM read_csv_auto('data/task5/breast_cancer/results/roc_points.csv', header=true)",
+        "description": "移动概率阈值后得到的FPR和TPR。",
+        "tables_used": [
+          "data/task5/breast_cancer/results/roc_points.csv"
+        ],
+        "filters": [
+          "scikit-learn乳腺癌诊断数据",
+          "恶性重编码为1",
+          "分层80/20划分",
+          "随机种子42",
+          "测试集不参与特征筛选"
+        ],
+        "metric_definitions": [
+          "四种模型使用同一组114例测试样本。"
+        ]
+      }
+    },
+    {
+      "id": "feature_source",
+      "label": "训练集特征筛选",
+      "path": "data/task5/breast_cancer/results/dashboard_selected_features.csv",
+      "query": {
+        "engine": "duckdb",
+        "language": "sql",
+        "sql": "SELECT * FROM read_csv_auto('data/task5/breast_cancer/results/dashboard_selected_features.csv', header=true)",
+        "description": "仅使用455例训练样本得到的最终特征、五折稳定性与VIF。",
+        "tables_used": [
+          "data/task5/breast_cancer/results/dashboard_selected_features.csv"
+        ],
+        "filters": [
+          "scikit-learn乳腺癌诊断数据",
+          "恶性重编码为1",
+          "分层80/20划分",
+          "随机种子42",
+          "测试集不参与特征筛选"
+        ],
+        "metric_definitions": [
+          "五折方向先在折内训练部分确定。",
+          "绝对相关系数达到0.90的重复变量不重复保留。",
+          "最终VIF目标低于5。"
+        ]
+      }
+    },
+    {
+      "id": "stability_source",
+      "label": "候选特征稳定性",
+      "path": "data/task5/breast_cancer/results/dashboard_feature_stability.csv",
+      "query": {
+        "engine": "duckdb",
+        "language": "sql",
+        "sql": "SELECT * FROM read_csv_auto('data/task5/breast_cancer/results/dashboard_feature_stability.csv', header=true)",
+        "description": "训练集中五折定向单变量AUC靠前的15项特征。",
+        "tables_used": [
+          "data/task5/breast_cancer/results/dashboard_feature_stability.csv"
+        ],
+        "filters": [
+          "scikit-learn乳腺癌诊断数据",
+          "恶性重编码为1",
+          "分层80/20划分",
+          "随机种子42",
+          "测试集不参与特征筛选"
+        ],
+        "metric_definitions": [
+          "测试集不参与候选特征排序。"
+        ]
+      }
+    },
+    {
+      "id": "lr_source",
+      "label": "逻辑回归标准化系数",
+      "path": "data/task5/breast_cancer/results/dashboard_lr_coefficients.csv",
+      "query": {
+        "engine": "duckdb",
+        "language": "sql",
+        "sql": "SELECT * FROM read_csv_auto('data/task5/breast_cancer/results/dashboard_lr_coefficients.csv', header=true)",
+        "description": "锁定逻辑回归模型中6项标准化特征的系数。",
+        "tables_used": [
+          "data/task5/breast_cancer/results/dashboard_lr_coefficients.csv"
+        ],
+        "filters": [
+          "scikit-learn乳腺癌诊断数据",
+          "恶性重编码为1",
+          "分层80/20划分",
+          "随机种子42",
+          "测试集不参与特征筛选"
+        ],
+        "metric_definitions": [
+          "系数用于解释模型方向，不表示医学因果。"
+        ]
+      }
+    },
+    {
+      "id": "rf_source",
+      "label": "随机森林特征重要性",
+      "path": "data/task5/breast_cancer/results/dashboard_rf_importance.csv",
+      "query": {
+        "engine": "duckdb",
+        "language": "sql",
+        "sql": "SELECT * FROM read_csv_auto('data/task5/breast_cancer/results/dashboard_rf_importance.csv', header=true)",
+        "description": "锁定随机森林模型中6项特征的不纯度重要性。",
+        "tables_used": [
+          "data/task5/breast_cancer/results/dashboard_rf_importance.csv"
+        ],
+        "filters": [
+          "scikit-learn乳腺癌诊断数据",
+          "恶性重编码为1",
+          "分层80/20划分",
+          "随机种子42",
+          "测试集不参与特征筛选"
+        ],
+        "metric_definitions": [
+          "不纯度重要性用于解释模型使用方式，不表示医学因果。"
+        ]
+      }
+    },
+    {
+      "id": "class_source",
+      "label": "训练测试类别构成",
+      "path": "data/task5/breast_cancer/results/dashboard_class_counts.csv",
+      "query": {
+        "engine": "duckdb",
+        "language": "sql",
+        "sql": "SELECT * FROM read_csv_auto('data/task5/breast_cancer/results/dashboard_class_counts.csv', header=true)",
+        "description": "分层80/20划分后的良性与恶性样本数量。",
+        "tables_used": [
+          "data/task5/breast_cancer/results/dashboard_class_counts.csv"
+        ],
+        "filters": [
+          "scikit-learn乳腺癌诊断数据",
+          "恶性重编码为1",
+          "分层80/20划分",
+          "随机种子42",
+          "测试集不参与特征筛选"
+        ],
+        "metric_definitions": [
+          "原始569例样本按随机种子42划分，恶性重编码为1。"
+        ]
+      }
+    }
+  ],
+  "package_info": {
+    "originUrl": "artifact://task5-breast-cancer-classification"
+  }
+}

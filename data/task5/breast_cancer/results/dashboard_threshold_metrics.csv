@@ -1,0 +1,21 @@
+﻿model,model_label,metric,value,metric_label
+logistic_regression,逻辑回归,balanced_accuracy,0.933531746031746,Balanced Accuracy
+random_forest,随机森林,balanced_accuracy,0.933531746031746,Balanced Accuracy
+gradient_boosting,梯度提升,balanced_accuracy,0.945436507936508,Balanced Accuracy
+decision_tree,决策树,balanced_accuracy,0.9484126984126984,Balanced Accuracy
+logistic_regression,逻辑回归,precision,0.9736842105263158,Precision
+random_forest,随机森林,precision,0.9736842105263158,Precision
+gradient_boosting,梯度提升,precision,0.9743589743589745,Precision
+decision_tree,决策树,precision,0.9090909090909092,Precision
+logistic_regression,逻辑回归,recall,0.8809523809523809,恶性召回率
+random_forest,随机森林,recall,0.8809523809523809,恶性召回率
+gradient_boosting,梯度提升,recall,0.9047619047619048,恶性召回率
+decision_tree,决策树,recall,0.9523809523809524,恶性召回率
+logistic_regression,逻辑回归,specificity,0.9861111111111112,特异度
+random_forest,随机森林,specificity,0.9861111111111112,特异度
+gradient_boosting,梯度提升,specificity,0.9861111111111112,特异度
+decision_tree,决策树,specificity,0.9444444444444444,特异度
+logistic_regression,逻辑回归,f1,0.925,F1
+random_forest,随机森林,f1,0.925,F1
+gradient_boosting,梯度提升,f1,0.9382716049382716,F1
+decision_tree,决策树,f1,0.9302325581395348,F1

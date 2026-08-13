@@ -1,0 +1,7 @@
+﻿model,model_label,feature,feature_cn,value,value_type,absolute_value,rank
+random_forest,随机森林,worst perimeter,较大值周长,0.3658363429794601,不纯度重要性,0.3658363429794601,1
+random_forest,随机森林,area error,面积标准误,0.2110131642187522,不纯度重要性,0.2110131642187522,3
+random_forest,随机森林,worst concavity,较大值凹度,0.2187329009409351,不纯度重要性,0.2187329009409351,2
+random_forest,随机森林,mean compactness,平均紧密度,0.1009604045354952,不纯度重要性,0.1009604045354952,4
+random_forest,随机森林,concave points error,凹点数标准误,0.0322856418717964,不纯度重要性,0.0322856418717964,6
+random_forest,随机森林,worst texture,较大值纹理,0.0711715454535608,不纯度重要性,0.0711715454535608,5
