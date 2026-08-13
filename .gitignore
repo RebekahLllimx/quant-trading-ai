@@ -7,18 +7,23 @@ __pycache__/
 .DS_Store
 Thumbs.db
 
-# Sensitive config — contains API tokens
-Task1/config.py
-Task2/config.py
-dashboard/config.py
-config.py
+# Sensitive local configuration
+**/config.py
+.env
+.env.*
 
-# Report generation scripts (AI-generated scaffolding, not hand-written code)
-*generate_report*
-*生成报告*
+# Generated build and QA files
+build/
+tmp/
+*.aux
+*.log
+*.out
+*.tex
 
-# Files containing real Chinese name (李沐晓)
-*李沐晓*
+# Private course references and archives
+Task*/references/course/
+Task7/reference/
+Task7/output/*.png
 *.zip
 
 # Internal workflow doc (contains AI de-texting tricks, not for teachers/TAs)
@@ -30,4 +35,5 @@ skills.md
 # Temporary office files
 ~$*.docx
 ~$*.pdf
+Task5/qa/
 Task4/dashboard/template.html
