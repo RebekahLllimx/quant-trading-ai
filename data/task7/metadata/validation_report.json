@@ -1,0 +1,75 @@
+{
+  "status": "pass",
+  "checks": [
+    {
+      "check": "raw_510300",
+      "status": "pass",
+      "rows": 2819,
+      "duplicates": 0,
+      "missing_ohlc": 0,
+      "invalid_high_low": 0,
+      "latest": "2026-08-13"
+    },
+    {
+      "check": "raw_510500",
+      "status": "pass",
+      "rows": 2819,
+      "duplicates": 0,
+      "missing_ohlc": 0,
+      "invalid_high_low": 0,
+      "latest": "2026-08-13"
+    },
+    {
+      "check": "raw_159915",
+      "status": "pass",
+      "rows": 2819,
+      "duplicates": 0,
+      "missing_ohlc": 0,
+      "invalid_high_low": 0,
+      "latest": "2026-08-13"
+    },
+    {
+      "check": "raw_000300",
+      "status": "pass",
+      "rows": 2822,
+      "duplicates": 0,
+      "missing_ohlc": 0,
+      "invalid_high_low": 0,
+      "latest": "2026-08-13"
+    },
+    {
+      "check": "strategy_a",
+      "status": "pass",
+      "rows": 2575,
+      "latest": "2026-08-13",
+      "min_nav": 305713.3183022,
+      "max_exposure": 0.99997518
+    },
+    {
+      "check": "strategy_b",
+      "status": "pass",
+      "rows": 2575,
+      "latest": "2026-08-13",
+      "min_nav": 471511.61441519,
+      "max_exposure": 0.52573632
+    },
+    {
+      "check": "strategy_c",
+      "status": "pass",
+      "rows": 2575,
+      "latest": "2026-08-13",
+      "min_nav": 420374.61062854,
+      "max_exposure": 0.62241372
+    },
+    {
+      "check": "dashboard_contract",
+      "status": "pass"
+    },
+    {
+      "check": "privacy_dashboard.json",
+      "status": "pass",
+      "matches": []
+    }
+  ],
+  "failures": []
+}

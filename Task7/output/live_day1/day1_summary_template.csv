@@ -1,0 +1,4 @@
+date,strategy,initial_assets,closing_total_assets,cash,market_value,day_return,cumulative_return,exposure,orders_submitted,orders_filled,orders_cancelled_or_rejected,run_status,notes
+,A,,,,,,,,,,,,waiting
+,B,,,,,,,,,,,,waiting
+,C,,,,,,,,,,,,waiting

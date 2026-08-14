@@ -1,0 +1,29 @@
+{
+  "created_at": "2026-07-17T19:04:17.393179+08:00",
+  "charts": [
+    {
+      "file": "baseline_comparison.png",
+      "purpose": "compare the two experimental designs without claiming identical samples"
+    },
+    {
+      "file": "time_split.png",
+      "purpose": "show strict time isolation and month-end sampling"
+    },
+    {
+      "file": "label_distribution.png",
+      "purpose": "show label drift across market years"
+    },
+    {
+      "file": "roc_curves.png",
+      "purpose": "show 2025 ranking performance across thresholds"
+    },
+    {
+      "file": "confusion_matrices.png",
+      "purpose": "show threshold-specific errors"
+    },
+    {
+      "file": "feature_importance.png",
+      "purpose": "explain model dependence with a non-causal caveat"
+    }
+  ]
+}

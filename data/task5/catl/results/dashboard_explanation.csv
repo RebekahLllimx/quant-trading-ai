@@ -1,0 +1,33 @@
+﻿model,model_label,feature,feature_cn,value,value_type,absolute_value,rank
+logistic_regression,逻辑回归,return_1d,1日收益,0.3273109562023155,标准化系数,0.3273109562023155,4
+logistic_regression,逻辑回归,rsi14,RSI(14),0.4473128567807319,标准化系数,0.4473128567807319,1
+logistic_regression,逻辑回归,return_10d,10日收益,0.1496574918544495,标准化系数,0.1496574918544495,6
+logistic_regression,逻辑回归,return_20d,20日收益,-0.1492666622489016,标准化系数,0.1492666622489016,7
+logistic_regression,逻辑回归,amount_ratio20,20日额比,-0.4071758379564278,标准化系数,0.4071758379564278,2
+logistic_regression,逻辑回归,return_5d,5日收益,-0.1330607745193288,标准化系数,0.1330607745193288,8
+logistic_regression,逻辑回归,intraday_range,日内振幅,0.3458308611691402,标准化系数,0.3458308611691402,3
+logistic_regression,逻辑回归,benchmark_volatility20,沪深300 20日波动率,-0.296790058363598,标准化系数,0.296790058363598,5
+decision_tree,决策树,return_1d,1日收益,0.1308381397678391,不纯度重要性,0.1308381397678391,4
+decision_tree,决策树,rsi14,RSI(14),0.4081772516536452,不纯度重要性,0.4081772516536452,1
+decision_tree,决策树,return_10d,10日收益,0.1568268640330782,不纯度重要性,0.1568268640330782,3
+decision_tree,决策树,return_20d,20日收益,0.035273457074165,不纯度重要性,0.035273457074165,5
+decision_tree,决策树,amount_ratio20,20日额比,0.2688842874712724,不纯度重要性,0.2688842874712724,2
+decision_tree,决策树,return_5d,5日收益,0.0,不纯度重要性,0.0,6
+decision_tree,决策树,intraday_range,日内振幅,0.0,不纯度重要性,0.0,7
+decision_tree,决策树,benchmark_volatility20,沪深300 20日波动率,0.0,不纯度重要性,0.0,8
+random_forest,随机森林,return_1d,1日收益,0.1352632946638625,不纯度重要性,0.1352632946638625,4
+random_forest,随机森林,rsi14,RSI(14),0.1934906435922232,不纯度重要性,0.1934906435922232,1
+random_forest,随机森林,return_10d,10日收益,0.1500465498096809,不纯度重要性,0.1500465498096809,2
+random_forest,随机森林,return_20d,20日收益,0.1480281517667544,不纯度重要性,0.1480281517667544,3
+random_forest,随机森林,amount_ratio20,20日额比,0.109219790778527,不纯度重要性,0.109219790778527,6
+random_forest,随机森林,return_5d,5日收益,0.0754806606323826,不纯度重要性,0.0754806606323826,7
+random_forest,随机森林,intraday_range,日内振幅,0.0648729369195806,不纯度重要性,0.0648729369195806,8
+random_forest,随机森林,benchmark_volatility20,沪深300 20日波动率,0.1235979718369885,不纯度重要性,0.1235979718369885,5
+gradient_boosting,梯度提升,return_1d,1日收益,0.1594068494891982,不纯度重要性,0.1594068494891982,2
+gradient_boosting,梯度提升,rsi14,RSI(14),0.3476329103959072,不纯度重要性,0.3476329103959072,1
+gradient_boosting,梯度提升,return_10d,10日收益,0.0700022838702029,不纯度重要性,0.0700022838702029,6
+gradient_boosting,梯度提升,return_20d,20日收益,0.1336695410991931,不纯度重要性,0.1336695410991931,4
+gradient_boosting,梯度提升,amount_ratio20,20日额比,0.1370714256186604,不纯度重要性,0.1370714256186604,3
+gradient_boosting,梯度提升,return_5d,5日收益,0.0,不纯度重要性,0.0,8
+gradient_boosting,梯度提升,intraday_range,日内振幅,0.0233349018237652,不纯度重要性,0.0233349018237652,7
+gradient_boosting,梯度提升,benchmark_volatility20,沪深300 20日波动率,0.1288820877030726,不纯度重要性,0.1288820877030726,5

@@ -1,0 +1,53 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# System
+.DS_Store
+Thumbs.db
+
+# Sensitive local configuration
+**/config.py
+.env
+.env.*
+
+# Generated build and QA files
+build/
+tmp/
+*.aux
+*.log
+*.out
+*.tex
+
+# Private course references and archives
+Task*/references/course/
+Task7/reference/
+Task7/output/*.png
+*.zip
+
+# Internal workflow doc (contains AI de-texting tricks, not for teachers/TAs)
+skills.md
+
+# Claude Code
+.claude/
+
+# Temporary office files
+~$*.docx
+~$*.pdf
+Task5/qa/
+Task4/dashboard/template.html
+# Private report-authoring materials
+**/spec.md
+**/references/course/
+**/references/style/
+**/generate_report.py
+**/generate_*notebook.py
+**/build_pdf.py
+**/patch_notebook_tex.py
+**/revise_notebook_language.py
+**/update_notebook_enhancements.py
+**/audit_language.py
+**/export_pdf*.applescript
+**/reporting/
+*.docx

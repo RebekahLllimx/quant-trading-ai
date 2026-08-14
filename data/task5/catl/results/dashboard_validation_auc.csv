@@ -1,0 +1,17 @@
+﻿model,validation_year,auc,model_label
+logistic_regression,2021年,0.71875,逻辑回归
+random_forest,2021年,0.6515625,随机森林
+gradient_boosting,2021年,0.6054687499999999,梯度提升
+decision_tree,2021年,0.51953125,决策树
+logistic_regression,2022年,0.5496794871794872,逻辑回归
+random_forest,2022年,0.5721153846153847,随机森林
+gradient_boosting,2022年,0.6113782051282051,梯度提升
+decision_tree,2022年,0.5248397435897436,决策树
+logistic_regression,2023年,0.5373376623376623,逻辑回归
+random_forest,2023年,0.4772727272727273,随机森林
+gradient_boosting,2023年,0.5560064935064934,梯度提升
+decision_tree,2023年,0.5211038961038961,决策树
+logistic_regression,2024年,0.5425925925925926,逻辑回归
+random_forest,2024年,0.5925925925925926,随机森林
+gradient_boosting,2024年,0.5111111111111111,梯度提升
+decision_tree,2024年,0.6481481481481481,决策树

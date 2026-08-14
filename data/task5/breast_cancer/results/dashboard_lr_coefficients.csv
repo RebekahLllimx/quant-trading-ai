@@ -1,0 +1,7 @@
+﻿model,model_label,feature,feature_cn,value,value_type,absolute_value,rank
+logistic_regression,逻辑回归,worst perimeter,较大值周长,4.005393906359771,标准化系数,4.005393906359771,1
+logistic_regression,逻辑回归,area error,面积标准误,3.683762292428928,标准化系数,3.683762292428928,2
+logistic_regression,逻辑回归,worst concavity,较大值凹度,1.4579917905312438,标准化系数,1.4579917905312438,4
+logistic_regression,逻辑回归,mean compactness,平均紧密度,0.4368622947039131,标准化系数,0.4368622947039131,5
+logistic_regression,逻辑回归,concave points error,凹点数标准误,-0.3739741913603868,标准化系数,0.3739741913603868,6
+logistic_regression,逻辑回归,worst texture,较大值纹理,1.7841907720118186,标准化系数,1.7841907720118186,3

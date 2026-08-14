@@ -1,0 +1,243 @@
+{
+  "validated_at": "2026-07-26T23:19:19.981429+08:00",
+  "overall_assessment": "ready_to_share_with_caveats",
+  "checks_passed": 33,
+  "checks_total": 33,
+  "failed_checks": [],
+  "checks": [
+    {
+      "check": "dataset_key_uniqueness",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "duplicate Symbol-Date rows=0"
+    },
+    {
+      "check": "binary_label",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "values=[0, 1]"
+    },
+    {
+      "check": "no_missing_model_cells",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "missing cells=0"
+    },
+    {
+      "check": "finite_features",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "all model feature cells are finite"
+    },
+    {
+      "check": "label_matches_future_return",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "Label equals 1[future_return_20d > 0]"
+    },
+    {
+      "check": "target_horizon_positive",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "minimum horizon calendar days=28"
+    },
+    {
+      "check": "split_date_disjointness",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "date overlaps={'train_validation': 0, 'train_development': 0, 'train_test': 0, 'validation_development': 0, 'validation_test': 0, 'development_test': 0}"
+    },
+    {
+      "check": "train_label_boundary",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "latest label end=2022-12-28, boundary=2022-12-31"
+    },
+    {
+      "check": "validation_label_boundary",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "latest label end=2023-12-28, boundary=2023-12-31"
+    },
+    {
+      "check": "development_label_boundary",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "latest label end=2024-12-27, boundary=2024-12-31"
+    },
+    {
+      "check": "test_label_boundary",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "latest label end=2025-12-26, boundary=2025-12-31"
+    },
+    {
+      "check": "annual_month_end_counts",
+      "passed": true,
+      "severity_if_failed": "medium",
+      "evidence": "unique month-end dates by year={2018: 11, 2019: 12, 2020: 12, 2021: 12, 2022: 11, 2023: 11, 2024: 11, 2025: 11}"
+    },
+    {
+      "check": "one_observation_date_per_month",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "maximum dates in a calendar month=1"
+    },
+    {
+      "check": "market_state_shared_within_date",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "maximum unique same-date market-state values=1"
+    },
+    {
+      "check": "excess_return_5d_identity",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "excess_return_5d = return_5d - market median"
+    },
+    {
+      "check": "excess_return_20d_identity",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "excess_return_20d = return_20d - market median"
+    },
+    {
+      "check": "rank_feature_range",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "range=[-0.4900, 0.5000]"
+    },
+    {
+      "check": "clip_bounds_cover_features",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "bounds=22, expected=22"
+    },
+    {
+      "check": "clip_bounds_ordered",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "unordered rows=0"
+    },
+    {
+      "check": "metrics_recompute_decision_tree",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "auc=0.490352519163, accuracy=0.480751173709, precision=0.544117647059, recall=0.317324185249, f1=0.400866738895"
+    },
+    {
+      "check": "prediction_grain_decision_tree",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "rows=1065, expected=1065, duplicate keys=0"
+    },
+    {
+      "check": "probability_range_decision_tree",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "range=[0.000000, 0.609079]"
+    },
+    {
+      "check": "metrics_recompute_logistic_regression",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "auc=0.528981587582, accuracy=0.509859154930, precision=0.560396039604, recall=0.485420240137, f1=0.520220588235"
+    },
+    {
+      "check": "prediction_grain_logistic_regression",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "rows=1065, expected=1065, duplicate keys=0"
+    },
+    {
+      "check": "probability_range_logistic_regression",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "range=[0.270375, 0.590125]"
+    },
+    {
+      "check": "metrics_recompute_random_forest",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "auc=0.492039315886, accuracy=0.490140845070, precision=0.546948356808, recall=0.399656946827, f1=0.461843409316"
+    },
+    {
+      "check": "prediction_grain_random_forest",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "rows=1065, expected=1065, duplicate keys=0"
+    },
+    {
+      "check": "probability_range_random_forest",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "range=[0.339204, 0.605130]"
+    },
+    {
+      "check": "same_test_labels_for_all_models",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "model count=3"
+    },
+    {
+      "check": "auc_intervals_ordered_and_contain_point",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "all three point estimates fall inside their stored block-bootstrap intervals"
+    },
+    {
+      "check": "raw_snapshot_hashes",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "hash mismatches=[]"
+    },
+    {
+      "check": "model_artifacts_exist",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "missing or too small=[]"
+    },
+    {
+      "check": "chart_outputs_exist",
+      "passed": true,
+      "severity_if_failed": "medium",
+      "evidence": "missing or too small=[]"
+    }
+  ],
+  "metric_recalculations": [
+    {
+      "model": "decision_tree",
+      "all_match": true,
+      "auc": 0.4903525191632918,
+      "accuracy": 0.4807511737089202,
+      "precision": 0.5441176470588235,
+      "recall": 0.31732418524871353,
+      "f1": 0.4008667388949079
+    },
+    {
+      "model": "logistic_regression",
+      "all_match": true,
+      "auc": 0.5289815875817598,
+      "accuracy": 0.5098591549295775,
+      "precision": 0.5603960396039604,
+      "recall": 0.4854202401372213,
+      "f1": 0.5202205882352942
+    },
+    {
+      "model": "random_forest",
+      "all_match": true,
+      "auc": 0.4920393158864935,
+      "accuracy": 0.49014084507042255,
+      "precision": 0.5469483568075117,
+      "recall": 0.3996569468267582,
+      "f1": 0.46184340931615464
+    }
+  ],
+  "required_caveats": [
+    "The best 2025 AUC is only 0.529 and its moving-block confidence interval reaches approximately 0.5.",
+    "The second experiment improves logistic-regression AUC modestly but does not improve every model.",
+    "The frozen universe is based on January 2018 liquidity rather than point-in-time index membership.",
+    "No fees, slippage, trading constraints or portfolio construction are included because this is a classification experiment.",
+    "Feature importance describes model dependence and is not causal evidence."
+  ]
+}

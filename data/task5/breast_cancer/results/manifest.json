@@ -1,0 +1,16 @@
+{
+  "source": "scikit-learn.datasets.load_breast_cancer",
+  "sklearn_target_original": {
+    "0": "malignant",
+    "1": "benign"
+  },
+  "report_target": {
+    "0": "benign",
+    "1": "malignant"
+  },
+  "split": {
+    "method": "stratified 80/20 holdout",
+    "random_state": 42
+  },
+  "dataset_sha256": "bccd2ffae53645eda69f0daca14648eb4c7d8cb79ac7542403771f25e38333a4"
+}

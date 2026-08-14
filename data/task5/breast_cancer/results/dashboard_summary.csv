@@ -1,0 +1,2 @@
+﻿best_auc,test_samples,selected_features,highest_malignant_recall,highest_specificity,random_label_auc
+0.9937169312169312,114,6,0.9523809523809524,0.9861111111111112,0.5029656084656084

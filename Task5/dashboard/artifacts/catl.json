@@ -1,0 +1,2136 @@
+{
+  "surface": "dashboard",
+  "manifest": {
+    "version": 1,
+    "surface": "dashboard",
+    "title": "TASK5 AI交易引擎：宁德时代相对沪深300分类",
+    "description": "周末预测宁德时代未来20个交易日是否跑赢沪深300，2025年严格样本外评估。",
+    "generatedAt": "2026-07-18T20:10:24+08:00",
+    "filters": [],
+    "cards": [
+      {
+        "id": "auc",
+        "description": "2025年概率排序能力；0.5接近随机。",
+        "dataset": "model_metrics",
+        "sourceId": "metrics_source",
+        "metrics": [
+          {
+            "label": "2025 ROC-AUC",
+            "field": "roc_auc",
+            "format": "number"
+          }
+        ]
+      },
+      {
+        "id": "validation",
+        "description": "2021—2024四个扩展窗口的平均AUC。",
+        "dataset": "model_metrics",
+        "sourceId": "metrics_source",
+        "metrics": [
+          {
+            "label": "开发期平均AUC",
+            "field": "mean_validation_auc",
+            "format": "number"
+          }
+        ]
+      },
+      {
+        "id": "balanced",
+        "description": "0.5阈值下对两类召回率取平均。",
+        "dataset": "model_metrics",
+        "sourceId": "metrics_source",
+        "metrics": [
+          {
+            "label": "Balanced Accuracy",
+            "field": "balanced_accuracy",
+            "format": "percent"
+          }
+        ]
+      },
+      {
+        "id": "precision",
+        "description": "预测跑赢的样本中实际跑赢的比例。",
+        "dataset": "model_metrics",
+        "sourceId": "metrics_source",
+        "metrics": [
+          {
+            "label": "Precision",
+            "field": "precision",
+            "format": "percent"
+          }
+        ]
+      },
+      {
+        "id": "recall",
+        "description": "实际跑赢的样本中被模型识别的比例。",
+        "dataset": "model_metrics",
+        "sourceId": "metrics_source",
+        "metrics": [
+          {
+            "label": "Recall",
+            "field": "recall",
+            "format": "percent"
+          }
+        ]
+      },
+      {
+        "id": "rows",
+        "description": "2025年具有完整20日未来标签的周度观察。",
+        "dataset": "model_metrics",
+        "sourceId": "metrics_source",
+        "metrics": [
+          {
+            "label": "测试样本",
+            "field": "test_rows",
+            "format": "compact"
+          }
+        ]
+      }
+    ],
+    "charts": [
+      {
+        "id": "model_auc",
+        "title": "四种模型的2025年AUC",
+        "subtitle": "决策树略高于0.5，但不确定区间跨过随机基准",
+        "type": "bar",
+        "intent": "comparison",
+        "dataset": "model_comparison",
+        "sourceId": "metrics_source",
+        "encodings": {
+          "x": {
+            "field": "model_label",
+            "type": "nominal",
+            "label": "模型"
+          },
+          "y": {
+            "field": "roc_auc",
+            "type": "quantitative",
+            "label": "ROC-AUC"
+          },
+          "tooltip": [
+            {
+              "field": "auc_ci",
+              "type": "text",
+              "label": "95%区间"
+            }
+          ]
+        },
+        "referenceLines": [
+          {
+            "axis": "y",
+            "value": 0.5,
+            "label": "随机排序",
+            "color": "neutral",
+            "lineStyle": "dashed"
+          }
+        ],
+        "palette": {
+          "kind": "semantic"
+        },
+        "layout": "full"
+      },
+      {
+        "id": "yearly_labels",
+        "title": "分年度Y=1比例",
+        "subtitle": "标签基准率随市场状态变化，2025年为52.1%",
+        "type": "bar",
+        "intent": "comparison",
+        "dataset": "yearly_labels",
+        "sourceId": "samples_source",
+        "encodings": {
+          "x": {
+            "field": "year",
+            "type": "ordinal",
+            "label": "年份"
+          },
+          "y": {
+            "field": "positive_rate",
+            "type": "quantitative",
+            "label": "Y=1比例",
+            "format": "percent"
+          },
+          "color": {
+            "field": "period",
+            "type": "nominal",
+            "label": "数据段"
+          },
+          "tooltip": [
+            {
+              "field": "rows",
+              "type": "quantitative",
+              "label": "周度样本",
+              "format": "compact"
+            }
+          ]
+        },
+        "referenceLines": [
+          {
+            "axis": "y",
+            "value": 0.5,
+            "label": "50%",
+            "color": "neutral",
+            "lineStyle": "dashed"
+          }
+        ],
+        "palette": {
+          "kind": "categorical"
+        },
+        "layout": "half"
+      },
+      {
+        "id": "validation_auc",
+        "title": "锁定参数的跨年验证AUC",
+        "subtitle": "四种模型在2021—2024扩展窗口中的稳定性",
+        "type": "line",
+        "intent": "trend",
+        "dataset": "validation_auc",
+        "sourceId": "validation_source",
+        "encodings": {
+          "x": {
+            "field": "validation_year",
+            "type": "ordinal",
+            "label": "验证年"
+          },
+          "y": {
+            "field": "auc",
+            "type": "quantitative",
+            "label": "ROC-AUC"
+          },
+          "color": {
+            "field": "model_label",
+            "type": "nominal",
+            "label": "模型"
+          },
+          "tooltip": [
+            {
+              "field": "model_label",
+              "type": "text",
+              "label": "模型"
+            }
+          ]
+        },
+        "referenceLines": [
+          {
+            "axis": "y",
+            "value": 0.5,
+            "label": "随机排序",
+            "color": "neutral",
+            "lineStyle": "dashed"
+          }
+        ],
+        "palette": {
+          "kind": "categorical"
+        },
+        "layout": "half"
+      },
+      {
+        "id": "roc",
+        "title": "2025年最终测试ROC曲线",
+        "subtitle": "四种模型在同一组48条周度样本上的跨阈值比较",
+        "type": "line",
+        "intent": "comparison",
+        "dataset": "roc_points",
+        "sourceId": "roc_source",
+        "encodings": {
+          "x": {
+            "field": "fpr",
+            "type": "quantitative",
+            "label": "假阳性率 FPR"
+          },
+          "y": {
+            "field": "tpr",
+            "type": "quantitative",
+            "label": "真阳性率 TPR"
+          },
+          "color": {
+            "field": "model_label",
+            "type": "nominal",
+            "label": "模型"
+          },
+          "tooltip": [
+            {
+              "field": "model_label",
+              "type": "text",
+              "label": "模型"
+            },
+            {
+              "field": "threshold",
+              "type": "quantitative",
+              "label": "概率阈值"
+            },
+            {
+              "field": "roc_auc",
+              "type": "quantitative",
+              "label": "AUC"
+            }
+          ]
+        },
+        "palette": {
+          "kind": "categorical"
+        },
+        "layout": "half"
+      },
+      {
+        "id": "confusion",
+        "title": "决策树0.5阈值混淆矩阵",
+        "subtitle": "2025年AUC最高模型：更少误判，但漏掉较多实际跑赢样本",
+        "type": "bar",
+        "intent": "comparison",
+        "dataset": "decision_confusion",
+        "sourceId": "confusion_source",
+        "encodings": {
+          "x": {
+            "field": "actual_label",
+            "type": "nominal",
+            "label": "实际类别"
+          },
+          "y": {
+            "field": "row_rate",
+            "type": "quantitative",
+            "label": "类别内占比",
+            "format": "percent"
+          },
+          "color": {
+            "field": "predicted_label",
+            "type": "nominal",
+            "label": "预测类别"
+          },
+          "tooltip": [
+            {
+              "field": "count",
+              "type": "quantitative",
+              "label": "样本数",
+              "format": "compact"
+            }
+          ]
+        },
+        "settings": {
+          "stacked": true
+        },
+        "palette": {
+          "kind": "categorical"
+        },
+        "layout": "half"
+      },
+      {
+        "id": "explanation",
+        "title": "决策树特征重要性",
+        "subtitle": "重要性反映模型分裂使用频率和贡献，不表示因果关系",
+        "type": "horizontalBar",
+        "intent": "comparison",
+        "dataset": "decision_explanation",
+        "sourceId": "explanation_source",
+        "encodings": {
+          "x": {
+            "field": "feature_cn",
+            "type": "nominal",
+            "label": "特征"
+          },
+          "y": {
+            "field": "value",
+            "type": "quantitative",
+            "label": "不纯度重要性"
+          },
+          "tooltip": [
+            {
+              "field": "rank",
+              "type": "quantitative",
+              "label": "排名"
+            }
+          ]
+        },
+        "settings": {
+          "sort": "ascending",
+          "showValues": true
+        },
+        "palette": {
+          "kind": "sequential"
+        },
+        "layout": "full"
+      }
+    ],
+    "tables": [
+      {
+        "id": "model_table",
+        "title": "四种模型结果汇总",
+        "subtitle": "AUC使用概率；其他分类指标使用0.5阈值",
+        "dataset": "model_comparison",
+        "sourceId": "metrics_source",
+        "defaultSort": {
+          "field": "roc_auc",
+          "direction": "desc"
+        },
+        "density": "spacious",
+        "columns": [
+          {
+            "field": "model_label",
+            "label": "模型",
+            "type": "text"
+          },
+          {
+            "field": "mean_validation_auc",
+            "label": "开发AUC",
+            "format": "number"
+          },
+          {
+            "field": "roc_auc",
+            "label": "2025 AUC",
+            "format": "number"
+          },
+          {
+            "field": "auc_ci",
+            "label": "95%区间",
+            "type": "text"
+          },
+          {
+            "field": "balanced_accuracy",
+            "label": "Balanced Acc.",
+            "format": "percent"
+          },
+          {
+            "field": "precision",
+            "label": "Precision",
+            "format": "percent"
+          },
+          {
+            "field": "recall",
+            "label": "Recall",
+            "format": "percent"
+          },
+          {
+            "field": "f1",
+            "label": "F1",
+            "format": "percent"
+          }
+        ],
+        "layout": "full"
+      },
+      {
+        "id": "feature_table",
+        "title": "开发期入选特征",
+        "subtitle": "特征在打开2025年测试集前锁定",
+        "dataset": "selected_features",
+        "sourceId": "feature_source",
+        "defaultSort": {
+          "field": "mean_auc",
+          "direction": "desc"
+        },
+        "density": "spacious",
+        "columns": [
+          {
+            "field": "feature_cn",
+            "label": "特征",
+            "type": "text"
+          },
+          {
+            "field": "mean_auc",
+            "label": "滚动平均AUC",
+            "format": "number"
+          },
+          {
+            "field": "std_auc",
+            "label": "AUC标准差",
+            "format": "number"
+          },
+          {
+            "field": "years_above_0_5",
+            "label": "AUC>0.5年数",
+            "format": "number"
+          },
+          {
+            "field": "vif",
+            "label": "VIF",
+            "format": "number"
+          },
+          {
+            "field": "reason",
+            "label": "保留理由",
+            "type": "text"
+          }
+        ],
+        "layout": "full"
+      }
+    ],
+    "sources": [
+      {
+        "id": "metrics_source",
+        "label": "最终测试模型指标",
+        "path": "data/task5/catl/results/dashboard_model_metrics.csv",
+        "query": {
+          "engine": "duckdb",
+          "language": "sql",
+          "sql": "SELECT * FROM read_csv_auto('data/task5/catl/results/dashboard_model_metrics.csv', header=true)",
+          "description": "四种锁定模型在2025周度测试样本上的分类指标。",
+          "tables_used": [
+            "data/task5/catl/results/dashboard_model_metrics.csv"
+          ],
+          "filters": [
+            "宁德时代300750.SZ",
+            "沪深300000300.SH",
+            "周末观察",
+            "未来20交易日超额收益标签",
+            "2025最终测试"
+          ],
+          "metric_definitions": [
+            "ROC-AUC使用Y=1概率计算。",
+            "混淆矩阵指标使用0.5阈值。",
+            "AUC区间使用4周移动时间块Bootstrap。"
+          ]
+        }
+      },
+      {
+        "id": "validation_source",
+        "label": "滚动开发验证",
+        "path": "data/task5/catl/results/dashboard_validation_auc.csv",
+        "query": {
+          "engine": "duckdb",
+          "language": "sql",
+          "sql": "SELECT * FROM read_csv_auto('data/task5/catl/results/dashboard_validation_auc.csv', header=true)",
+          "description": "四种模型锁定参数在2021—2024的扩展窗口AUC。",
+          "tables_used": [
+            "data/task5/catl/results/dashboard_validation_auc.csv"
+          ],
+          "filters": [
+            "宁德时代300750.SZ",
+            "沪深300000300.SH",
+            "周末观察",
+            "未来20交易日超额收益标签",
+            "2025最终测试"
+          ],
+          "metric_definitions": [
+            "每折只用更早数据训练。",
+            "训练样本label_end_date早于验证年起点。"
+          ]
+        }
+      },
+      {
+        "id": "roc_source",
+        "label": "ROC曲线点",
+        "path": "data/task5/catl/results/roc_points.csv",
+        "query": {
+          "engine": "duckdb",
+          "language": "sql",
+          "sql": "SELECT * FROM read_csv_auto('data/task5/catl/results/roc_points.csv', header=true)",
+          "description": "2025最终测试上移动分类阈值生成的FPR和TPR。",
+          "tables_used": [
+            "data/task5/catl/results/roc_points.csv"
+          ],
+          "filters": [
+            "宁德时代300750.SZ",
+            "沪深300000300.SH",
+            "周末观察",
+            "未来20交易日超额收益标签",
+            "2025最终测试"
+          ],
+          "metric_definitions": [
+            "每个模型在同一组48条周度样本上评估。"
+          ]
+        }
+      },
+      {
+        "id": "confusion_source",
+        "label": "决策树混淆矩阵",
+        "path": "data/task5/catl/results/dashboard_decision_tree_confusion.csv",
+        "query": {
+          "engine": "duckdb",
+          "language": "sql",
+          "sql": "SELECT * FROM read_csv_auto('data/task5/catl/results/dashboard_decision_tree_confusion.csv', header=true)",
+          "description": "2025最终测试中决策树实际类别和0.5阈值预测类别的交叉表。",
+          "tables_used": [
+            "data/task5/catl/results/dashboard_decision_tree_confusion.csv"
+          ],
+          "filters": [
+            "宁德时代300750.SZ",
+            "沪深300000300.SH",
+            "周末观察",
+            "未来20交易日超额收益标签",
+            "2025最终测试"
+          ],
+          "metric_definitions": [
+            "row_rate是各实际类别内的预测占比。"
+          ]
+        }
+      },
+      {
+        "id": "explanation_source",
+        "label": "决策树特征重要性",
+        "path": "data/task5/catl/results/dashboard_decision_tree_importance.csv",
+        "query": {
+          "engine": "duckdb",
+          "language": "sql",
+          "sql": "SELECT * FROM read_csv_auto('data/task5/catl/results/dashboard_decision_tree_importance.csv', header=true)",
+          "description": "2025年AUC最高模型的开发期训练特征重要性。",
+          "tables_used": [
+            "data/task5/catl/results/dashboard_decision_tree_importance.csv"
+          ],
+          "filters": [
+            "宁德时代300750.SZ",
+            "沪深300000300.SH",
+            "周末观察",
+            "未来20交易日超额收益标签",
+            "2025最终测试"
+          ],
+          "metric_definitions": [
+            "不纯度重要性表示模型使用方式，不表示因果关系。"
+          ]
+        }
+      },
+      {
+        "id": "samples_source",
+        "label": "周度建模样本",
+        "path": "data/task5/catl/processed/weekly_samples.csv",
+        "query": {
+          "engine": "duckdb",
+          "language": "sql",
+          "sql": "SELECT * FROM read_csv_auto('data/task5/catl/processed/weekly_samples.csv', header=true)",
+          "description": "每个自然周最后一个交易日的特征、20日未来超额收益和0/1标签。",
+          "tables_used": [
+            "data/task5/catl/processed/weekly_samples.csv"
+          ],
+          "filters": [
+            "宁德时代300750.SZ",
+            "沪深300000300.SH",
+            "周末观察",
+            "未来20交易日超额收益标签",
+            "2025最终测试"
+          ],
+          "metric_definitions": [
+            "Y=1当且仅当宁德时代未来20交易日收益高于沪深300。",
+            "所有X只使用观察日及以前数据。"
+          ]
+        }
+      },
+      {
+        "id": "feature_source",
+        "label": "最终入选特征",
+        "path": "data/task5/catl/results/dashboard_selected_features.csv",
+        "query": {
+          "engine": "duckdb",
+          "language": "sql",
+          "sql": "SELECT * FROM read_csv_auto('data/task5/catl/results/dashboard_selected_features.csv', header=true)",
+          "description": "仅根据2018—2024开发期滚动AUC、相关性与VIF筛选的变量。",
+          "tables_used": [
+            "data/task5/catl/results/dashboard_selected_features.csv"
+          ],
+          "filters": [
+            "宁德时代300750.SZ",
+            "沪深300000300.SH",
+            "周末观察",
+            "未来20交易日超额收益标签",
+            "2025最终测试"
+          ],
+          "metric_definitions": [
+            "mean_auc是2021—2024四个滚动验证年的单变量逻辑回归平均AUC。",
+            "VIF目标低于5。"
+          ]
+        }
+      }
+    ],
+    "blocks": [
+      {
+        "id": "opening",
+        "type": "markdown",
+        "body": "## 结果与边界\n\n2025年测试中，决策树AUC最高为0.524，时间块Bootstrap区间为0.349—0.691，跨过0.5；其余三个模型也没有通过预测能力检验。AUC复算和标签检查未发现机械错误，20日标签重叠、单股样本较少和信息覆盖不足是当前设计的主要边界。这不是一个可用于交易的模型。",
+        "sourceId": "metrics_source"
+      },
+      {
+        "id": "cards",
+        "type": "metric-strip",
+        "cardIds": [
+          "auc",
+          "validation",
+          "balanced",
+          "precision",
+          "recall",
+          "rows"
+        ]
+      },
+      {
+        "id": "model_auc_block",
+        "type": "chart",
+        "chartId": "model_auc",
+        "layout": "full"
+      },
+      {
+        "id": "yearly_labels_block",
+        "type": "chart",
+        "chartId": "yearly_labels",
+        "layout": "half"
+      },
+      {
+        "id": "validation_auc_block",
+        "type": "chart",
+        "chartId": "validation_auc",
+        "layout": "half"
+      },
+      {
+        "id": "roc_block",
+        "type": "chart",
+        "chartId": "roc",
+        "layout": "half"
+      },
+      {
+        "id": "confusion_block",
+        "type": "chart",
+        "chartId": "confusion",
+        "layout": "half"
+      },
+      {
+        "id": "explanation_block",
+        "type": "chart",
+        "chartId": "explanation",
+        "layout": "full"
+      },
+      {
+        "id": "model_table_block",
+        "type": "table",
+        "tableId": "model_table",
+        "layout": "full"
+      },
+      {
+        "id": "feature_table_block",
+        "type": "table",
+        "tableId": "feature_table",
+        "layout": "full"
+      },
+      {
+        "id": "caveats",
+        "type": "markdown",
+        "body": "## 阅读边界\n\n- 一共370条周度记录，但相邻周的20日标签重叠，全期近似独立窗口约91个，2025年约12个。\n- 当前区间很宽，无法区分关系换向、弱信号和抽样波动。\n- 管线检查只能排除机械错误，不能证明标签和数据设计充分。\n- 模型只预测超额收益方向，不输出幅度，也未计算交易成本或仓位。\n- 测试集打开后未重新选变量、调参或事后倒转概率。"
+      }
+    ]
+  },
+  "snapshot": {
+    "version": 1,
+    "generatedAt": "2026-07-18T20:10:24+08:00",
+    "status": "ready",
+    "datasets": {
+      "model_metrics": [
+        {
+          "model": "decision_tree",
+          "model_cn": "决策树",
+          "roc_auc": 0.5243478260869565,
+          "auc_ci_low": 0.34918430335097,
+          "auc_ci_high": 0.6913313094429347,
+          "pr_auc": 0.6114970986460349,
+          "accuracy": 0.5833333333333334,
+          "balanced_accuracy": 0.5947826086956521,
+          "precision": 0.7272727272727273,
+          "recall": 0.32,
+          "f1": 0.4444444444444444,
+          "brier": 0.2501013522498663,
+          "tn": 20,
+          "fp": 3,
+          "fn": 17,
+          "tp": 8,
+          "params": "{\"max_depth\": 3, \"min_samples_leaf\": 15, \"class_weight\": \"balanced\"}",
+          "mean_validation_auc": 0.5534057594604469,
+          "std_validation_auc": 0.0632008181499467,
+          "auc_2021": 0.51953125,
+          "auc_2022": 0.5248397435897436,
+          "auc_2023": 0.5211038961038961,
+          "auc_2024": 0.6481481481481481,
+          "model_label": "决策树",
+          "test_rows": 48,
+          "auc_ci": "0.349–0.691",
+          "auc_minus_random": 0.024347826086956514,
+          "display_order": 0
+        },
+        {
+          "model": "gradient_boosting",
+          "model_cn": "梯度提升",
+          "roc_auc": 0.4495652173913043,
+          "auc_ci_low": 0.2315996503496503,
+          "auc_ci_high": 0.6574184303350968,
+          "pr_auc": 0.5908683610500118,
+          "accuracy": 0.4583333333333333,
+          "balanced_accuracy": 0.4434782608695652,
+          "precision": 0.4878048780487805,
+          "recall": 0.8,
+          "f1": 0.6060606060606061,
+          "brier": 0.2645704624505406,
+          "tn": 2,
+          "fp": 21,
+          "fn": 5,
+          "tp": 20,
+          "params": "{\"n_estimators\": 80, \"learning_rate\": 0.05, \"max_depth\": 1, \"min_samples_leaf\": 8}",
+          "mean_validation_auc": 0.5709911399364523,
+          "std_validation_auc": 0.047010559491996,
+          "auc_2021": 0.6054687499999999,
+          "auc_2022": 0.6113782051282051,
+          "auc_2023": 0.5560064935064934,
+          "auc_2024": 0.5111111111111111,
+          "model_label": "梯度提升",
+          "test_rows": 48,
+          "auc_ci": "0.232–0.657",
+          "auc_minus_random": -0.050434782608695716,
+          "display_order": 1
+        },
+        {
+          "model": "random_forest",
+          "model_cn": "随机森林",
+          "roc_auc": 0.4,
+          "auc_ci_low": 0.1781120312859443,
+          "auc_ci_high": 0.6206409801136363,
+          "pr_auc": 0.5280883536613685,
+          "accuracy": 0.4375,
+          "balanced_accuracy": 0.4356521739130434,
+          "precision": 0.4615384615384615,
+          "recall": 0.48,
+          "f1": 0.4705882352941176,
+          "brier": 0.2709705167882371,
+          "tn": 9,
+          "fp": 14,
+          "fn": 13,
+          "tp": 12,
+          "params": "{\"max_depth\": 3, \"min_samples_leaf\": 10, \"max_features\": \"sqrt\"}",
+          "mean_validation_auc": 0.5733858011201762,
+          "std_validation_auc": 0.0723874621024763,
+          "auc_2021": 0.6515625,
+          "auc_2022": 0.5721153846153847,
+          "auc_2023": 0.4772727272727273,
+          "auc_2024": 0.5925925925925926,
+          "model_label": "随机森林",
+          "test_rows": 48,
+          "auc_ci": "0.178–0.621",
+          "auc_minus_random": -0.09999999999999998,
+          "display_order": 2
+        },
+        {
+          "model": "logistic_regression",
+          "model_cn": "逻辑回归",
+          "roc_auc": 0.368695652173913,
+          "auc_ci_low": 0.1562065972222222,
+          "auc_ci_high": 0.5856778996865204,
+          "pr_auc": 0.5207547007135362,
+          "accuracy": 0.4583333333333333,
+          "balanced_accuracy": 0.4469565217391304,
+          "precision": 0.4864864864864865,
+          "recall": 0.72,
+          "f1": 0.5806451612903226,
+          "brier": 0.2925006882589874,
+          "tn": 4,
+          "fp": 19,
+          "fn": 7,
+          "tp": 18,
+          "params": "{\"C\": 1.0}",
+          "mean_validation_auc": 0.5870899355274356,
+          "std_validation_auc": 0.0879189331871984,
+          "auc_2021": 0.71875,
+          "auc_2022": 0.5496794871794872,
+          "auc_2023": 0.5373376623376623,
+          "auc_2024": 0.5425925925925926,
+          "model_label": "逻辑回归",
+          "test_rows": 48,
+          "auc_ci": "0.156–0.586",
+          "auc_minus_random": -0.13130434782608702,
+          "display_order": 3
+        }
+      ],
+      "model_comparison": [
+        {
+          "model": "decision_tree",
+          "model_cn": "决策树",
+          "roc_auc": 0.5243478260869565,
+          "auc_ci_low": 0.34918430335097,
+          "auc_ci_high": 0.6913313094429347,
+          "pr_auc": 0.6114970986460349,
+          "accuracy": 0.5833333333333334,
+          "balanced_accuracy": 0.5947826086956521,
+          "precision": 0.7272727272727273,
+          "recall": 0.32,
+          "f1": 0.4444444444444444,
+          "brier": 0.2501013522498663,
+          "tn": 20,
+          "fp": 3,
+          "fn": 17,
+          "tp": 8,
+          "params": "{\"max_depth\": 3, \"min_samples_leaf\": 15, \"class_weight\": \"balanced\"}",
+          "mean_validation_auc": 0.5534057594604469,
+          "std_validation_auc": 0.0632008181499467,
+          "auc_2021": 0.51953125,
+          "auc_2022": 0.5248397435897436,
+          "auc_2023": 0.5211038961038961,
+          "auc_2024": 0.6481481481481481,
+          "model_label": "决策树",
+          "test_rows": 48,
+          "auc_ci": "0.349–0.691",
+          "auc_minus_random": 0.024347826086956514,
+          "display_order": 0
+        },
+        {
+          "model": "gradient_boosting",
+          "model_cn": "梯度提升",
+          "roc_auc": 0.4495652173913043,
+          "auc_ci_low": 0.2315996503496503,
+          "auc_ci_high": 0.6574184303350968,
+          "pr_auc": 0.5908683610500118,
+          "accuracy": 0.4583333333333333,
+          "balanced_accuracy": 0.4434782608695652,
+          "precision": 0.4878048780487805,
+          "recall": 0.8,
+          "f1": 0.6060606060606061,
+          "brier": 0.2645704624505406,
+          "tn": 2,
+          "fp": 21,
+          "fn": 5,
+          "tp": 20,
+          "params": "{\"n_estimators\": 80, \"learning_rate\": 0.05, \"max_depth\": 1, \"min_samples_leaf\": 8}",
+          "mean_validation_auc": 0.5709911399364523,
+          "std_validation_auc": 0.047010559491996,
+          "auc_2021": 0.6054687499999999,
+          "auc_2022": 0.6113782051282051,
+          "auc_2023": 0.5560064935064934,
+          "auc_2024": 0.5111111111111111,
+          "model_label": "梯度提升",
+          "test_rows": 48,
+          "auc_ci": "0.232–0.657",
+          "auc_minus_random": -0.050434782608695716,
+          "display_order": 1
+        },
+        {
+          "model": "random_forest",
+          "model_cn": "随机森林",
+          "roc_auc": 0.4,
+          "auc_ci_low": 0.1781120312859443,
+          "auc_ci_high": 0.6206409801136363,
+          "pr_auc": 0.5280883536613685,
+          "accuracy": 0.4375,
+          "balanced_accuracy": 0.4356521739130434,
+          "precision": 0.4615384615384615,
+          "recall": 0.48,
+          "f1": 0.4705882352941176,
+          "brier": 0.2709705167882371,
+          "tn": 9,
+          "fp": 14,
+          "fn": 13,
+          "tp": 12,
+          "params": "{\"max_depth\": 3, \"min_samples_leaf\": 10, \"max_features\": \"sqrt\"}",
+          "mean_validation_auc": 0.5733858011201762,
+          "std_validation_auc": 0.0723874621024763,
+          "auc_2021": 0.6515625,
+          "auc_2022": 0.5721153846153847,
+          "auc_2023": 0.4772727272727273,
+          "auc_2024": 0.5925925925925926,
+          "model_label": "随机森林",
+          "test_rows": 48,
+          "auc_ci": "0.178–0.621",
+          "auc_minus_random": -0.09999999999999998,
+          "display_order": 2
+        },
+        {
+          "model": "logistic_regression",
+          "model_cn": "逻辑回归",
+          "roc_auc": 0.368695652173913,
+          "auc_ci_low": 0.1562065972222222,
+          "auc_ci_high": 0.5856778996865204,
+          "pr_auc": 0.5207547007135362,
+          "accuracy": 0.4583333333333333,
+          "balanced_accuracy": 0.4469565217391304,
+          "precision": 0.4864864864864865,
+          "recall": 0.72,
+          "f1": 0.5806451612903226,
+          "brier": 0.2925006882589874,
+          "tn": 4,
+          "fp": 19,
+          "fn": 7,
+          "tp": 18,
+          "params": "{\"C\": 1.0}",
+          "mean_validation_auc": 0.5870899355274356,
+          "std_validation_auc": 0.0879189331871984,
+          "auc_2021": 0.71875,
+          "auc_2022": 0.5496794871794872,
+          "auc_2023": 0.5373376623376623,
+          "auc_2024": 0.5425925925925926,
+          "model_label": "逻辑回归",
+          "test_rows": 48,
+          "auc_ci": "0.156–0.586",
+          "auc_minus_random": -0.13130434782608702,
+          "display_order": 3
+        }
+      ],
+      "validation_auc": [
+        {
+          "model": "logistic_regression",
+          "validation_year": "2021年",
+          "auc": 0.71875,
+          "model_label": "逻辑回归"
+        },
+        {
+          "model": "random_forest",
+          "validation_year": "2021年",
+          "auc": 0.6515625,
+          "model_label": "随机森林"
+        },
+        {
+          "model": "gradient_boosting",
+          "validation_year": "2021年",
+          "auc": 0.6054687499999999,
+          "model_label": "梯度提升"
+        },
+        {
+          "model": "decision_tree",
+          "validation_year": "2021年",
+          "auc": 0.51953125,
+          "model_label": "决策树"
+        },
+        {
+          "model": "logistic_regression",
+          "validation_year": "2022年",
+          "auc": 0.5496794871794872,
+          "model_label": "逻辑回归"
+        },
+        {
+          "model": "random_forest",
+          "validation_year": "2022年",
+          "auc": 0.5721153846153847,
+          "model_label": "随机森林"
+        },
+        {
+          "model": "gradient_boosting",
+          "validation_year": "2022年",
+          "auc": 0.6113782051282051,
+          "model_label": "梯度提升"
+        },
+        {
+          "model": "decision_tree",
+          "validation_year": "2022年",
+          "auc": 0.5248397435897436,
+          "model_label": "决策树"
+        },
+        {
+          "model": "logistic_regression",
+          "validation_year": "2023年",
+          "auc": 0.5373376623376623,
+          "model_label": "逻辑回归"
+        },
+        {
+          "model": "random_forest",
+          "validation_year": "2023年",
+          "auc": 0.4772727272727273,
+          "model_label": "随机森林"
+        },
+        {
+          "model": "gradient_boosting",
+          "validation_year": "2023年",
+          "auc": 0.5560064935064934,
+          "model_label": "梯度提升"
+        },
+        {
+          "model": "decision_tree",
+          "validation_year": "2023年",
+          "auc": 0.5211038961038961,
+          "model_label": "决策树"
+        },
+        {
+          "model": "logistic_regression",
+          "validation_year": "2024年",
+          "auc": 0.5425925925925926,
+          "model_label": "逻辑回归"
+        },
+        {
+          "model": "random_forest",
+          "validation_year": "2024年",
+          "auc": 0.5925925925925926,
+          "model_label": "随机森林"
+        },
+        {
+          "model": "gradient_boosting",
+          "validation_year": "2024年",
+          "auc": 0.5111111111111111,
+          "model_label": "梯度提升"
+        },
+        {
+          "model": "decision_tree",
+          "validation_year": "2024年",
+          "auc": 0.6481481481481481,
+          "model_label": "决策树"
+        }
+      ],
+      "roc_points": [
+        {
+          "model": "logistic_regression",
+          "fpr": 0.0,
+          "tpr": 0.0,
+          "threshold": 1.836203999614494,
+          "model_label": "逻辑回归",
+          "roc_auc": 0.368695652173913
+        },
+        {
+          "model": "logistic_regression",
+          "fpr": 0.0,
+          "tpr": 0.04,
+          "threshold": 0.8362039996144939,
+          "model_label": "逻辑回归",
+          "roc_auc": 0.368695652173913
+        },
+        {
+          "model": "logistic_regression",
+          "fpr": 0.0,
+          "tpr": 0.12,
+          "threshold": 0.7784514035750288,
+          "model_label": "逻辑回归",
+          "roc_auc": 0.368695652173913
+        },
+        {
+          "model": "logistic_regression",
+          "fpr": 0.1739130434782608,
+          "tpr": 0.12,
+          "threshold": 0.7236232865726139,
+          "model_label": "逻辑回归",
+          "roc_auc": 0.368695652173913
+        },
+        {
+          "model": "logistic_regression",
+          "fpr": 0.1739130434782608,
+          "tpr": 0.16,
+          "threshold": 0.722509137734727,
+          "model_label": "逻辑回归",
+          "roc_auc": 0.368695652173913
+        },
+        {
+          "model": "logistic_regression",
+          "fpr": 0.3478260869565217,
+          "tpr": 0.16,
+          "threshold": 0.6927672196770611,
+          "model_label": "逻辑回归",
+          "roc_auc": 0.368695652173913
+        },
+        {
+          "model": "logistic_regression",
+          "fpr": 0.3478260869565217,
+          "tpr": 0.2,
+          "threshold": 0.6902611323302775,
+          "model_label": "逻辑回归",
+          "roc_auc": 0.368695652173913
+        },
+        {
+          "model": "logistic_regression",
+          "fpr": 0.4782608695652174,
+          "tpr": 0.2,
+          "threshold": 0.662483318977137,
+          "model_label": "逻辑回归",
+          "roc_auc": 0.368695652173913
+        },
+        {
+          "model": "logistic_regression",
+          "fpr": 0.4782608695652174,
+          "tpr": 0.32,
+          "threshold": 0.6288635402858052,
+          "model_label": "逻辑回归",
+          "roc_auc": 0.368695652173913
+        },
+        {
+          "model": "logistic_regression",
+          "fpr": 0.5217391304347826,
+          "tpr": 0.32,
+          "threshold": 0.620725100510973,
+          "model_label": "逻辑回归",
+          "roc_auc": 0.368695652173913
+        },
+        {
+          "model": "logistic_regression",
+          "fpr": 0.5217391304347826,
+          "tpr": 0.36,
+          "threshold": 0.618350765480709,
+          "model_label": "逻辑回归",
+          "roc_auc": 0.368695652173913
+        },
+        {
+          "model": "logistic_regression",
+          "fpr": 0.5652173913043478,
+          "tpr": 0.36,
+          "threshold": 0.6149732177350541,
+          "model_label": "逻辑回归",
+          "roc_auc": 0.368695652173913
+        },
+        {
+          "model": "logistic_regression",
+          "fpr": 0.5652173913043478,
+          "tpr": 0.4,
+          "threshold": 0.5956297554369747,
+          "model_label": "逻辑回归",
+          "roc_auc": 0.368695652173913
+        },
+        {
+          "model": "logistic_regression",
+          "fpr": 0.6956521739130435,
+          "tpr": 0.4,
+          "threshold": 0.5757178792457256,
+          "model_label": "逻辑回归",
+          "roc_auc": 0.368695652173913
+        },
+        {
+          "model": "logistic_regression",
+          "fpr": 0.6956521739130435,
+          "tpr": 0.44,
+          "threshold": 0.5744462601754804,
+          "model_label": "逻辑回归",
+          "roc_auc": 0.368695652173913
+        },
+        {
+          "model": "logistic_regression",
+          "fpr": 0.7391304347826086,
+          "tpr": 0.44,
+          "threshold": 0.5597184617123983,
+          "model_label": "逻辑回归",
+          "roc_auc": 0.368695652173913
+        },
+        {
+          "model": "logistic_regression",
+          "fpr": 0.7391304347826086,
+          "tpr": 0.56,
+          "threshold": 0.5454171073460125,
+          "model_label": "逻辑回归",
+          "roc_auc": 0.368695652173913
+        },
+        {
+          "model": "logistic_regression",
+          "fpr": 0.782608695652174,
+          "tpr": 0.56,
+          "threshold": 0.5355512667561196,
+          "model_label": "逻辑回归",
+          "roc_auc": 0.368695652173913
+        },
+        {
+          "model": "logistic_regression",
+          "fpr": 0.782608695652174,
+          "tpr": 0.6,
+          "threshold": 0.5320838665927471,
+          "model_label": "逻辑回归",
+          "roc_auc": 0.368695652173913
+        },
+        {
+          "model": "logistic_regression",
+          "fpr": 0.8260869565217391,
+          "tpr": 0.6,
+          "threshold": 0.5220075252134336,
+          "model_label": "逻辑回归",
+          "roc_auc": 0.368695652173913
+        },
+        {
+          "model": "logistic_regression",
+          "fpr": 0.8260869565217391,
+          "tpr": 0.76,
+          "threshold": 0.4938764689732113,
+          "model_label": "逻辑回归",
+          "roc_auc": 0.368695652173913
+        },
+        {
+          "model": "logistic_regression",
+          "fpr": 0.8695652173913043,
+          "tpr": 0.76,
+          "threshold": 0.4898847891357626,
+          "model_label": "逻辑回归",
+          "roc_auc": 0.368695652173913
+        },
+        {
+          "model": "logistic_regression",
+          "fpr": 0.8695652173913043,
+          "tpr": 0.8,
+          "threshold": 0.489532314773144,
+          "model_label": "逻辑回归",
+          "roc_auc": 0.368695652173913
+        },
+        {
+          "model": "logistic_regression",
+          "fpr": 0.9130434782608696,
+          "tpr": 0.8,
+          "threshold": 0.4890858920883134,
+          "model_label": "逻辑回归",
+          "roc_auc": 0.368695652173913
+        },
+        {
+          "model": "logistic_regression",
+          "fpr": 0.9130434782608696,
+          "tpr": 0.84,
+          "threshold": 0.4688103394890227,
+          "model_label": "逻辑回归",
+          "roc_auc": 0.368695652173913
+        },
+        {
+          "model": "logistic_regression",
+          "fpr": 0.9565217391304348,
+          "tpr": 0.84,
+          "threshold": 0.4570976894867448,
+          "model_label": "逻辑回归",
+          "roc_auc": 0.368695652173913
+        },
+        {
+          "model": "logistic_regression",
+          "fpr": 0.9565217391304348,
+          "tpr": 0.88,
+          "threshold": 0.4544176893721937,
+          "model_label": "逻辑回归",
+          "roc_auc": 0.368695652173913
+        },
+        {
+          "model": "logistic_regression",
+          "fpr": 1.0,
+          "tpr": 0.88,
+          "threshold": 0.4480671524976294,
+          "model_label": "逻辑回归",
+          "roc_auc": 0.368695652173913
+        },
+        {
+          "model": "logistic_regression",
+          "fpr": 1.0,
+          "tpr": 1.0,
+          "threshold": 0.3428032932364128,
+          "model_label": "逻辑回归",
+          "roc_auc": 0.368695652173913
+        },
+        {
+          "model": "decision_tree",
+          "fpr": 0.0,
+          "tpr": 0.0,
+          "threshold": 1.8506258692628652,
+          "model_label": "决策树",
+          "roc_auc": 0.5243478260869565
+        },
+        {
+          "model": "decision_tree",
+          "fpr": 0.0,
+          "tpr": 0.08,
+          "threshold": 0.8506258692628651,
+          "model_label": "决策树",
+          "roc_auc": 0.5243478260869565
+        },
+        {
+          "model": "decision_tree",
+          "fpr": 0.0,
+          "tpr": 0.12,
+          "threshold": 0.7564625850340136,
+          "model_label": "决策树",
+          "roc_auc": 0.5243478260869565
+        },
+        {
+          "model": "decision_tree",
+          "fpr": 0.1304347826086956,
+          "tpr": 0.32,
+          "threshold": 0.7042625839850203,
+          "model_label": "决策树",
+          "roc_auc": 0.5243478260869565
+        },
+        {
+          "model": "decision_tree",
+          "fpr": 0.6956521739130435,
+          "tpr": 0.56,
+          "threshold": 0.4958693203154334,
+          "model_label": "决策树",
+          "roc_auc": 0.5243478260869565
+        },
+        {
+          "model": "decision_tree",
+          "fpr": 0.9565217391304348,
+          "tpr": 1.0,
+          "threshold": 0.3632667876588019,
+          "model_label": "决策树",
+          "roc_auc": 0.5243478260869565
+        },
+        {
+          "model": "decision_tree",
+          "fpr": 1.0,
+          "tpr": 1.0,
+          "threshold": 0.0525519848771266,
+          "model_label": "决策树",
+          "roc_auc": 0.5243478260869565
+        },
+        {
+          "model": "random_forest",
+          "fpr": 0.0,
+          "tpr": 0.0,
+          "threshold": 1.7831971257813712,
+          "model_label": "随机森林",
+          "roc_auc": 0.4
+        },
+        {
+          "model": "random_forest",
+          "fpr": 0.0,
+          "tpr": 0.04,
+          "threshold": 0.7831971257813712,
+          "model_label": "随机森林",
+          "roc_auc": 0.4
+        },
+        {
+          "model": "random_forest",
+          "fpr": 0.0,
+          "tpr": 0.12,
+          "threshold": 0.6890837455803847,
+          "model_label": "随机森林",
+          "roc_auc": 0.4
+        },
+        {
+          "model": "random_forest",
+          "fpr": 0.3043478260869565,
+          "tpr": 0.12,
+          "threshold": 0.6188651068068283,
+          "model_label": "随机森林",
+          "roc_auc": 0.4
+        },
+        {
+          "model": "random_forest",
+          "fpr": 0.3043478260869565,
+          "tpr": 0.16,
+          "threshold": 0.6015328787687853,
+          "model_label": "随机森林",
+          "roc_auc": 0.4
+        },
+        {
+          "model": "random_forest",
+          "fpr": 0.4347826086956521,
+          "tpr": 0.16,
+          "threshold": 0.5776831481178333,
+          "model_label": "随机森林",
+          "roc_auc": 0.4
+        },
+        {
+          "model": "random_forest",
+          "fpr": 0.4347826086956521,
+          "tpr": 0.36,
+          "threshold": 0.5607470017864409,
+          "model_label": "随机森林",
+          "roc_auc": 0.4
+        },
+        {
+          "model": "random_forest",
+          "fpr": 0.5217391304347826,
+          "tpr": 0.36,
+          "threshold": 0.5459800924656437,
+          "model_label": "随机森林",
+          "roc_auc": 0.4
+        },
+        {
+          "model": "random_forest",
+          "fpr": 0.5217391304347826,
+          "tpr": 0.4,
+          "threshold": 0.5316102678303103,
+          "model_label": "随机森林",
+          "roc_auc": 0.4
+        },
+        {
+          "model": "random_forest",
+          "fpr": 0.5652173913043478,
+          "tpr": 0.4,
+          "threshold": 0.5302435885784645,
+          "model_label": "随机森林",
+          "roc_auc": 0.4
+        },
+        {
+          "model": "random_forest",
+          "fpr": 0.5652173913043478,
+          "tpr": 0.44,
+          "threshold": 0.5170412111003665,
+          "model_label": "随机森林",
+          "roc_auc": 0.4
+        },
+        {
+          "model": "random_forest",
+          "fpr": 0.6086956521739131,
+          "tpr": 0.44,
+          "threshold": 0.5007292386734092,
+          "model_label": "随机森林",
+          "roc_auc": 0.4
+        },
+        {
+          "model": "random_forest",
+          "fpr": 0.6086956521739131,
+          "tpr": 0.48,
+          "threshold": 0.5005548232235998,
+          "model_label": "随机森林",
+          "roc_auc": 0.4
+        },
+        {
+          "model": "random_forest",
+          "fpr": 0.7391304347826086,
+          "tpr": 0.48,
+          "threshold": 0.4928245635340241,
+          "model_label": "随机森林",
+          "roc_auc": 0.4
+        },
+        {
+          "model": "random_forest",
+          "fpr": 0.7391304347826086,
+          "tpr": 0.68,
+          "threshold": 0.4733248249869906,
+          "model_label": "随机森林",
+          "roc_auc": 0.4
+        },
+        {
+          "model": "random_forest",
+          "fpr": 0.782608695652174,
+          "tpr": 0.68,
+          "threshold": 0.4501200143073279,
+          "model_label": "随机森林",
+          "roc_auc": 0.4
+        },
+        {
+          "model": "random_forest",
+          "fpr": 0.782608695652174,
+          "tpr": 0.72,
+          "threshold": 0.4498405689623578,
+          "model_label": "随机森林",
+          "roc_auc": 0.4
+        },
+        {
+          "model": "random_forest",
+          "fpr": 0.8695652173913043,
+          "tpr": 0.72,
+          "threshold": 0.4434291100249631,
+          "model_label": "随机森林",
+          "roc_auc": 0.4
+        },
+        {
+          "model": "random_forest",
+          "fpr": 0.8695652173913043,
+          "tpr": 0.84,
+          "threshold": 0.4369727443559303,
+          "model_label": "随机森林",
+          "roc_auc": 0.4
+        },
+        {
+          "model": "random_forest",
+          "fpr": 0.9130434782608696,
+          "tpr": 0.84,
+          "threshold": 0.429542890211036,
+          "model_label": "随机森林",
+          "roc_auc": 0.4
+        },
+        {
+          "model": "random_forest",
+          "fpr": 0.9130434782608696,
+          "tpr": 0.92,
+          "threshold": 0.4126340940123373,
+          "model_label": "随机森林",
+          "roc_auc": 0.4
+        },
+        {
+          "model": "random_forest",
+          "fpr": 0.9565217391304348,
+          "tpr": 0.92,
+          "threshold": 0.4115427269295576,
+          "model_label": "随机森林",
+          "roc_auc": 0.4
+        },
+        {
+          "model": "random_forest",
+          "fpr": 0.9565217391304348,
+          "tpr": 1.0,
+          "threshold": 0.3962611550244482,
+          "model_label": "随机森林",
+          "roc_auc": 0.4
+        },
+        {
+          "model": "random_forest",
+          "fpr": 1.0,
+          "tpr": 1.0,
+          "threshold": 0.3835294186766008,
+          "model_label": "随机森林",
+          "roc_auc": 0.4
+        },
+        {
+          "model": "gradient_boosting",
+          "fpr": 0.0,
+          "tpr": 0.0,
+          "threshold": 1.820925231851799,
+          "model_label": "梯度提升",
+          "roc_auc": 0.4495652173913043
+        },
+        {
+          "model": "gradient_boosting",
+          "fpr": 0.0,
+          "tpr": 0.04,
+          "threshold": 0.8209252318517989,
+          "model_label": "梯度提升",
+          "roc_auc": 0.4495652173913043
+        },
+        {
+          "model": "gradient_boosting",
+          "fpr": 0.0,
+          "tpr": 0.12,
+          "threshold": 0.689722784227633,
+          "model_label": "梯度提升",
+          "roc_auc": 0.4495652173913043
+        },
+        {
+          "model": "gradient_boosting",
+          "fpr": 0.0,
+          "tpr": 0.2,
+          "threshold": 0.6647131071466277,
+          "model_label": "梯度提升",
+          "roc_auc": 0.4495652173913043
+        },
+        {
+          "model": "gradient_boosting",
+          "fpr": 0.0869565217391304,
+          "tpr": 0.2,
+          "threshold": 0.6537379273532897,
+          "model_label": "梯度提升",
+          "roc_auc": 0.4495652173913043
+        },
+        {
+          "model": "gradient_boosting",
+          "fpr": 0.1739130434782608,
+          "tpr": 0.2,
+          "threshold": 0.6529675813297451,
+          "model_label": "梯度提升",
+          "roc_auc": 0.4495652173913043
+        },
+        {
+          "model": "gradient_boosting",
+          "fpr": 0.2608695652173913,
+          "tpr": 0.2,
+          "threshold": 0.6411761136901653,
+          "model_label": "梯度提升",
+          "roc_auc": 0.4495652173913043
+        },
+        {
+          "model": "gradient_boosting",
+          "fpr": 0.3043478260869565,
+          "tpr": 0.24,
+          "threshold": 0.633546739334295,
+          "model_label": "梯度提升",
+          "roc_auc": 0.4495652173913043
+        },
+        {
+          "model": "gradient_boosting",
+          "fpr": 0.3043478260869565,
+          "tpr": 0.28,
+          "threshold": 0.626645930891076,
+          "model_label": "梯度提升",
+          "roc_auc": 0.4495652173913043
+        },
+        {
+          "model": "gradient_boosting",
+          "fpr": 0.3478260869565217,
+          "tpr": 0.28,
+          "threshold": 0.6256238536442045,
+          "model_label": "梯度提升",
+          "roc_auc": 0.4495652173913043
+        },
+        {
+          "model": "gradient_boosting",
+          "fpr": 0.4347826086956521,
+          "tpr": 0.28,
+          "threshold": 0.6127809592216508,
+          "model_label": "梯度提升",
+          "roc_auc": 0.4495652173913043
+        },
+        {
+          "model": "gradient_boosting",
+          "fpr": 0.4782608695652174,
+          "tpr": 0.32,
+          "threshold": 0.6057324591367522,
+          "model_label": "梯度提升",
+          "roc_auc": 0.4495652173913043
+        },
+        {
+          "model": "gradient_boosting",
+          "fpr": 0.4782608695652174,
+          "tpr": 0.44,
+          "threshold": 0.5925146283174624,
+          "model_label": "梯度提升",
+          "roc_auc": 0.4495652173913043
+        },
+        {
+          "model": "gradient_boosting",
+          "fpr": 0.6086956521739131,
+          "tpr": 0.48,
+          "threshold": 0.5853468516155917,
+          "model_label": "梯度提升",
+          "roc_auc": 0.4495652173913043
+        },
+        {
+          "model": "gradient_boosting",
+          "fpr": 0.6956521739130435,
+          "tpr": 0.48,
+          "threshold": 0.5646986278109871,
+          "model_label": "梯度提升",
+          "roc_auc": 0.4495652173913043
+        },
+        {
+          "model": "gradient_boosting",
+          "fpr": 0.6956521739130435,
+          "tpr": 0.56,
+          "threshold": 0.5499399929115506,
+          "model_label": "梯度提升",
+          "roc_auc": 0.4495652173913043
+        },
+        {
+          "model": "gradient_boosting",
+          "fpr": 0.7391304347826086,
+          "tpr": 0.72,
+          "threshold": 0.5362836299545992,
+          "model_label": "梯度提升",
+          "roc_auc": 0.4495652173913043
+        },
+        {
+          "model": "gradient_boosting",
+          "fpr": 0.9130434782608696,
+          "tpr": 0.8,
+          "threshold": 0.5289131469742877,
+          "model_label": "梯度提升",
+          "roc_auc": 0.4495652173913043
+        },
+        {
+          "model": "gradient_boosting",
+          "fpr": 0.9130434782608696,
+          "tpr": 0.84,
+          "threshold": 0.4947190916379992,
+          "model_label": "梯度提升",
+          "roc_auc": 0.4495652173913043
+        },
+        {
+          "model": "gradient_boosting",
+          "fpr": 0.9565217391304348,
+          "tpr": 0.84,
+          "threshold": 0.4658197483739079,
+          "model_label": "梯度提升",
+          "roc_auc": 0.4495652173913043
+        },
+        {
+          "model": "gradient_boosting",
+          "fpr": 0.9565217391304348,
+          "tpr": 0.92,
+          "threshold": 0.4515978780015895,
+          "model_label": "梯度提升",
+          "roc_auc": 0.4495652173913043
+        },
+        {
+          "model": "gradient_boosting",
+          "fpr": 1.0,
+          "tpr": 0.92,
+          "threshold": 0.4442761882604039,
+          "model_label": "梯度提升",
+          "roc_auc": 0.4495652173913043
+        },
+        {
+          "model": "gradient_boosting",
+          "fpr": 1.0,
+          "tpr": 1.0,
+          "threshold": 0.3865264261651286,
+          "model_label": "梯度提升",
+          "roc_auc": 0.4495652173913043
+        }
+      ],
+      "decision_confusion": [
+        {
+          "model": "decision_tree",
+          "model_label": "决策树",
+          "actual_label": "实际未跑赢 0",
+          "predicted_label": "预测未跑赢 0",
+          "count": 20,
+          "row_rate": 0.8695652173913043
+        },
+        {
+          "model": "decision_tree",
+          "model_label": "决策树",
+          "actual_label": "实际未跑赢 0",
+          "predicted_label": "预测跑赢 1",
+          "count": 3,
+          "row_rate": 0.13043478260869565
+        },
+        {
+          "model": "decision_tree",
+          "model_label": "决策树",
+          "actual_label": "实际跑赢 1",
+          "predicted_label": "预测未跑赢 0",
+          "count": 17,
+          "row_rate": 0.68
+        },
+        {
+          "model": "decision_tree",
+          "model_label": "决策树",
+          "actual_label": "实际跑赢 1",
+          "predicted_label": "预测跑赢 1",
+          "count": 8,
+          "row_rate": 0.32
+        }
+      ],
+      "decision_explanation": [
+        {
+          "model": "decision_tree",
+          "model_label": "决策树",
+          "feature": "return_1d",
+          "feature_cn": "1日收益",
+          "value": 0.1308381397678391,
+          "value_type": "不纯度重要性",
+          "absolute_value": 0.1308381397678391,
+          "rank": 4
+        },
+        {
+          "model": "decision_tree",
+          "model_label": "决策树",
+          "feature": "rsi14",
+          "feature_cn": "RSI(14)",
+          "value": 0.4081772516536452,
+          "value_type": "不纯度重要性",
+          "absolute_value": 0.4081772516536452,
+          "rank": 1
+        },
+        {
+          "model": "decision_tree",
+          "model_label": "决策树",
+          "feature": "return_10d",
+          "feature_cn": "10日收益",
+          "value": 0.1568268640330782,
+          "value_type": "不纯度重要性",
+          "absolute_value": 0.1568268640330782,
+          "rank": 3
+        },
+        {
+          "model": "decision_tree",
+          "model_label": "决策树",
+          "feature": "return_20d",
+          "feature_cn": "20日收益",
+          "value": 0.035273457074165,
+          "value_type": "不纯度重要性",
+          "absolute_value": 0.035273457074165,
+          "rank": 5
+        },
+        {
+          "model": "decision_tree",
+          "model_label": "决策树",
+          "feature": "amount_ratio20",
+          "feature_cn": "20日额比",
+          "value": 0.2688842874712724,
+          "value_type": "不纯度重要性",
+          "absolute_value": 0.2688842874712724,
+          "rank": 2
+        },
+        {
+          "model": "decision_tree",
+          "model_label": "决策树",
+          "feature": "return_5d",
+          "feature_cn": "5日收益",
+          "value": 0.0,
+          "value_type": "不纯度重要性",
+          "absolute_value": 0.0,
+          "rank": 6
+        },
+        {
+          "model": "decision_tree",
+          "model_label": "决策树",
+          "feature": "intraday_range",
+          "feature_cn": "日内振幅",
+          "value": 0.0,
+          "value_type": "不纯度重要性",
+          "absolute_value": 0.0,
+          "rank": 7
+        },
+        {
+          "model": "decision_tree",
+          "model_label": "决策树",
+          "feature": "benchmark_volatility20",
+          "feature_cn": "沪深300 20日波动率",
+          "value": 0.0,
+          "value_type": "不纯度重要性",
+          "absolute_value": 0.0,
+          "rank": 8
+        }
+      ],
+      "yearly_labels": [
+        {
+          "year": "2018年",
+          "rows": 16,
+          "positive_rate": 0.75,
+          "period": "开发期"
+        },
+        {
+          "year": "2019年",
+          "rows": 51,
+          "positive_rate": 0.37254901960784315,
+          "period": "开发期"
+        },
+        {
+          "year": "2020年",
+          "rows": 52,
+          "positive_rate": 0.7115384615384616,
+          "period": "开发期"
+        },
+        {
+          "year": "2021年",
+          "rows": 52,
+          "positive_rate": 0.6153846153846154,
+          "period": "开发期"
+        },
+        {
+          "year": "2022年",
+          "rows": 50,
+          "positive_rate": 0.48,
+          "period": "开发期"
+        },
+        {
+          "year": "2023年",
+          "rows": 50,
+          "positive_rate": 0.44,
+          "period": "开发期"
+        },
+        {
+          "year": "2024年",
+          "rows": 51,
+          "positive_rate": 0.7058823529411765,
+          "period": "开发期"
+        },
+        {
+          "year": "2025年",
+          "rows": 48,
+          "positive_rate": 0.5208333333333334,
+          "period": "最终测试"
+        }
+      ],
+      "selected_features": [
+        {
+          "feature": "return_1d",
+          "feature_cn": "1日收益",
+          "mean_auc": 0.5779597861629111,
+          "std_auc": 0.0629857958009807,
+          "years_above_0_5": 4,
+          "vif": 1.2838643367517888,
+          "reason": "通过滚动验证与相关性去冗余"
+        },
+        {
+          "feature": "rsi14",
+          "feature_cn": "RSI(14)",
+          "mean_auc": 0.570270556989307,
+          "std_auc": 0.0656168532078021,
+          "years_above_0_5": 3,
+          "vif": 2.9627365374254806,
+          "reason": "通过滚动验证与相关性去冗余"
+        },
+        {
+          "feature": "return_10d",
+          "feature_cn": "10日收益",
+          "mean_auc": 0.5394042733886484,
+          "std_auc": 0.0523236186419013,
+          "years_above_0_5": 3,
+          "vif": 3.8451925254667247,
+          "reason": "通过滚动验证与相关性去冗余"
+        },
+        {
+          "feature": "return_20d",
+          "feature_cn": "20日收益",
+          "mean_auc": 0.5376060137778889,
+          "std_auc": 0.0517608174651968,
+          "years_above_0_5": 3,
+          "vif": 2.6769426078713945,
+          "reason": "通过滚动验证与相关性去冗余"
+        },
+        {
+          "feature": "amount_ratio20",
+          "feature_cn": "20日额比",
+          "mean_auc": 0.5363290644540645,
+          "std_auc": 0.0631295953206589,
+          "years_above_0_5": 3,
+          "vif": 1.941482332617015,
+          "reason": "通过滚动验证与相关性去冗余"
+        },
+        {
+          "feature": "return_5d",
+          "feature_cn": "5日收益",
+          "mean_auc": 0.5337056895650646,
+          "std_auc": 0.0558477199107817,
+          "years_above_0_5": 3,
+          "vif": 2.2786401644459504,
+          "reason": "通过滚动验证与相关性去冗余"
+        },
+        {
+          "feature": "intraday_range",
+          "feature_cn": "日内振幅",
+          "mean_auc": 0.5275388890623266,
+          "std_auc": 0.0458142699699904,
+          "years_above_0_5": 3,
+          "vif": 2.0082206629346264,
+          "reason": "通过滚动验证与相关性去冗余"
+        },
+        {
+          "feature": "benchmark_volatility20",
+          "feature_cn": "沪深300 20日波动率",
+          "mean_auc": 0.5243814778971029,
+          "std_auc": 0.0968325528228631,
+          "years_above_0_5": 2,
+          "vif": 1.2998764376894083,
+          "reason": "通过滚动验证与相关性去冗余"
+        }
+      ]
+    }
+  },
+  "sources": [
+    {
+      "id": "metrics_source",
+      "label": "最终测试模型指标",
+      "path": "data/task5/catl/results/dashboard_model_metrics.csv",
+      "query": {
+        "engine": "duckdb",
+        "language": "sql",
+        "sql": "SELECT * FROM read_csv_auto('data/task5/catl/results/dashboard_model_metrics.csv', header=true)",
+        "description": "四种锁定模型在2025周度测试样本上的分类指标。",
+        "tables_used": [
+          "data/task5/catl/results/dashboard_model_metrics.csv"
+        ],
+        "filters": [
+          "宁德时代300750.SZ",
+          "沪深300000300.SH",
+          "周末观察",
+          "未来20交易日超额收益标签",
+          "2025最终测试"
+        ],
+        "metric_definitions": [
+          "ROC-AUC使用Y=1概率计算。",
+          "混淆矩阵指标使用0.5阈值。",
+          "AUC区间使用4周移动时间块Bootstrap。"
+        ]
+      }
+    },
+    {
+      "id": "validation_source",
+      "label": "滚动开发验证",
+      "path": "data/task5/catl/results/dashboard_validation_auc.csv",
+      "query": {
+        "engine": "duckdb",
+        "language": "sql",
+        "sql": "SELECT * FROM read_csv_auto('data/task5/catl/results/dashboard_validation_auc.csv', header=true)",
+        "description": "四种模型锁定参数在2021—2024的扩展窗口AUC。",
+        "tables_used": [
+          "data/task5/catl/results/dashboard_validation_auc.csv"
+        ],
+        "filters": [
+          "宁德时代300750.SZ",
+          "沪深300000300.SH",
+          "周末观察",
+          "未来20交易日超额收益标签",
+          "2025最终测试"
+        ],
+        "metric_definitions": [
+          "每折只用更早数据训练。",
+          "训练样本label_end_date早于验证年起点。"
+        ]
+      }
+    },
+    {
+      "id": "roc_source",
+      "label": "ROC曲线点",
+      "path": "data/task5/catl/results/roc_points.csv",
+      "query": {
+        "engine": "duckdb",
+        "language": "sql",
+        "sql": "SELECT * FROM read_csv_auto('data/task5/catl/results/roc_points.csv', header=true)",
+        "description": "2025最终测试上移动分类阈值生成的FPR和TPR。",
+        "tables_used": [
+          "data/task5/catl/results/roc_points.csv"
+        ],
+        "filters": [
+          "宁德时代300750.SZ",
+          "沪深300000300.SH",
+          "周末观察",
+          "未来20交易日超额收益标签",
+          "2025最终测试"
+        ],
+        "metric_definitions": [
+          "每个模型在同一组48条周度样本上评估。"
+        ]
+      }
+    },
+    {
+      "id": "confusion_source",
+      "label": "决策树混淆矩阵",
+      "path": "data/task5/catl/results/dashboard_decision_tree_confusion.csv",
+      "query": {
+        "engine": "duckdb",
+        "language": "sql",
+        "sql": "SELECT * FROM read_csv_auto('data/task5/catl/results/dashboard_decision_tree_confusion.csv', header=true)",
+        "description": "2025最终测试中决策树实际类别和0.5阈值预测类别的交叉表。",
+        "tables_used": [
+          "data/task5/catl/results/dashboard_decision_tree_confusion.csv"
+        ],
+        "filters": [
+          "宁德时代300750.SZ",
+          "沪深300000300.SH",
+          "周末观察",
+          "未来20交易日超额收益标签",
+          "2025最终测试"
+        ],
+        "metric_definitions": [
+          "row_rate是各实际类别内的预测占比。"
+        ]
+      }
+    },
+    {
+      "id": "explanation_source",
+      "label": "决策树特征重要性",
+      "path": "data/task5/catl/results/dashboard_decision_tree_importance.csv",
+      "query": {
+        "engine": "duckdb",
+        "language": "sql",
+        "sql": "SELECT * FROM read_csv_auto('data/task5/catl/results/dashboard_decision_tree_importance.csv', header=true)",
+        "description": "2025年AUC最高模型的开发期训练特征重要性。",
+        "tables_used": [
+          "data/task5/catl/results/dashboard_decision_tree_importance.csv"
+        ],
+        "filters": [
+          "宁德时代300750.SZ",
+          "沪深300000300.SH",
+          "周末观察",
+          "未来20交易日超额收益标签",
+          "2025最终测试"
+        ],
+        "metric_definitions": [
+          "不纯度重要性表示模型使用方式，不表示因果关系。"
+        ]
+      }
+    },
+    {
+      "id": "samples_source",
+      "label": "周度建模样本",
+      "path": "data/task5/catl/processed/weekly_samples.csv",
+      "query": {
+        "engine": "duckdb",
+        "language": "sql",
+        "sql": "SELECT * FROM read_csv_auto('data/task5/catl/processed/weekly_samples.csv', header=true)",
+        "description": "每个自然周最后一个交易日的特征、20日未来超额收益和0/1标签。",
+        "tables_used": [
+          "data/task5/catl/processed/weekly_samples.csv"
+        ],
+        "filters": [
+          "宁德时代300750.SZ",
+          "沪深300000300.SH",
+          "周末观察",
+          "未来20交易日超额收益标签",
+          "2025最终测试"
+        ],
+        "metric_definitions": [
+          "Y=1当且仅当宁德时代未来20交易日收益高于沪深300。",
+          "所有X只使用观察日及以前数据。"
+        ]
+      }
+    },
+    {
+      "id": "feature_source",
+      "label": "最终入选特征",
+      "path": "data/task5/catl/results/dashboard_selected_features.csv",
+      "query": {
+        "engine": "duckdb",
+        "language": "sql",
+        "sql": "SELECT * FROM read_csv_auto('data/task5/catl/results/dashboard_selected_features.csv', header=true)",
+        "description": "仅根据2018—2024开发期滚动AUC、相关性与VIF筛选的变量。",
+        "tables_used": [
+          "data/task5/catl/results/dashboard_selected_features.csv"
+        ],
+        "filters": [
+          "宁德时代300750.SZ",
+          "沪深300000300.SH",
+          "周末观察",
+          "未来20交易日超额收益标签",
+          "2025最终测试"
+        ],
+        "metric_definitions": [
+          "mean_auc是2021—2024四个滚动验证年的单变量逻辑回归平均AUC。",
+          "VIF目标低于5。"
+        ]
+      }
+    }
+  ],
+  "package_info": {
+    "originUrl": "artifact://task5-catl-relative-classification"
+  }
+}

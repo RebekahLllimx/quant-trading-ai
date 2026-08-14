@@ -1,0 +1,153 @@
+{
+  "validated_at": "2026-07-26T23:19:18.953876+08:00",
+  "overall_assessment": "ready_to_share_with_caveats",
+  "checks_passed": 18,
+  "checks_total": 18,
+  "failed_checks": [],
+  "checks": [
+    {
+      "check": "dataset_key_uniqueness",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "duplicate Symbol-Date rows=0"
+    },
+    {
+      "check": "binary_label",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "values=[0, 1]"
+    },
+    {
+      "check": "no_missing_model_cells",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "missing cells=0"
+    },
+    {
+      "check": "split_date_disjointness",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "date overlaps={'train_validation': 0, 'train_test': 0, 'validation_test': 0}"
+    },
+    {
+      "check": "train_label_purge",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "latest train label end=2022-12-30"
+    },
+    {
+      "check": "validation_label_purge",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "latest validation label end=2023-12-29"
+    },
+    {
+      "check": "metrics_recompute_decision_tree",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "auc=0.477143396336, accuracy=0.497142857143, precision=0.504918032787, recall=0.576779026217, f1=0.538461538462"
+    },
+    {
+      "check": "prediction_grain_decision_tree",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "rows=525, expected=525, duplicate keys=0"
+    },
+    {
+      "check": "auc_uses_probability_decision_tree",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "stored/probability AUC=0.477143; hard-label AUC=0.495754"
+    },
+    {
+      "check": "metrics_recompute_logistic_regression",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "auc=0.508651975728, accuracy=0.510476190476, precision=0.516556291391, recall=0.584269662921, f1=0.548330404218"
+    },
+    {
+      "check": "prediction_grain_logistic_regression",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "rows=525, expected=525, duplicate keys=0"
+    },
+    {
+      "check": "auc_uses_probability_logistic_regression",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "stored/probability AUC=0.508652; hard-label AUC=0.509189"
+    },
+    {
+      "check": "metrics_recompute_random_forest",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "auc=0.532764277212, accuracy=0.502857142857, precision=0.512195121951, recall=0.471910112360, f1=0.491228070175"
+    },
+    {
+      "check": "prediction_grain_random_forest",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "rows=525, expected=525, duplicate keys=0"
+    },
+    {
+      "check": "auc_uses_probability_random_forest",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "stored/probability AUC=0.532764; hard-label AUC=0.503397"
+    },
+    {
+      "check": "same_test_labels_for_all_models",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "models=3"
+    },
+    {
+      "check": "raw_snapshot_hashes",
+      "passed": true,
+      "severity_if_failed": "high",
+      "evidence": "hash mismatches=[]"
+    },
+    {
+      "check": "chart_outputs_exist",
+      "passed": true,
+      "severity_if_failed": "medium",
+      "evidence": "missing or too small=[]"
+    }
+  ],
+  "metric_recalculations": [
+    {
+      "model": "decision_tree",
+      "all_match": true,
+      "auc": 0.47714339633597536,
+      "accuracy": 0.49714285714285716,
+      "precision": 0.5049180327868853,
+      "recall": 0.5767790262172284,
+      "f1": 0.5384615384615384
+    },
+    {
+      "model": "logistic_regression",
+      "all_match": true,
+      "auc": 0.5086519757280143,
+      "accuracy": 0.5104761904761905,
+      "precision": 0.5165562913907285,
+      "recall": 0.5842696629213483,
+      "f1": 0.5483304042179261
+    },
+    {
+      "model": "random_forest",
+      "all_match": true,
+      "auc": 0.532764277211625,
+      "accuracy": 0.5028571428571429,
+      "precision": 0.5121951219512195,
+      "recall": 0.47191011235955055,
+      "f1": 0.49122807017543857
+    }
+  ],
+  "required_caveats": [
+    "AUC values are only slightly above 0.5 and do not establish a profitable strategy.",
+    "The universe is frozen from January 2018 liquidity and is not a historical index constituent panel.",
+    "Price levels are scale-free adjusted return indexes for most symbols; only ratio features are modeled.",
+    "Three initial raw files came from an earlier frozen qfq API attempt and are explicitly identified in the manifest.",
+    "Current provider limits prevented automatic company-name enrichment; stock codes remain the stable identifiers."
+  ]
+}
