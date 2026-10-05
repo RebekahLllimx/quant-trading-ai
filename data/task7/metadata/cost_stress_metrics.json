@@ -19,8 +19,8 @@
       "estimated_cost": 233589.52360650984,
       "benchmark_return": -0.010941273530108653,
       "excess_return": -0.5032133706569095,
-      "beta": 0.411932094394666,
-      "correlation": 0.6245548146845967
+      "beta": 0.4119320943946658,
+      "correlation": 0.6245548146845961
     },
     "validation": {
       "status": "ok",
@@ -85,8 +85,8 @@
       "estimated_cost": 282880.678625489,
       "benchmark_return": 0.2561363779184369,
       "excess_return": -0.8033188583214133,
-      "beta": 0.457060021840563,
-      "correlation": 0.6565446647046663
+      "beta": 0.4570600218405634,
+      "correlation": 0.6565446647046671
     }
   },
   "B": {
@@ -110,7 +110,7 @@
       "benchmark_return": -0.010941273530108653,
       "excess_return": -0.05505582525429065,
       "beta": 0.15234256023327453,
-      "correlation": 0.6310801968302416
+      "correlation": 0.6310801968302415
     },
     "validation": {
       "status": "ok",
@@ -176,7 +176,7 @@
       "benchmark_return": 0.2561363779184369,
       "excess_return": -0.36010805298974624,
       "beta": 0.15457204886940076,
-      "correlation": 0.6437386609994807
+      "correlation": 0.6437386609994816
     }
   },
   "C": {
@@ -199,8 +199,8 @@
       "estimated_cost": 164360.07453291267,
       "benchmark_return": -0.010941273530108653,
       "excess_return": -0.0956057094377144,
-      "beta": 0.3248743658300309,
-      "correlation": 0.6553610881387449
+      "beta": 0.324874365830031,
+      "correlation": 0.6553610881387453
     },
     "validation": {
       "status": "ok",
@@ -265,7 +265,7 @@
       "estimated_cost": 222752.7576280613,
       "benchmark_return": 0.2561363779184369,
       "excess_return": -0.08857430505455732,
-      "beta": 0.40401402694312627,
+      "beta": 0.40401402694312605,
       "correlation": 0.6608437220134462
     }
   }
