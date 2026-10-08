@@ -1,4 +1,21 @@
-# 量化交易：AI大模型辅助的金融交易策略
+# Quantitative Trading Coursework | 量化交易课程项目
+
+A Peking University Guanghua workshop project covering market-data preparation, technical indicators, rule-based backtests, machine-learning experiments, and a simulated strategy dashboard. The eight tasks are course exercises rather than a live trading service. [Explore the GitHub Pages hub](https://rebekahlllimx.github.io/quant-trading-ai/), or open the [Task 7 shadow-portfolio dashboard](Task7/dashboard/index.html) and its [validation script](Task7/scripts/validate_results.py). Historical backtests, local shadow tracking, and actual JoinQuant fills are identified separately in Task 7; none of the charts establishes future profitability.
+
+**Offline check using the committed sample data** (no market API, account, or order execution):
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt
+python -m unittest discover -s tests -v
+python Task7/scripts/validate_results.py
+python Task2/scripts/build_dashboard.py
+```
+
+`Task2/scripts/update_data.py` and the other refresh scripts access external market APIs and are separate from this offline check. The research environment is listed in [`requirements.txt`](requirements.txt); JoinQuant's `jqdata` is platform-provided and is not installed by pip. The [Chinese task guide](#任务列表) below links to reports, scripts, and dashboards.
+
+---
 
 北京大学光华BA工作坊课程项目。包含8个阶段性任务，从数据引擎搭建到专业学习报告，覆盖金融数据处理、技术指标构造、策略回测、机器学习预测与模拟交易部署。
 
