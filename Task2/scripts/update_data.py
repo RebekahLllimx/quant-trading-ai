@@ -11,9 +11,8 @@ import akshare as ak
 from datetime import datetime, timedelta
 
 # 路径配置
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(BASE_DIR, '..', '..', 'data', 'csv')
-os.makedirs(DATA_DIR, exist_ok=True)
 
 END_DATE = datetime.now().strftime("%Y%m%d")  # 20260703
 START_DATE = (datetime.now() - timedelta(days=400)).strftime("%Y%m%d")  # ~1 year ago
@@ -78,6 +77,7 @@ def fetch_hk_stock(code):
 
 
 def main():
+    os.makedirs(DATA_DIR, exist_ok=True)
     print("=" * 60)
     print("  更新股价数据 (AKShare)")
     print(f"  时间范围: {START_DATE} ~ {END_DATE}")
