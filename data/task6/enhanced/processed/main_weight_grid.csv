@@ -1,4 +1,4 @@
-﻿top_n,weight_method,power,weight_cap,validation_total_return,validation_sharpe,validation_max_drawdown,validation_average_turnover,selection_score
+top_n,weight_method,power,weight_cap,validation_total_return,validation_sharpe,validation_max_drawdown,validation_average_turnover,selection_score
 20,ew,1.0,0.05,0.27382661142347464,3.022111308503914,0.0,0.8333333333333336,3.022111308503914
 20,ew,1.0,0.08,0.27382661142347464,3.022111308503914,0.0,0.8333333333333336,3.022111308503914
 20,ew,1.0,0.1,0.27382661142347464,3.022111308503914,0.0,0.8333333333333336,3.022111308503914

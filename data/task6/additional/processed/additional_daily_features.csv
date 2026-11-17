@@ -1,4 +1,4 @@
-﻿ts_code,trade_date,open,high,low,close,pre_close,change,pct_chg,vol,amount,daily_return,return_5d,return_20d,ma5,ma20,ma5_gap,ma20_gap,rsi14,atr14_pct,volatility20,volume_ratio20,intraday_range,future_return_3d,label_end_date,Label,Split
+ts_code,trade_date,open,high,low,close,pre_close,change,pct_chg,vol,amount,daily_return,return_5d,return_20d,ma5,ma20,ma5_gap,ma20_gap,rsi14,atr14_pct,volatility20,volume_ratio20,intraday_range,future_return_3d,label_end_date,Label,Split
 000001.SZ,2024-01-02,9.39,9.42,9.21,9.21,9.39,-0.18,-1.9169,1158366.45,1075742.252,,,,,,,,,,,,0.02280130293159599,0.006514657980455807,2024-01-05,1,not_labeled
 000001.SZ,2024-01-03,9.19,9.22,9.15,9.2,9.21,-0.01,-0.1086,733610.31,673673.614,-0.0010857763300762269,,,,,,,,,,,0.007608695652173945,-0.005434782608695565,2024-01-08,0,not_labeled
 000001.SZ,2024-01-04,9.19,9.19,9.08,9.11,9.2,-0.09,-0.9783,864193.99,787470.082,-0.009782608695652173,,,,,,,,,,,0.012074643249176667,0.007683863885839859,2024-01-09,1,not_labeled

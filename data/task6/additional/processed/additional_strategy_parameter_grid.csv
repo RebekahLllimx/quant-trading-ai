@@ -1,4 +1,4 @@
-﻿buy_threshold,sell_threshold,max_position,validation_total_return,validation_sharpe,validation_max_drawdown,validation_entry_count,validation_turnover
+buy_threshold,sell_threshold,max_position,validation_total_return,validation_sharpe,validation_max_drawdown,validation_entry_count,validation_turnover
 0.55,0.35,0.6,0.0010325562313244774,0.4205548930425536,-0.004181362482470363,1,0.27816697809563823
 0.55,0.35,0.8,0.0013723237504725816,0.4205548930425537,-0.0055725177786981606,1,0.37088930412751775
 0.55,0.35,1.0,0.0017098798683248262,0.42055489304255333,-0.0069623581512904265,1,0.4636116301593971
