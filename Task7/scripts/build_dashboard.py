@@ -23,7 +23,7 @@ def main() -> int:
         raise ValueError("Dashboard fallback marker is missing")
     html = html.replace(marker, payload, 1)
     OUTPUT.write_text(html, encoding="utf-8")
-    print(f"✅ Built {OUTPUT}")
+    print(f" Built {OUTPUT}")
     return 0
 
 

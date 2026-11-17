@@ -42,25 +42,25 @@ MODEL_DIR = ROOT / "artifacts" / "models" / "task5" / "breast_cancer"
 SEED = 42
 
 MODEL_NAMES = {
-    "logistic_regression": "逻辑回归",
-    "decision_tree": "决策树",
-    "random_forest": "随机森林",
-    "gradient_boosting": "梯度提升",
+    "logistic_regression": "Logistic Regression",
+    "decision_tree": "Decision tree",
+    "random_forest": "Random Forest",
+    "gradient_boosting": "gradient boost",
 }
 
 FEATURE_NAMES = {
-    "mean radius": "平均半径", "mean texture": "平均纹理", "mean perimeter": "平均周长",
-    "mean area": "平均面积", "mean smoothness": "平均光滑度", "mean compactness": "平均紧密度",
-    "mean concavity": "平均凹度", "mean concave points": "平均凹点数", "mean symmetry": "平均对称度",
-    "mean fractal dimension": "平均分形维数", "radius error": "半径标准误", "texture error": "纹理标准误",
-    "perimeter error": "周长标准误", "area error": "面积标准误", "smoothness error": "光滑度标准误",
-    "compactness error": "紧密度标准误", "concavity error": "凹度标准误",
-    "concave points error": "凹点数标准误", "symmetry error": "对称度标准误",
-    "fractal dimension error": "分形维数标准误", "worst radius": "较大值半径",
-    "worst texture": "较大值纹理", "worst perimeter": "较大值周长", "worst area": "较大值面积",
-    "worst smoothness": "较大值光滑度", "worst compactness": "较大值紧密度",
-    "worst concavity": "较大值凹度", "worst concave points": "较大值凹点数",
-    "worst symmetry": "较大值对称度", "worst fractal dimension": "较大值分形维数",
+    "mean radius": "average radius", "mean texture": "Average Texture", "mean perimeter": "Average Circumference",
+    "mean area": "Average area", "mean smoothness": "average smoothness", "mean compactness": "Average Tightness",
+    "mean concavity": "average concavity", "mean concave points": "Average number of concave points", "mean symmetry": "Average Symmetry",
+    "mean fractal dimension": "Average Fractal Dimension", "radius error": "Radius standard error", "texture error": "Texture standard error",
+    "perimeter error": "Perimeter standard error", "area error": "Area standard error", "smoothness error": "Smoothness standard error",
+    "compactness error": "Tightness standard error", "concavity error": "Concavity standard error",
+    "concave points error": "Standard error of the number of depressions", "symmetry error": "Symmetry standard error",
+    "fractal dimension error": "standard error of fractal dimension", "worst radius": "Larger Value Radius",
+    "worst texture": "Larger Value Texture", "worst perimeter": "Larger Perimeter Value", "worst area": "Larger Value Area",
+    "worst smoothness": "Larger value Smoothness", "worst compactness": "Larger value compactness",
+    "worst concavity": "Larger value concavity", "worst concave points": "Number of larger concave points",
+    "worst symmetry": "degree of symmetry of larger value", "worst fractal dimension": "Larger-value fractal dimension",
 }
 
 
@@ -100,7 +100,7 @@ def load_data() -> pd.DataFrame:
     # sklearn encodes malignant=0 and benign=1. Recode so the clinically
     # consequential class is the positive class throughout the report.
     frame["target"] = (bunch.target == 0).astype(int)
-    frame["diagnosis"] = frame["target"].map({0: "良性", 1: "恶性"})
+    frame["diagnosis"] = frame["target"].map({0: "Benign", 1: "malignant"})
     frame.insert(0, "sample_id", np.arange(1, len(frame) + 1))
     return frame
 
@@ -111,26 +111,26 @@ def split_data(data: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
     )
     train = data.iloc[np.sort(train_idx)].copy()
     test = data.iloc[np.sort(test_idx)].copy()
-    train["split"] = "训练集"
-    test["split"] = "测试集"
+    train["split"] = "Training set"
+    test["split"] = "Test set"
     return train, test
 
 
 def data_quality(data: pd.DataFrame, features: list[str]) -> pd.DataFrame:
     return pd.DataFrame([
-        {"检查": "样本数", "结果": len(data), "通过": len(data) == 569},
-        {"检查": "数值特征数", "结果": len(features), "通过": len(features) == 30},
-        {"检查": "必需字段缺失单元格", "结果": int(data[features + ["target"]].isna().sum().sum()), "通过": not data[features + ["target"]].isna().any().any()},
-        {"检查": "完全重复的特征行", "结果": int(data[features].duplicated().sum()), "通过": not data[features].duplicated().any()},
-        {"检查": "标签取值", "结果": str(sorted(data["target"].unique().tolist())), "通过": set(data["target"]) == {0, 1}},
-        {"检查": "样本编号唯一", "结果": int(data["sample_id"].nunique()), "通过": data["sample_id"].is_unique},
+        {"Check": "Sample size", "Result": len(data), "Through": len(data) == 569},
+        {"Check": "Numerical characteristic number", "Result": len(features), "Through": len(features) == 30},
+        {"Check": "Required Fields Missing Cells", "Result": int(data[features + ["target"]].isna().sum().sum()), "Through": not data[features + ["target"]].isna().any().any()},
+        {"Check": "Duplicate feature rows", "Result": int(data[features].duplicated().sum()), "Through": not data[features].duplicated().any()},
+        {"Check": "Label value", "Result": str(sorted(data["target"].unique().tolist())), "Through": set(data["target"]) == {0, 1}},
+        {"Check": "Sample number is unique", "Result": int(data["sample_id"].nunique()), "Through": data["sample_id"].is_unique},
     ])
 
 
 def describe_features(data: pd.DataFrame, features: list[str]) -> pd.DataFrame:
     desc = data[features].describe().T.reset_index().rename(columns={
-        "index": "feature", "count": "样本数", "mean": "均值", "std": "标准差",
-        "min": "最小值", "25%": "25%", "50%": "中位数", "75%": "75%", "max": "最大值",
+        "index": "feature", "count": "Sample size", "mean": "Mean", "std": "Standard deviation",
+        "min": "Minimum value", "25%": "25%", "50%": "Median", "75%": "75%", "max": "Maximum value",
     })
     desc.insert(1, "feature_cn", desc["feature"].map(FEATURE_NAMES))
     return desc
@@ -167,7 +167,7 @@ def grouped_audit(train: pd.DataFrame, features: list[str]) -> pd.DataFrame:
             "cv_auc_std": float(np.std(fold_aucs, ddof=1)),
             "cv_auc_min": float(np.min(fold_aucs)),
             "direction_consistency": float(np.mean(np.asarray(fold_directions) == global_direction)),
-            "direction": "值越大越偏恶性" if raw_auc >= 0.5 else "值越小越偏恶性",
+            "direction": "The larger the value, the more malignant it is." if raw_auc >= 0.5 else "The smaller the value, the more malignant",
         })
     return pd.DataFrame(rows).sort_values(
         ["cv_auc_mean", "direction_consistency", "direction_free_auc"], ascending=False
@@ -183,14 +183,14 @@ def select_features(train: pd.DataFrame, grouped: pd.DataFrame, max_features: in
         blockers = [chosen for chosen in selected if abs(corr.loc[row.feature, chosen]) >= 0.90]
         if blockers:
             keep = False
-            reason = f"与已保留的{FEATURE_NAMES[blockers[0]]}高度相关"
+            reason = f"with the reserved{FEATURE_NAMES[blockers[0]]}highly correlated"
         elif len(selected) >= max_features:
             keep = False
-            reason = f"超过预设的{max_features}项复杂度上限"
+            reason = f"Exceeds the preset{max_features}Item Complexity Upper Limit"
         else:
             keep = True
             selected.append(row.feature)
-            reason = "五折区分度和方向稳定性靠前，且未与已选变量高度重复"
+            reason = "Five-fold distinction and direction stability are prominent, And there is no high overlap with already selected variables"
         decisions.append({"feature": row.feature, "feature_cn": row.feature_cn, "keep_initial": keep, "reason": reason})
 
     # VIF is evaluated on the training set only. Iteratively remove the largest
@@ -205,7 +205,7 @@ def select_features(train: pd.DataFrame, grouped: pd.DataFrame, max_features: in
         for item in decisions:
             if item["feature"] == removed:
                 item["keep_initial"] = False
-                item["reason"] = f"训练集VIF={vifs[removed]:.2f}，迭代删除"
+                item["reason"] = f"Training setVIF={vifs[removed]:.2f}, Iterative Delete"
 
     final_matrix = StandardScaler().fit_transform(train[selected])
     final_vif = pd.DataFrame({
@@ -373,13 +373,13 @@ def run_and_save() -> Bundle:
         "tree_importances.csv": importances,
     }
     for filename, frame in outputs.items():
-        frame.to_csv(RESULT_DIR / filename, index=False, encoding="utf-8-sig")
+        frame.to_csv(RESULT_DIR / filename, index=False, encoding="utf-8")
     for key, model in models.items():
         joblib.dump(model, MODEL_DIR / f"{key}.pkl")
 
     summary = {
         "source": "scikit-learn load_breast_cancer",
-        "samples": len(data), "features": len(features), "positive_class": "恶性",
+        "samples": len(data), "features": len(features), "positive_class": "malignant",
         "positive_rate": float(data.target.mean()), "train_samples": len(train), "test_samples": len(test),
         "train_positive_rate": float(train.target.mean()), "test_positive_rate": float(test.target.mean()),
         "selected_features": selected,

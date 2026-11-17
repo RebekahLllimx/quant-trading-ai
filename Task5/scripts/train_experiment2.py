@@ -130,7 +130,7 @@ def main() -> None:
     splits = {name: part.copy() for name, part in frame.groupby("Split", sort=False)}
     required = ("train", "validation", "development", "test")
     if any(name not in splits or splits[name].empty for name in required):
-        raise RuntimeError("实验二数据缺少训练、验证、开发或测试分段。")
+        raise RuntimeError("Lack of training on experimental 2 data, Verification, Development or Test Segmentation. ")
 
     selection_bounds = fit_clip_bounds(splits["train"])
     x_train = apply_clip(splits["train"], selection_bounds)
@@ -165,11 +165,11 @@ def main() -> None:
             print(f"[select] {MODEL_LABELS[model_name]} {candidate_name}: 2023={period_aucs[0]:.4f}, 2024={period_aucs[1]:.4f}, mean={np.mean(period_aucs):.4f}")
         selected[model_name] = best
 
-    pd.DataFrame(selection_rows).to_csv(PROCESSED_DIR / "task5_experiment2_candidate_metrics.csv", index=False, encoding="utf-8-sig")
+    pd.DataFrame(selection_rows).to_csv(PROCESSED_DIR / "task5_experiment2_candidate_metrics.csv", index=False, encoding="utf-8")
 
     fit_frame = frame[frame["Split"].isin(["train", "validation", "development"])].copy()
     bounds = fit_clip_bounds(fit_frame)
-    bounds.to_csv(METADATA_DIR / "feature_clip_bounds.csv", index=False, encoding="utf-8-sig")
+    bounds.to_csv(METADATA_DIR / "feature_clip_bounds.csv", index=False, encoding="utf-8")
     x_fit, y_fit = apply_clip(fit_frame, bounds), fit_frame["Label"].to_numpy()
     test = splits["test"]
     x_test, y_test = apply_clip(test, bounds), test["Label"].to_numpy()
@@ -229,10 +229,10 @@ def main() -> None:
 
     metrics_path = PROCESSED_DIR / "task5_experiment2_model_metrics.csv"
     predictions_path = PROCESSED_DIR / "task5_experiment2_test_predictions.csv"
-    pd.DataFrame(metric_rows).to_csv(metrics_path, index=False, encoding="utf-8-sig")
-    pd.concat(prediction_frames, ignore_index=True).to_csv(predictions_path, index=False, encoding="utf-8-sig", date_format="%Y-%m-%d")
-    pd.DataFrame(roc_rows).to_csv(PROCESSED_DIR / "task5_experiment2_roc_points.csv", index=False, encoding="utf-8-sig")
-    pd.DataFrame(importance_rows).to_csv(PROCESSED_DIR / "task5_experiment2_feature_importance.csv", index=False, encoding="utf-8-sig")
+    pd.DataFrame(metric_rows).to_csv(metrics_path, index=False, encoding="utf-8")
+    pd.concat(prediction_frames, ignore_index=True).to_csv(predictions_path, index=False, encoding="utf-8", date_format="%Y-%m-%d")
+    pd.DataFrame(roc_rows).to_csv(PROCESSED_DIR / "task5_experiment2_roc_points.csv", index=False, encoding="utf-8")
+    pd.DataFrame(importance_rows).to_csv(PROCESSED_DIR / "task5_experiment2_feature_importance.csv", index=False, encoding="utf-8")
 
     run_metadata = {
         "created_at": datetime.now().astimezone().isoformat(),

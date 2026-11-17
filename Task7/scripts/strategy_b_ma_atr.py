@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""TASK7 Strategy B — MA10/30 + ATR risk budget for JoinQuant."""
+"""TASK7 Strategy B  -  MA10/30 + ATR risk budget for JoinQuant."""
 
 from jqdata import *
 import numpy as np
@@ -78,7 +78,7 @@ def trade(context):
     required = max(g.ma_slow, g.atr_window + 1)
     bars = previous_bars(context, required)
     if bars is None or len(bars) < required:
-        log.warning("B | 历史数据不足")
+        log.warning("B | Insufficient historical data")
         return
 
     closes = np.asarray(bars["close"], dtype=float)
@@ -94,7 +94,7 @@ def trade(context):
 
     if drawdown >= g.drawdown_limit and g.cooldown_remaining == 0:
         g.cooldown_remaining = g.cooldown_days
-        log.warning("B | 账户回撤达到5%%，暂停新开仓%d日" % g.cooldown_days)
+        log.warning("B | Account drawdown Reach5%%, Pause new position openings%dday" % g.cooldown_days)
 
     if holding > 0:
         candidate = close - g.atr_multiple * atr
@@ -152,7 +152,7 @@ def trade(context):
 def audit_orders(context):
     for order_id, order in get_orders().items():
         log.info(
-            "B订单 | id=%s security=%s amount=%s filled=%s status=%s"
+            "BOrder | id=%s security=%s amount=%s filled=%s status=%s"
             % (
                 order_id,
                 order.security,

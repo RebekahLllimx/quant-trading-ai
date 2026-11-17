@@ -59,7 +59,7 @@ def get_pro():
 
     token = load_tushare_token()
     if not token or token == "YOUR_TUSHARE_TOKEN_HERE":
-        raise RuntimeError("未配置 Tushare Token，无法构造历史时点股票池。")
+        raise RuntimeError("Not configured Tushare Token, Unable to construct historical point stock pool. ")
     return ts.pro_api(token)
 
 
@@ -115,14 +115,14 @@ def build_universe(pro, size: int) -> pd.DataFrame:
     summary = summary.merge(master, on="ts_code", how="left")
     summary["list_date"] = summary["list_date"].fillna("").astype(str)
     summary = summary[summary["list_date"].le("20180131") | summary["list_date"].eq("")]
-    summary = summary[~summary["name"].fillna("").str.contains(r"ST|退", regex=True)]
+    summary = summary[~summary["name"].fillna("").str.contains(r"ST|Return", regex=True)]
     summary = summary.sort_values(["median_amount", "mean_amount"], ascending=False).head(size).copy()
     summary.insert(0, "universe_rank", np.arange(1, len(summary) + 1))
     summary["selection_window"] = "2018-01"
     summary["selection_metric"] = "median_daily_amount_thousand_cny"
 
     if len(summary) < max(50, size // 2):
-        raise RuntimeError(f"符合条件的股票仅 {len(summary)} 只，低于研究所需数量。")
+        raise RuntimeError(f"Eligible Stock Only {len(summary)} only, Less than the amount needed for the study. ")
     return summary
 
 
@@ -171,13 +171,13 @@ def normalize_akshare(frame: pd.DataFrame, symbol: str, name: str) -> pd.DataFra
     code = symbol.split(".")[0]
     out = frame.rename(
         columns={
-            "日期": "Date",
-            "开盘": "Open",
-            "最高": "High",
-            "最低": "Low",
-            "收盘": "Close",
-            "成交量": "Volume",
-            "成交额": "Amount",
+            "Date": "Date",
+            "Opening": "Open",
+            "highest": "High",
+            "Minimum": "Low",
+            "Close of trading": "Close",
+            "Trading volume": "Volume",
+            "Turnover": "Amount",
         }
     ).copy()
     out["Date"] = pd.to_datetime(out["Date"])
@@ -219,7 +219,7 @@ def fetch_symbol(pro, symbol: str, name: str) -> tuple[pd.DataFrame, str]:
             base_wait=2.0,
         )
         if frame is None or frame.empty:
-            raise RuntimeError(f"两种数据源均未返回 {symbol} 的行情。")
+            raise RuntimeError(f"Neither data source returned {symbol} market conditions. ")
         return normalize_akshare(frame, symbol, name), "AKShare qfq fallback"
 
 
@@ -264,14 +264,14 @@ def main() -> None:
         print(f"[universe] reuse {len(universe)} symbols from {universe_path}")
     else:
         universe = build_universe(pro, args.universe_size)
-        universe.to_csv(universe_path, index=False, encoding="utf-8-sig")
+        universe.to_csv(universe_path, index=False, encoding="utf-8")
         print(f"[universe] froze {len(universe)} symbols -> {universe_path}")
 
     if "name" not in universe or universe["name"].isna().all():
         master = stock_master(pro)[["ts_code", "name"]].drop_duplicates("ts_code")
         if not master.empty:
             universe = universe.drop(columns=["name"], errors="ignore").merge(master, on="ts_code", how="left")
-            universe.to_csv(universe_path, index=False, encoding="utf-8-sig")
+            universe.to_csv(universe_path, index=False, encoding="utf-8")
             print(f"[universe] enriched {universe['name'].notna().sum()} company names")
 
     prior_sources = {}
@@ -295,11 +295,11 @@ def main() -> None:
                 source = INITIAL_SOURCE_OVERRIDES[symbol]
             if name != symbol and frame["Name"].astype(str).eq(symbol).all():
                 frame["Name"] = name
-                frame.to_csv(raw_path, index=False, encoding="utf-8-sig", date_format="%Y-%m-%d")
+                frame.to_csv(raw_path, index=False, encoding="utf-8", date_format="%Y-%m-%d")
         else:
             try:
                 frame, source = fetch_symbol(pro, symbol, name)
-                frame.to_csv(raw_path, index=False, encoding="utf-8-sig", date_format="%Y-%m-%d")
+                frame.to_csv(raw_path, index=False, encoding="utf-8", date_format="%Y-%m-%d")
             except Exception as exc:
                 failures.append({"symbol": symbol, "name": name, "error": str(exc)[:500]})
                 print(f"[error] {symbol} {name}: {exc}")
@@ -342,7 +342,7 @@ def main() -> None:
     write_json(METADATA_DIR / "raw_manifest.json", manifest)
     print(f"[done] {len(records)} successful, {len(failures)} failed")
     if len(records) < max(50, args.universe_size // 2):
-        raise RuntimeError("成功下载的股票数量不足，停止后续建模。")
+        raise RuntimeError("Insufficient number of successfully downloaded stocks, Stop subsequent modeling. ")
 
 
 if __name__ == "__main__":

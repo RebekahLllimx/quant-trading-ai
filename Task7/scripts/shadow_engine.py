@@ -52,15 +52,15 @@ def latest_card(strategy, frame, metrics, platform_status):
     return {
         "strategy": strategy,
         "name": {
-            "A": "平台模板基线",
-            "B": "双均线 + ATR风控",
-            "C": "宽基ETF动量轮动",
+            "A": "platform-template baseline",
+            "B": "dual moving-average + ATRRisk control",
+            "C": "broad-marketETFmomentum rotation",
         }[strategy],
         "as_of": latest["Date"],
         "signal": latest["Signal"],
         "selected": latest["Selected"],
         "selected_name": (
-            SYMBOLS.get(str(latest["Selected"]), {}).get("name", "现金")
+            SYMBOLS.get(str(latest["Selected"]), {}).get("name", "Cash")
         ),
         "exposure": latest["Exposure"],
         "nav": latest["NAV"],
@@ -69,7 +69,7 @@ def latest_card(strategy, frame, metrics, platform_status):
         "annualized_volatility": full.get("annualized_volatility"),
         "beta": full.get("beta"),
         "trade_orders": full.get("trade_orders"),
-        "data_layer": "自动影子跟踪",
+        "data_layer": "Automatic shadow tracking",
         "joinquant_actual_status": platform_status,
     }
 
@@ -89,14 +89,14 @@ def main() -> int:
         "simulation_status",
         {
             "status": "not_imported",
-            "message": "模拟盘保持私有；创建后通过截图或字段导出补充证据。",
+            "message": "The simulation panel remains private.; After creation, supplement evidence via screenshots or field exports. ",
             "actual_performance_available": False,
         },
     )
     platform_status = {
-        "deployed_waiting_data": "已部署，等待平台数据",
-        "not_imported": "等待创建 / 导入",
-    }.get(joinquant_actual.get("status"), joinquant_actual.get("status", "未知"))
+        "deployed_waiting_data": "Deployed, Waiting for platform data",
+        "not_imported": "Pending creation / Import",
+    }.get(joinquant_actual.get("status"), joinquant_actual.get("status", "Unknown"))
 
     stress_cost = dict(BASE_COST)
     stress_cost["commission_rate"] *= 2
@@ -246,23 +246,23 @@ def main() -> int:
     )
 
     payload = {
-        "title": "TASK7 · 三策略持续观察",
+        "title": "TASK7  -  3 strategy continuous observation",
         "generated_at_utc": datetime.now(timezone.utc).isoformat(),
         "latest_complete_date": latest_common,
         "data_status": (
-            "影子数据已更新；三次JoinQuant回测已完成；"
-            "三个私有模拟盘已部署并等待首批运行数据"
+            "Shadow data updated; Three timesJoinQuantTest back completed; "
+            "Three private simulated accounts have been deployed and are awaiting the first batch of running data."
             if joinquant_summary
-            else "影子数据已更新；JoinQuant实际模拟数据等待用户导入"
+            else "Shadow data updated; JoinQuantActual Simulation Data Awaiting User Import"
         ),
-        "privacy": "公开页不包含JoinQuant账号、私有链接、密码、Cookie或手机号。",
+        "privacy": "Public page does not containJoinQuantAccount, Private Link, password, Cookieor mobile number. ",
         "method": {
             "initial_capital": 500_000,
-            "signal_timing": "仅使用T-1及更早数据，下一交易日开盘执行",
+            "signal_timing": "Use onlyT-1and earlier data, To be executed at the open of the next trading day",
             "cost": BASE_COST,
             "actual_vs_shadow": (
-                "页面当前收益均为公开行情重建的历史/影子结果，"
-                "不是JoinQuant实际成交结果。"
+                "Current page returns are all historical reconstructions based on public market data./Shadow result, "
+                "No.JoinQuantActual Transaction Results. "
             ),
         },
         "cards": cards,
@@ -290,7 +290,7 @@ def main() -> int:
     write_json(DASHBOARD_DATA_DIR / "dashboard.json", payload)
     write_json(METADATA_DIR / "backtest_metrics.json", metrics)
     write_json(METADATA_DIR / "cost_stress_metrics.json", stress_metrics)
-    print(f"✅ TASK7 shadow results through {latest_common}")
+    print(f" TASK7 shadow results through {latest_common}")
     for card in cards:
         print(
             f"  {card['strategy']} {card['signal']:>5} "

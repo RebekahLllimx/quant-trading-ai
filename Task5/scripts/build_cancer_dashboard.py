@@ -24,10 +24,10 @@ OUTPUT = PAGES / "cancer.html"
 PLUGIN_ROOT = data_analytics_plugin_root()
 
 MODEL_NAMES = {
-    "logistic_regression": "逻辑回归",
-    "decision_tree": "决策树",
-    "random_forest": "随机森林",
-    "gradient_boosting": "梯度提升",
+    "logistic_regression": "Logistic Regression",
+    "decision_tree": "Decision tree",
+    "random_forest": "Random Forest",
+    "gradient_boosting": "gradient boost",
 }
 
 
@@ -48,11 +48,11 @@ def source(source_id: str, label: str, relative_path: str, description: str, def
             "description": description,
             "tables_used": [relative_path],
             "filters": [
-                "scikit-learn乳腺癌诊断数据",
-                "恶性重编码为1",
-                "分层80/20划分",
-                "随机种子42",
-                "测试集不参与特征筛选",
+                "scikit-learnBreast cancer diagnostic data",
+                "Malignant recoding is1",
+                "Layering80/20division",
+                "random seed42",
+                "Test set does not participate in feature filtering",
             ],
             "metric_definitions": definitions,
         },
@@ -80,7 +80,7 @@ def main() -> None:
     )
     model_data["model_label"] = model_data["model"].map(MODEL_NAMES)
     model_data["auc_ci"] = model_data.apply(
-        lambda row: f"{row.auc_ci_low:.3f}至{row.auc_ci_high:.3f}", axis=1
+        lambda row: f"{row.auc_ci_low:.3f}to{row.auc_ci_high:.3f}", axis=1
     )
     model_order = {
         "logistic_regression": 0,
@@ -105,8 +105,8 @@ def main() -> None:
     metric_labels = {
         "balanced_accuracy": "Balanced Accuracy",
         "precision": "Precision",
-        "recall": "恶性召回率",
-        "specificity": "特异度",
+        "recall": "False negative rate",
+        "specificity": "Specificity",
         "f1": "F1",
     }
     threshold_metrics["metric_label"] = threshold_metrics["metric"].map(metric_labels)
@@ -132,12 +132,12 @@ def main() -> None:
     explanation = pd.concat([
         coefficients.assign(
             model="logistic_regression",
-            model_label="逻辑回归",
+            model_label="Logistic Regression",
             value=coefficients["coefficient"],
-            value_type="标准化系数",
+            value_type="Standardized coefficient",
         )[["model", "model_label", "feature", "feature_cn", "value", "value_type"]],
         importance[importance.model.isin(["random_forest", "gradient_boosting"])]
-        .assign(value=lambda frame: frame["importance"], value_type="不纯度重要性")
+        .assign(value=lambda frame: frame["importance"], value_type="Importance of Purity")
         [["model", "model_cn", "feature", "feature_cn", "value", "value_type"]]
         .rename(columns={"model_cn": "model_label"}),
     ], ignore_index=True)
@@ -162,7 +162,7 @@ def main() -> None:
 
     summary = pd.DataFrame([{
         "best_auc": model_data.roc_auc.max(),
-        "test_samples": int((dataset.split == "测试集").sum()),
+        "test_samples": int((dataset.split == "Test set").sum()),
         "selected_features": len(selected),
         "highest_malignant_recall": model_data.recall.max(),
         "highest_specificity": model_data.specificity.max(),
@@ -180,153 +180,153 @@ def main() -> None:
         "dashboard_class_counts.csv": class_counts,
     }
     for name, frame in extracts.items():
-        frame.to_csv(RESULT / name, index=False, encoding="utf-8-sig")
+        frame.to_csv(RESULT / name, index=False, encoding="utf-8")
 
     sources = [
         source(
-            "summary_source", "看板摘要指标",
+            "summary_source", "Dashboard Summary Indicator",
             "data/task5/breast_cancer/results/dashboard_summary.csv",
-            "由冻结测试指标、特征筛选和管线核对结果生成的一行摘要。",
+            "by freeze test indicator, A one-line summary generated from feature selection and pipeline verification results.. ",
             [
-                "best_auc为四种模型测试ROC-AUC的最大值。",
-                "highest_malignant_recall使用恶性=1和0.5阈值。",
-                "random_label_auc为500次随机训练标签的平均测试AUC。",
+                "best_aucTest for the 4 modelROC-AUCThe maximum value. ",
+                "highest_malignant_recallUse malignant=1and0.5Threshold. ",
+                "random_label_aucFor500Average Test of Sub-Randomly Trained LabelsAUC. ",
             ],
         ),
         source(
-            "metrics_source", "四种模型测试指标",
+            "metrics_source", "4 Model Test Index",
             "data/task5/breast_cancer/results/dashboard_model_metrics.csv",
-            "四种锁定模型在114例测试样本上的分类指标。",
+            "Four locking models in114Classification metrics on example test samples. ",
             [
-                "ROC-AUC和PR-AUC使用恶性概率计算。",
-                "混淆矩阵指标使用0.5阈值。",
-                "AUC区间使用普通样本Bootstrap。",
+                "ROC-AUCandPR-AUCUsing the Malignant Probability Calculation. ",
+                "confusion matrix indicator usage0.5Threshold. ",
+                "AUCUse ordinary samples in the intervalBootstrap. ",
             ],
         ),
         source(
-            "roc_source", "测试集ROC曲线点",
+            "roc_source", "Test setROCCurve Point",
             "data/task5/breast_cancer/results/roc_points.csv",
-            "移动概率阈值后得到的FPR和TPR。",
-            ["四种模型使用同一组114例测试样本。"],
+            "obtained after moving the probability thresholdFPRandTPR. ",
+            ["The 4 model uses the same set114Example Test Sample. "],
         ),
         source(
-            "feature_source", "训练集特征筛选",
+            "feature_source", "training set feature filtering",
             "data/task5/breast_cancer/results/dashboard_selected_features.csv",
-            "仅使用455例训练样本得到的最终特征、五折稳定性与VIF。",
+            "Use only455The final features obtained from the training sample, for instance, Five fold stability andVIF. ",
             [
-                "五折方向先在折内训练部分确定。",
-                "绝对相关系数达到0.90的重复变量不重复保留。",
-                "最终VIF目标低于5。",
+                "The five-fold direction is first determined within the internal training part. ",
+                "The absolute correlation coefficient reaches0.90The duplicate variable is not retained repeatedly.. ",
+                "UltimatelyVIFTarget below5. ",
             ],
         ),
         source(
-            "stability_source", "候选特征稳定性",
+            "stability_source", "candidate feature stability",
             "data/task5/breast_cancer/results/dashboard_feature_stability.csv",
-            "训练集中五折定向单变量AUC靠前的15项特征。",
-            ["测试集不参与候选特征排序。"],
+            "Five-fold directional univariate in the training setAUCFrontline15Item feature. ",
+            ["The test set does not participate in candidate feature ranking. "],
         ),
         source(
-            "lr_source", "逻辑回归标准化系数",
+            "lr_source", "Standardized coefficients of logistic regression",
             "data/task5/breast_cancer/results/dashboard_lr_coefficients.csv",
-            "锁定逻辑回归模型中6项标准化特征的系数。",
-            ["系数用于解释模型方向，不表示医学因果。"],
+            "In locked logistic regression model6Coefficients of item standardized features. ",
+            ["coefficients are used to explain the model orientation, does not indicate medical cause and effect. "],
         ),
         source(
-            "rf_source", "随机森林特征重要性",
+            "rf_source", "Random forest feature importance",
             "data/task5/breast_cancer/results/dashboard_rf_importance.csv",
-            "锁定随机森林模型中6项特征的不纯度重要性。",
-            ["不纯度重要性用于解释模型使用方式，不表示医学因果。"],
+            "In locked random forest model6Importance of Impurity for the Feature. ",
+            ["Impurity importance is used to explain the way the model is used., does not indicate medical cause and effect. "],
         ),
         source(
-            "class_source", "训练测试类别构成",
+            "class_source", "Training Test Category Composition",
             "data/task5/breast_cancer/results/dashboard_class_counts.csv",
-            "分层80/20划分后的良性与恶性样本数量。",
-            ["原始569例样本按随机种子42划分，恶性重编码为1。"],
+            "Layering80/20Number of benign and malignant samples after division. ",
+            ["Original569Example sample by random seed42division, Malignant recoding is1. "],
         ),
     ]
 
     cards = [
-        {"id": "best_auc", "description": "四种模型在114例测试样本上的最高排序能力。", "dataset": "summary", "sourceId": "summary_source", "metrics": [{"label": "最高测试AUC", "field": "best_auc", "format": "number"}]},
-        {"id": "test_samples", "description": "此前没有参与特征筛选或调参的患者样本。", "dataset": "summary", "sourceId": "summary_source", "metrics": [{"label": "测试样本", "field": "test_samples", "format": "compact"}]},
-        {"id": "selected_features", "description": "经五折稳定性、相关性去重和VIF筛选后保留。", "dataset": "summary", "sourceId": "summary_source", "metrics": [{"label": "最终特征", "field": "selected_features", "format": "compact"}]},
-        {"id": "recall", "description": "0.5阈值下四种模型中的最高恶性召回率。", "dataset": "summary", "sourceId": "summary_source", "metrics": [{"label": "最高恶性召回率", "field": "highest_malignant_recall", "format": "percent"}]},
-        {"id": "specificity", "description": "0.5阈值下四种模型中的最高良性识别率。", "dataset": "summary", "sourceId": "summary_source", "metrics": [{"label": "最高特异度", "field": "highest_specificity", "format": "percent"}]},
-        {"id": "random_auc", "description": "随机打乱训练标签500次后的平均测试AUC。", "dataset": "summary", "sourceId": "summary_source", "metrics": [{"label": "随机标签AUC", "field": "random_label_auc", "format": "number"}]},
+        {"id": "best_auc", "description": "The 4 model is in114Highest ranking ability on the example test samples. ", "dataset": "summary", "sourceId": "summary_source", "metrics": [{"label": "Highest testAUC", "field": "best_auc", "format": "number"}]},
+        {"id": "test_samples", "description": "Patients' samples that had not previously participated in feature selection or parameter tuning.. ", "dataset": "summary", "sourceId": "summary_source", "metrics": [{"label": "Test sample", "field": "test_samples", "format": "compact"}]},
+        {"id": "selected_features", "description": "Five-fold stability after folding, Correlation deweighting andVIFKeep After Filtering. ", "dataset": "summary", "sourceId": "summary_source", "metrics": [{"label": "Final Features", "field": "selected_features", "format": "compact"}]},
+        {"id": "recall", "description": "0.5Highest malignant recall rate among four models under the threshold. ", "dataset": "summary", "sourceId": "summary_source", "metrics": [{"label": "Highest Severity Recall Rate", "field": "highest_malignant_recall", "format": "percent"}]},
+        {"id": "specificity", "description": "0.5Highest benign recognition rate among the four models below the threshold. ", "dataset": "summary", "sourceId": "summary_source", "metrics": [{"label": "Highest specificity", "field": "highest_specificity", "format": "percent"}]},
+        {"id": "random_auc", "description": "Random Disable Training Label500Average test after thisAUC. ", "dataset": "summary", "sourceId": "summary_source", "metrics": [{"label": "Random LabelAUC", "field": "random_label_auc", "format": "number"}]},
     ]
 
     charts = [
         {
-            "id": "model_auc", "title": "四种模型的测试ROC-AUC",
-            "subtitle": "逻辑回归与随机森林并列约0.994，前三种模型区间高度重叠",
+            "id": "model_auc", "title": "Testing of the four modelsROC-AUC",
+            "subtitle": "Logistic regression and random forest are roughly equal0.994, The first three models have highly overlapping ranges",
             "type": "bar", "intent": "comparison", "dataset": "model_metrics", "sourceId": "metrics_source",
             "encodings": {
-                "x": {"field": "model_label", "type": "nominal", "label": "模型"},
+                "x": {"field": "model_label", "type": "nominal", "label": "model"},
                 "y": {"field": "roc_auc", "type": "quantitative", "label": "ROC-AUC"},
-                "tooltip": [{"field": "auc_ci", "type": "text", "label": "95%区间"}],
+                "tooltip": [{"field": "auc_ci", "type": "text", "label": "95%Interval"}],
             },
-            "referenceLines": [{"axis": "y", "value": 0.5, "label": "随机排序", "color": "neutral", "lineStyle": "dashed"}],
+            "referenceLines": [{"axis": "y", "value": 0.5, "label": "Random Sort", "color": "neutral", "lineStyle": "dashed"}],
             "palette": {"kind": "semantic"}, "layout": "full",
         },
         {
-            "id": "roc", "title": "测试集ROC曲线",
-            "subtitle": "四种模型使用同一组114例患者样本",
+            "id": "roc", "title": "Test setROCcurve",
+            "subtitle": "The 4 model uses the same set114Sample of patients",
             "type": "line", "intent": "comparison", "dataset": "roc_points", "sourceId": "roc_source",
             "encodings": {
-                "x": {"field": "fpr", "type": "quantitative", "label": "假阳性率FPR"},
-                "y": {"field": "tpr", "type": "quantitative", "label": "真阳性率TPR"},
-                "color": {"field": "model_label", "type": "nominal", "label": "模型"},
+                "x": {"field": "fpr", "type": "quantitative", "label": "false positive rateFPR"},
+                "y": {"field": "tpr", "type": "quantitative", "label": "true positive rateTPR"},
+                "color": {"field": "model_label", "type": "nominal", "label": "model"},
                 "tooltip": [
-                    {"field": "model_label", "type": "text", "label": "模型"},
-                    {"field": "threshold", "type": "quantitative", "label": "概率阈值"},
+                    {"field": "model_label", "type": "text", "label": "model"},
+                    {"field": "threshold", "type": "quantitative", "label": "probability threshold"},
                     {"field": "roc_auc", "type": "quantitative", "label": "AUC"},
                 ],
             },
             "palette": {"kind": "categorical"}, "layout": "half",
         },
         {
-            "id": "threshold", "title": "0.5阈值下的分类指标",
-            "subtitle": "决策树的Balanced Accuracy和恶性召回率最高，梯度提升的F1更高",
+            "id": "threshold", "title": "0.5Classification indicators under threshold",
+            "subtitle": "The decision treeBalanced Accuracyand malignant recall has the highest, gradient boosting&#39;sF1Higher",
             "type": "bar", "intent": "comparison", "dataset": "threshold_metrics", "sourceId": "metrics_source",
             "encodings": {
-                "x": {"field": "model_label", "type": "nominal", "label": "模型"},
-                "y": {"field": "value", "type": "quantitative", "label": "指标值", "format": "percent"},
-                "color": {"field": "metric_label", "type": "nominal", "label": "指标"},
+                "x": {"field": "model_label", "type": "nominal", "label": "model"},
+                "y": {"field": "value", "type": "quantitative", "label": "Index value", "format": "percent"},
+                "color": {"field": "metric_label", "type": "nominal", "label": "Indicator"},
             },
             "settings": {"grouped": True}, "palette": {"kind": "categorical"}, "layout": "half",
         },
         {
-            "id": "stability", "title": "候选特征的五折稳定性",
-            "subtitle": "排序和方向仅根据训练集计算，显示前15项",
+            "id": "stability", "title": "Five-fold stability of candidate features",
+            "subtitle": "Ranking and direction are calculated solely based on the training set., Before display15item",
             "type": "horizontalBar", "intent": "comparison", "dataset": "feature_stability", "sourceId": "stability_source",
             "encodings": {
-                "x": {"field": "feature_cn", "type": "nominal", "label": "特征"},
-                "y": {"field": "cv_auc_mean", "type": "quantitative", "label": "五折平均AUC"},
+                "x": {"field": "feature_cn", "type": "nominal", "label": "Feature"},
+                "y": {"field": "cv_auc_mean", "type": "quantitative", "label": "50% off averageAUC"},
                 "tooltip": [
-                    {"field": "cv_auc_std", "type": "quantitative", "label": "折间标准差"},
-                    {"field": "direction_consistency", "type": "quantitative", "label": "方向一致率", "format": "percent"},
+                    {"field": "cv_auc_std", "type": "quantitative", "label": "standard deviation of fold"},
+                    {"field": "direction_consistency", "type": "quantitative", "label": "Directional Consistency Rate", "format": "percent"},
                 ],
             },
             "settings": {"sort": "ascending", "showValues": True},
             "palette": {"kind": "sequential"}, "layout": "full",
         },
         {
-            "id": "lr_explanation", "title": "逻辑回归标准化系数",
-            "subtitle": "正值把样本推向恶性，负值把样本推向良性",
+            "id": "lr_explanation", "title": "Standardized coefficients of logistic regression",
+            "subtitle": "Positive values push the sample towards malignancy., Negative values push the sample to benign",
             "type": "horizontalBar", "intent": "comparison", "dataset": "lr_explanation", "sourceId": "lr_source",
             "encodings": {
-                "x": {"field": "feature_cn", "type": "nominal", "label": "特征"},
-                "y": {"field": "value", "type": "quantitative", "label": "标准化系数"},
+                "x": {"field": "feature_cn", "type": "nominal", "label": "Feature"},
+                "y": {"field": "value", "type": "quantitative", "label": "Standardized coefficient"},
             },
             "settings": {"sort": "ascending", "showValues": True},
             "palette": {"kind": "diverging"}, "layout": "half",
         },
         {
-            "id": "rf_explanation", "title": "随机森林特征重要性",
-            "subtitle": "较大值周长使用最多，重要性不表示医学因果",
+            "id": "rf_explanation", "title": "Random forest feature importance",
+            "subtitle": "Larger Perimeter Most Used, Importance does not imply medical causation.",
             "type": "horizontalBar", "intent": "comparison", "dataset": "rf_explanation", "sourceId": "rf_source",
             "encodings": {
-                "x": {"field": "feature_cn", "type": "nominal", "label": "特征"},
-                "y": {"field": "value", "type": "quantitative", "label": "不纯度重要性"},
+                "x": {"field": "feature_cn", "type": "nominal", "label": "Feature"},
+                "y": {"field": "value", "type": "quantitative", "label": "Importance of Purity"},
             },
             "settings": {"sort": "ascending", "showValues": True},
             "palette": {"kind": "sequential"}, "layout": "half",
@@ -335,36 +335,36 @@ def main() -> None:
 
     tables = [
         {
-            "id": "model_table", "title": "四种模型结果汇总",
-            "subtitle": "AUC使用概率，其他分类指标使用0.5阈值",
+            "id": "model_table", "title": "Summary of 4 Model Results",
+            "subtitle": "AUCProbability of use, Use of other disaggregated indicators0.5Threshold",
             "dataset": "model_metrics", "sourceId": "metrics_source",
             "defaultSort": {"field": "roc_auc", "direction": "desc"},
             "density": "spacious", "layout": "full",
             "columns": [
-                {"field": "model_label", "label": "模型", "type": "text"},
-                {"field": "cv_auc_mean", "label": "训练五折AUC", "format": "number"},
-                {"field": "roc_auc", "label": "测试AUC", "format": "number"},
-                {"field": "auc_ci", "label": "95%区间", "type": "text"},
+                {"field": "model_label", "label": "model", "type": "text"},
+                {"field": "cv_auc_mean", "label": "50% off trainingAUC", "format": "number"},
+                {"field": "roc_auc", "label": "TestAUC", "format": "number"},
+                {"field": "auc_ci", "label": "95%Interval", "type": "text"},
                 {"field": "balanced_accuracy", "label": "Balanced Acc.", "format": "percent"},
                 {"field": "precision", "label": "Precision", "format": "percent"},
-                {"field": "recall", "label": "恶性Recall", "format": "percent"},
+                {"field": "recall", "label": "malignantRecall", "format": "percent"},
                 {"field": "specificity", "label": "Specificity", "format": "percent"},
                 {"field": "f1", "label": "F1", "format": "percent"},
             ],
         },
         {
-            "id": "feature_table", "title": "最终入选特征",
-            "subtitle": "特征在读取测试集结果前锁定",
+            "id": "feature_table", "title": "Final Selected Features",
+            "subtitle": "Features are locked before reading test set results",
             "dataset": "selected_features", "sourceId": "feature_source",
             "defaultSort": {"field": "cv_auc_mean", "direction": "desc"},
             "density": "spacious", "layout": "full",
             "columns": [
-                {"field": "feature_cn", "label": "特征", "type": "text"},
-                {"field": "cv_auc_mean", "label": "五折AUC", "format": "number"},
-                {"field": "cv_auc_std", "label": "折间标准差", "format": "number"},
-                {"field": "direction_consistency", "label": "方向一致率", "format": "percent"},
+                {"field": "feature_cn", "label": "Feature", "type": "text"},
+                {"field": "cv_auc_mean", "label": "50% offAUC", "format": "number"},
+                {"field": "cv_auc_std", "label": "standard deviation of fold", "format": "number"},
+                {"field": "direction_consistency", "label": "Directional Consistency Rate", "format": "percent"},
                 {"field": "vif", "label": "VIF", "format": "number"},
-                {"field": "direction", "label": "样本方向", "type": "text"},
+                {"field": "direction", "label": "Sample direction", "type": "text"},
             ],
         },
     ]
@@ -372,7 +372,7 @@ def main() -> None:
     blocks = [
         {
             "id": "opening", "type": "markdown", "sourceId": "metrics_source",
-            "body": "## 分类结果\n\n逻辑回归与随机森林的测试AUC均约为0.994，梯度提升约为0.992，决策树约为0.972。前三种模型的区间高度重叠，千分位差别不足以形成稳定排名。阈值取0.5时，决策树的Balanced Accuracy和恶性召回率最高，梯度提升的F1和Brier更好。",
+            "body": "## Classification results\n\nTests of logistic regression and random forestAUCBoth are approximately0.994, The gradient lift is approximately0.992, The decision tree is approximately0.972. The first three models have highly overlapping intervals, Thousandth differences are insufficient to form a stable ranking. Threshold selection0.5time, The decision treeBalanced Accuracyand malignant recall has the highest, gradient boosting&#39;sF1andBrierBetter. ",
         },
         {"id": "cards", "type": "metric-strip", "cardIds": [card["id"] for card in cards]},
         {"id": "model_auc_block", "type": "chart", "chartId": "model_auc", "layout": "full"},
@@ -385,7 +385,7 @@ def main() -> None:
         {"id": "feature_table_block", "type": "table", "tableId": "feature_table", "layout": "full"},
         {
             "id": "caveats", "type": "markdown",
-            "body": "## 阅读边界\n\n- 恶性统一编码为1，所有Recall和FN均按这一口径解释。\n- 特征筛选只使用455例训练样本，114例测试样本只用于最终评价。\n- 高AUC来自当前数据结构和X、Y之间较直接的形态联系，不代表算法在其他数据上同样有效。\n- 这是教学数据上的内部测试，没有外部医院、不同设备或不同人群验证。\n- 系数和树模型重要性解释模型依赖，不表示医学因果，也不能用于临床诊断。",
+            "body": "## Reading the boundaries\n\n- Malignant uniform coding is1, AllRecallandFNAll explained according to this 1 caliber. \n- Feature filtering uses only455Example training sample, 114For example, the test sample is only used for final evaluation. \n- highAUCfrom the current data structure andX, YThe more direct morphological link, Does not represent that the algorithm is equally effective on other data. \n- This is an internal test on teaching data, No external hospital, Validation on different devices or different populations. \n- Coefficient and tree model importance explain model dependency., does not indicate medical cause and effect, Nor can it be used for clinical diagnosis.. ",
         },
     ]
 
@@ -395,8 +395,8 @@ def main() -> None:
         "manifest": {
             "version": 1,
             "surface": "dashboard",
-            "title": "TASK5 AI交易引擎：乳腺癌分类模型评估",
-            "description": "用569例乳腺癌诊断样本完成特征筛选、四模型训练、ROC-AUC评价和模型解释。",
+            "title": "Task 5 - Machine-Learning Case Studies: Evaluation of breast cancer classification model",
+            "description": "use569Example: breast cancer diagnosis samples completed feature selection, 4 model training, ROC-AUCEvaluation and Model Interpretation. ",
             "generatedAt": generated,
             "filters": [],
             "cards": cards,

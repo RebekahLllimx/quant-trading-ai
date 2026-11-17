@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Phase 3: 技术指标可视化 (mplfinance)
-以贵州茅台 (600519) 为主展示标的，绘制综合指标图 + 参数对比图
+Phase 3: Visualization of technical indicators (mplfinance)
+Kweichow Moutai (600519) Main display target, Draw comprehensive index map + Parameter Comparison Chart
 """
 
 import os
@@ -16,7 +16,7 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
 import mplfinance as mpf
 
-# 添加 scripts 到路径
+# Add scripts To Path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from indicators import (
     calc_all_indicators, calc_rsi, calc_macd, calc_bollinger,
@@ -24,16 +24,16 @@ from indicators import (
     data_diagnosis, print_diagnosis,
 )
 
-# ═══════════════════════════════════════════════════════════════
-# 配置
-# ═══════════════════════════════════════════════════════════════
+#
+# Configuration
+#
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_DIR = os.path.join(BASE_DIR, '..', 'data', 'csv')
 CHART_DIR = os.path.join(BASE_DIR, '..', 'artifacts', 'charts', 'task2')
 os.makedirs(CHART_DIR, exist_ok=True)
 
-# 中文字体
+# Chinese fonts
 plt.rcParams['font.sans-serif'] = [
     'Heiti SC', 'STHeiti', 'PingFang SC',
     'Arial Unicode MS', 'SimHei', 'sans-serif'
@@ -41,7 +41,7 @@ plt.rcParams['font.sans-serif'] = [
 plt.rcParams['axes.unicode_minus'] = False
 plt.rcParams['font.monospace'] = ['Heiti SC', 'STHeiti', 'sans-serif']
 
-# mplfinance 风格
+# mplfinance style
 MC = mpf.make_marketcolors(
     up='red', down='green', edge='inherit', wick='inherit',
     volume={'up': 'red', 'down': 'green'}, alpha=0.85
@@ -59,11 +59,11 @@ STYLE = mpf.make_mpf_style(
 
 
 def load_stock(code, name, market):
-    """加载股票 CSV 数据"""
+    """Load Stock CSV Data"""
     filename = f"{code}_{name}_{market}_daily.csv"
     filepath = os.path.join(DATA_DIR, filename)
     if not os.path.exists(filepath):
-        raise FileNotFoundError(f"数据文件不存在: {filepath}")
+        raise FileNotFoundError(f"Data file does not exist: {filepath}")
     df = pd.read_csv(filepath, encoding='utf-8-sig')
     df['Date'] = pd.to_datetime(df['Date'])
     df = df.sort_values('Date').reset_index(drop=True)
@@ -71,43 +71,43 @@ def load_stock(code, name, market):
 
 
 def prepare_ohlc(df):
-    """准备 mplfinance 需要的 OHLCV DataFrame"""
+    """Prepare mplfinance Needed OHLCV DataFrame"""
     ohlc = df[['Date', 'Open', 'High', 'Low', 'Close', 'Volume']].copy()
     ohlc = ohlc.set_index('Date')
     ohlc['Volume'] = ohlc['Volume'].astype(float)
-    # 成交量转万股
+    # turnover to tens of thousands of shares
     ohlc['Volume'] = ohlc['Volume'] / 10000
     return ohlc
 
 
-# ═══════════════════════════════════════════════════════════════
-# 图1: 综合指标全览 (K线 + 布林带 + 成交量 + RSI + MACD + KDJ)
-# ═══════════════════════════════════════════════════════════════
+#
+# Figure1: Comprehensive index overview (Kline + Bollinger Bands + Trading volume + RSI + MACD + KDJ)
+#
 
 def plot_comprehensive(df, stock_info, save_path):
     """
-    综合指标图: K线(布林带) + 成交量 + RSI + MACD + KDJ
-    6 个面板 (mplfinance panel_ratios)
+    Comprehensive indicator chart: Kline(Bollinger Bands) + Trading volume + RSI + MACD + KDJ
+    6 Panel (mplfinance panel_ratios)
     """
     ohlc = prepare_ohlc(df)
 
-    # 计算所有指标
+    # Calculate all indicators
     ind = calc_all_indicators(df)
     ind['Date'] = df['Date']
     ind = ind.set_index('Date')
 
-    # 构建 add_plots
+    # Build add_plots
     add_plots = []
 
-    # Panel 0 (主图): 布林带三轨
+    # Panel 0 (Main image): Bollinger Bands three rails
     add_plots.append(mpf.make_addplot(
-        ind['BB_UP'], color='#7f7f7f', width=0.8, linestyle='--', panel=0, label='上轨'
+        ind['BB_UP'], color='#7f7f7f', width=0.8, linestyle='--', panel=0, label='On track'
     ))
     add_plots.append(mpf.make_addplot(
-        ind['BB_MID'], color='#ff7f0e', width=1.0, linestyle='-', panel=0, label='中轨(MA20)'
+        ind['BB_MID'], color='#ff7f0e', width=1.0, linestyle='-', panel=0, label='Middle rail(MA20)'
     ))
     add_plots.append(mpf.make_addplot(
-        ind['BB_DN'], color='#7f7f7f', width=0.8, linestyle='--', panel=0, label='下轨'
+        ind['BB_DN'], color='#7f7f7f', width=0.8, linestyle='--', panel=0, label='Lower rail'
     ))
     add_plots.append(mpf.make_addplot(
         ind['MA60'], color='#2ca02c', width=1.0, linestyle='-', panel=0, label='MA60'
@@ -164,35 +164,35 @@ def plot_comprehensive(df, stock_info, save_path):
     market = stock_info['market']
 
     title = (
-        f"图1：{name}（{code}）技术指标综合分析\n"
-        f"{market} | 日线 | 前复权 | {df['Date'].iloc[0].strftime('%Y-%m-%d')} ~ {df['Date'].iloc[-1].strftime('%Y-%m-%d')}"
+        f"Figure1: {name} ({code}) Comprehensive analysis of technical indicators\n"
+        f"{market} | Daily Line | forward-adjusted | {df['Date'].iloc[0].strftime('%Y-%m-%d')} ~ {df['Date'].iloc[-1].strftime('%Y-%m-%d')}"
     )
 
     fig, axes = mpf.plot(
         ohlc, type='candle', style=STYLE, addplot=add_plots,
-        volume=True, ylabel='价格(元)', ylabel_lower='成交量(万股)',
+        volume=True, ylabel='Price(yuan)', ylabel_lower='Trading volume(million shares)',
         figsize=(20, 18), panel_ratios=(3, 1, 1.2, 1.2, 1.2),
         title=title, returnfig=True,
         datetime_format='%Y-%m', xrotation=30,
         show_nontrading=False, warn_too_much_data=300,
     )
 
-    # 图例
+    # Legend
     ax_main = axes[0]
     handles, labels = ax_main.get_legend_handles_labels()
-    # 去重
+    # Deduplication
     by_label = dict(zip(labels, handles))
     ax_main.legend(by_label.values(), by_label.keys(), loc='upper left',
                    fontsize=8, ncol=2, framealpha=0.7)
 
-    # 添加统计信息文本框
+    # Add Statistics Text Box
     close = df['Close'].astype(float)
     chg = (close.iloc[-1] - close.iloc[0]) / close.iloc[0] * 100
     stats = (
-        f"期初: {close.iloc[0]:.2f} → 期末: {close.iloc[-1]:.2f} | 涨跌幅: {chg:+.2f}%\n"
-        f"最高: {close.max():.2f} | 最低: {close.min():.2f} | 均值: {close.mean():.2f}\n"
-        f"年化波动: {close.pct_change().std() * np.sqrt(252) * 100:.2f}% | "
-        f"最大回撤: {((close.cummax() - close) / close.cummax()).min() * 100:.2f}%"
+        f"Beginning of Period: {close.iloc[0]:.2f}  ->  End of term: {close.iloc[-1]:.2f} | Return: {chg:+.2f}%\n"
+        f"highest: {close.max():.2f} | Minimum: {close.min():.2f} | Mean: {close.mean():.2f}\n"
+        f"Annualized volatility: {close.pct_change().std() * np.sqrt(252) * 100:.2f}% | "
+        f"Maximum Drawdown: {((close.cummax() - close) / close.cummax()).min() * 100:.2f}%"
     )
     props = dict(boxstyle='round,pad=0.5', facecolor='lightyellow', alpha=0.85)
     ax_main.text(0.99, 0.99, stats, transform=ax_main.transAxes,
@@ -202,15 +202,15 @@ def plot_comprehensive(df, stock_info, save_path):
     plt.tight_layout()
     plt.savefig(save_path, dpi=150, bbox_inches='tight')
     plt.close()
-    print(f"  ✅ 综合指标图已保存: {os.path.basename(save_path)}")
+    print(f"   Comprehensive indicator chart has been saved: {os.path.basename(save_path)}")
 
 
-# ═══════════════════════════════════════════════════════════════
-# 图2: CCI + ATR + ADX 补充指标
-# ═══════════════════════════════════════════════════════════════
+#
+# Figure2: CCI + ATR + ADX Supplementary indicators
+#
 
 def plot_supplementary(df, stock_info, save_path):
-    """补充指标图: CCI + ATR + ADX"""
+    """Supplementary Indicator Chart: CCI + ATR + ADX"""
     ohlc = prepare_ohlc(df)
     ind = calc_all_indicators(df)
     ind['Date'] = df['Date']
@@ -218,7 +218,7 @@ def plot_supplementary(df, stock_info, save_path):
 
     add_plots = []
 
-    # Panel 0 (主图): K线 + MA20
+    # Panel 0 (Main image): Kline + MA20
     add_plots.append(mpf.make_addplot(
         ind['MA20'], color='#ff7f0e', width=1.0, panel=0, label='MA20'
     ))
@@ -242,7 +242,7 @@ def plot_supplementary(df, stock_info, save_path):
         ind['ATR'], color='#9467bd', width=1.2, panel=2, ylabel='ATR'
     ))
 
-    # Panel 3: ADX + ±DI
+    # Panel 3: ADX + DI
     add_plots.append(mpf.make_addplot(
         ind['ADX'], color='#d62728', width=1.2, panel=3, ylabel='ADX/DI', label='ADX'
     ))
@@ -261,21 +261,21 @@ def plot_supplementary(df, stock_info, save_path):
     market = stock_info['market']
 
     title = (
-        f"图2：{name}（{code}）补充技术指标\n"
+        f"Figure2: {name} ({code}) Supplementary technical indicators\n"
         f"{market} | CCI + ATR + ADX | "
         f"{df['Date'].iloc[0].strftime('%Y-%m-%d')} ~ {df['Date'].iloc[-1].strftime('%Y-%m-%d')}"
     )
 
     fig, axes = mpf.plot(
         ohlc, type='candle', style=STYLE, addplot=add_plots,
-        volume=False, ylabel='价格(元)',
+        volume=False, ylabel='Price(yuan)',
         figsize=(20, 16), panel_ratios=(3, 1.2, 1.2, 1.2),
         title=title, returnfig=True,
         datetime_format='%Y-%m', xrotation=30,
         show_nontrading=False, warn_too_much_data=300,
     )
 
-    # 图例 (panels: 0=主图, 1=CCI, 2=ATR, 3=ADX)
+    # Legend (panels: 0=Main image, 1=CCI, 2=ATR, 3=ADX)
     for ax_idx in [0, 1, 3]:
         if ax_idx < len(axes):
             handles, labels = axes[ax_idx].get_legend_handles_labels()
@@ -287,21 +287,21 @@ def plot_supplementary(df, stock_info, save_path):
     plt.tight_layout()
     plt.savefig(save_path, dpi=150, bbox_inches='tight')
     plt.close()
-    print(f"  ✅ 补充指标图已保存: {os.path.basename(save_path)}")
+    print(f"   Supplementary indicator chart saved: {os.path.basename(save_path)}")
 
 
-# ═══════════════════════════════════════════════════════════════
-# 图3: RSI 参数对比 (N=7, 14, 21)
-# ═══════════════════════════════════════════════════════════════
+#
+# Figure3: RSI Comparison of parameters (N=7, 14, 21)
+#
 
 def plot_rsi_comparison(df, stock_info, save_path):
-    """RSI 不同参数对比: period=7, 14, 21"""
+    """RSI Comparison of Different Parameters: period=7, 14, 21"""
     code = stock_info['code']
     name = stock_info['name']
 
     fig, axes = plt.subplots(3, 1, figsize=(20, 12), sharex=True)
     fig.suptitle(
-        f"图3：{name}（{code}）RSI 参数演化对比 — 周期 N=7, 14, 21",
+        f"Figure3: {name} ({code}) RSI Parameter Evolution Comparison  -  cycle N=7, 14, 21",
         fontsize=16, fontweight='bold', y=0.98
     )
 
@@ -324,12 +324,12 @@ def plot_rsi_comparison(df, stock_info, save_path):
         ax.set_ylabel(f'N={p}', fontsize=11, fontweight='bold')
         ax.legend(loc='upper left', fontsize=9)
 
-        # 标注超买/超卖天数
+        # Marking Overbought/Oversold Days
         overbought_days = (rsi > 70).sum()
         oversold_days = (rsi < 30).sum()
         ax.text(0.99, 0.95,
-                f'RSI>70: {overbought_days}天 | RSI<30: {oversold_days}天 '
-                f'| 均值: {rsi.mean():.1f}',
+                f'RSI>70: {overbought_days}days | RSI<30: {oversold_days}days '
+                f'| Mean: {rsi.mean():.1f}',
                 transform=ax.transAxes, fontsize=9,
                 verticalalignment='top', horizontalalignment='right',
                 family='monospace',
@@ -337,37 +337,37 @@ def plot_rsi_comparison(df, stock_info, save_path):
 
         ax.grid(True, alpha=0.3)
 
-    # 底部价格叠加
+    # Bottom price stacking
     ax_price = axes[2].twinx()
-    ax_price.plot(df['Date'], close, color='#9467bd', linewidth=0.8, alpha=0.6, label='收盘价')
-    ax_price.set_ylabel('收盘价(元)', fontsize=10, color='#9467bd')
+    ax_price.plot(df['Date'], close, color='#9467bd', linewidth=0.8, alpha=0.6, label='Close')
+    ax_price.set_ylabel('Close(yuan)', fontsize=10, color='#9467bd')
     ax_price.legend(loc='upper right', fontsize=8)
 
     plt.tight_layout()
     plt.savefig(save_path, dpi=150, bbox_inches='tight')
     plt.close()
-    print(f"  ✅ RSI参数对比图已保存: {os.path.basename(save_path)}")
+    print(f"   RSIParameter comparison chart saved: {os.path.basename(save_path)}")
 
 
-# ═══════════════════════════════════════════════════════════════
-# 图4: MACD 参数对比
-# ═══════════════════════════════════════════════════════════════
+#
+# Figure4: MACD Comparison of parameters
+#
 
 def plot_macd_comparison(df, stock_info, save_path):
-    """MACD 不同参数对比: (6,13,5) vs (12,26,9) vs (21,55,13)"""
+    """MACD Comparison of Different Parameters: (6,13,5) vs (12,26,9) vs (21,55,13)"""
     code = stock_info['code']
     name = stock_info['name']
 
     params = [
-        (6, 13, 5, '(6,13,5) 短线'),
-        (12, 26, 9, '(12,26,9) 经典'),
-        (21, 55, 13, '(21,55,13) 长线'),
+        (6, 13, 5, '(6,13,5) Short-term'),
+        (12, 26, 9, '(12,26,9) Classic'),
+        (21, 55, 13, '(21,55,13) Long-term'),
     ]
     colors_dif = ['#1f77b4', '#ff7f0e', '#2ca02c']
 
     fig, axes = plt.subplots(3, 1, figsize=(20, 12), sharex=True)
     fig.suptitle(
-        f"图4：{name}（{code}）MACD 参数演化对比",
+        f"Figure4: {name} ({code}) MACD Parameter Evolution Comparison",
         fontsize=16, fontweight='bold', y=0.98
     )
 
@@ -378,13 +378,13 @@ def plot_macd_comparison(df, stock_info, save_path):
         ax.plot(df['Date'], macd['DIF'], color=c, linewidth=1.0, label=f'DIF({label})')
         ax.plot(df['Date'], macd['DEA'], color='#d62728', linewidth=0.8, label=f'DEA({label})')
 
-        # BAR 柱状图
+        # BAR Bar chart
         bar_colors = ['#d62728' if v >= 0 else '#2ca02c' for v in macd['BAR'].fillna(0)]
         ax.bar(df['Date'], macd['BAR'], color=bar_colors, width=0.8, alpha=0.4)
 
         ax.axhline(y=0, color='gray', linewidth=0.5)
 
-        # 统计金叉/死叉次数
+        # Statistical Golden Fork/Number of death crosss
         dif_arr = macd['DIF'].values
         dea_arr = macd['DEA'].values
         cross_up = 0
@@ -400,7 +400,7 @@ def plot_macd_comparison(df, stock_info, save_path):
         ax.set_ylabel(label, fontsize=11, fontweight='bold')
         ax.legend(loc='upper left', fontsize=8, ncol=2)
         ax.text(0.99, 0.95,
-                f'金叉: {cross_up}次 | 死叉: {cross_down}次',
+                f'Golden Cross: {cross_up}Next | death cross: {cross_down}Next',
                 transform=ax.transAxes, fontsize=9,
                 verticalalignment='top', horizontalalignment='right',
                 family='monospace',
@@ -410,28 +410,28 @@ def plot_macd_comparison(df, stock_info, save_path):
     plt.tight_layout()
     plt.savefig(save_path, dpi=150, bbox_inches='tight')
     plt.close()
-    print(f"  ✅ MACD参数对比图已保存: {os.path.basename(save_path)}")
+    print(f"   MACDParameter comparison chart saved: {os.path.basename(save_path)}")
 
 
-# ═══════════════════════════════════════════════════════════════
-# 图5: 布林带参数对比
-# ═══════════════════════════════════════════════════════════════
+#
+# Figure5: Bollinger Bands Parameter Comparison
+#
 
 def plot_bollinger_comparison(df, stock_info, save_path):
-    """布林带不同参数对比: (10,1.5) vs (20,2.0) vs (50,2.5)"""
+    """Comparison of different parameters of Bollinger Bands: (10,1.5) vs (20,2.0) vs (50,2.5)"""
     code = stock_info['code']
     name = stock_info['name']
 
     param_sets = [
-        (10, 1.5, '(10, 1.5) 短线'),
-        (20, 2.0, '(20, 2.0) 经典'),
-        (50, 2.5, '(50, 2.5) 长线'),
+        (10, 1.5, '(10, 1.5) Short-term'),
+        (20, 2.0, '(20, 2.0) Classic'),
+        (50, 2.5, '(50, 2.5) Long-term'),
     ]
     colors = ['#1f77b4', '#ff7f0e', '#2ca02c']
 
     fig, axes = plt.subplots(3, 1, figsize=(20, 14), sharex=True)
     fig.suptitle(
-        f"图5：{name}（{code}）布林带参数演化对比",
+        f"Figure5: {name} ({code}) Bollinger Bands Parameter Evolution Contrast",
         fontsize=16, fontweight='bold', y=0.98
     )
 
@@ -441,13 +441,13 @@ def plot_bollinger_comparison(df, stock_info, save_path):
         ax = axes[i]
         bb = calc_bollinger(df, period=period, k=k)
 
-        ax.plot(df['Date'], close, color='black', linewidth=0.8, alpha=0.7, label='收盘价')
-        ax.plot(df['Date'], bb['UP'], color=c, linewidth=0.8, linestyle='--', label=f'上轨(±{k}σ)')
-        ax.plot(df['Date'], bb['MID'], color=c, linewidth=1.0, label=f'中轨(SMA{period})')
-        ax.plot(df['Date'], bb['DN'], color=c, linewidth=0.8, linestyle='--', label=f'下轨(±{k}σ)')
+        ax.plot(df['Date'], close, color='black', linewidth=0.8, alpha=0.7, label='Close')
+        ax.plot(df['Date'], bb['UP'], color=c, linewidth=0.8, linestyle='--', label=f'On track({k}sigma)')
+        ax.plot(df['Date'], bb['MID'], color=c, linewidth=1.0, label=f'Middle rail(SMA{period})')
+        ax.plot(df['Date'], bb['DN'], color=c, linewidth=0.8, linestyle='--', label=f'Lower rail({k}sigma)')
         ax.fill_between(df['Date'], bb['UP'], bb['DN'], alpha=0.05, color=c)
 
-        # 统计触及轨道次数
+        # Count the number of times the track is touched
         touch_up = (close > bb['UP']).sum()
         touch_dn = (close < bb['DN']).sum()
         avg_bandwidth = bb['BandWidth'].mean()
@@ -455,7 +455,7 @@ def plot_bollinger_comparison(df, stock_info, save_path):
         ax.set_ylabel(label, fontsize=11, fontweight='bold')
         ax.legend(loc='upper left', fontsize=8, ncol=2)
         ax.text(0.99, 0.95,
-                f'突破上轨: {touch_up}次 | 跌破下轨: {touch_dn}次 | 平均带宽: {avg_bandwidth:.1f}%',
+                f'Breakout above the upper rail: {touch_up}Next | Falling below the lower rail: {touch_dn}Next | Average Bandwidth: {avg_bandwidth:.1f}%',
                 transform=ax.transAxes, fontsize=9,
                 verticalalignment='top', horizontalalignment='right',
                 family='monospace',
@@ -465,27 +465,27 @@ def plot_bollinger_comparison(df, stock_info, save_path):
     plt.tight_layout()
     plt.savefig(save_path, dpi=150, bbox_inches='tight')
     plt.close()
-    print(f"  ✅ 布林带参数对比图已保存: {os.path.basename(save_path)}")
+    print(f"   Bollinger Bands parameter comparison chart has been saved: {os.path.basename(save_path)}")
 
 
-# ═══════════════════════════════════════════════════════════════
-# 图6: KDJ 参数对比
-# ═══════════════════════════════════════════════════════════════
+#
+# Figure6: KDJ Comparison of parameters
+#
 
 def plot_kdj_comparison(df, stock_info, save_path):
-    """KDJ 不同参数对比: (5,2,2) vs (9,3,3) vs (14,5,5)"""
+    """KDJ Comparison of Different Parameters: (5,2,2) vs (9,3,3) vs (14,5,5)"""
     code = stock_info['code']
     name = stock_info['name']
 
     param_sets = [
-        (5, 2, 2, '(5,2,2) 极短线'),
-        (9, 3, 3, '(9,3,3) 标准'),
-        (14, 5, 5, '(14,5,5) 长线'),
+        (5, 2, 2, '(5,2,2) Ultra-short term'),
+        (9, 3, 3, '(9,3,3) Standard'),
+        (14, 5, 5, '(14,5,5) Long-term'),
     ]
 
     fig, axes = plt.subplots(3, 1, figsize=(20, 13), sharex=True)
     fig.suptitle(
-        f"图6：{name}（{code}）KDJ 参数演化对比",
+        f"Figure6: {name} ({code}) KDJ Parameter Evolution Comparison",
         fontsize=16, fontweight='bold', y=0.98
     )
 
@@ -502,7 +502,7 @@ def plot_kdj_comparison(df, stock_info, save_path):
         ax.fill_between(df['Date'], 80, 120, alpha=0.05, color='#d62728')
         ax.fill_between(df['Date'], -20, 20, alpha=0.05, color='#2ca02c')
 
-        # J 线极值统计
+        # J line extreme value statistics
         j_above_100 = (kdj['J'] > 100).sum()
         j_below_0 = (kdj['J'] < 0).sum()
 
@@ -510,7 +510,7 @@ def plot_kdj_comparison(df, stock_info, save_path):
         ax.legend(loc='upper left', fontsize=8)
         ax.set_ylim(-20, 120)
         ax.text(0.99, 0.95,
-                f'J>100: {j_above_100}天 | J<0: {j_below_0}天',
+                f'J>100: {j_above_100}days | J<0: {j_below_0}days',
                 transform=ax.transAxes, fontsize=9,
                 verticalalignment='top', horizontalalignment='right',
                 family='monospace',
@@ -520,15 +520,15 @@ def plot_kdj_comparison(df, stock_info, save_path):
     plt.tight_layout()
     plt.savefig(save_path, dpi=150, bbox_inches='tight')
     plt.close()
-    print(f"  ✅ KDJ参数对比图已保存: {os.path.basename(save_path)}")
+    print(f"   KDJParameter comparison chart saved: {os.path.basename(save_path)}")
 
 
-# ═══════════════════════════════════════════════════════════════
-# 图7: MA 多周期共振
-# ═══════════════════════════════════════════════════════════════
+#
+# Figure7: MA multi-period resonance
+#
 
 def plot_ma_resonance(df, stock_info, save_path):
-    """多周期均线共振图"""
+    """Multi-period moving average resonance diagram"""
     code = stock_info['code']
     name = stock_info['name']
 
@@ -550,14 +550,14 @@ def plot_ma_resonance(df, stock_info, save_path):
             ))
 
     title = (
-        f"图7：{name}（{code}）多周期均线共振分析\n"
-        f"MA5/10/20/60/120/250 | 多头排列=短期均线在上 | "
+        f"Figure7: {name} ({code}) Multi-period moving average resonance analysis\n"
+        f"MA5/10/20/60/120/250 | multi-head arrangement=Short-term moving average on top | "
         f"{df['Date'].iloc[0].strftime('%Y-%m-%d')} ~ {df['Date'].iloc[-1].strftime('%Y-%m-%d')}"
     )
 
     fig, axes = mpf.plot(
         ohlc, type='candle', style=STYLE, addplot=add_plots,
-        volume=True, ylabel='价格(元)', ylabel_lower='成交量(万股)',
+        volume=True, ylabel='Price(yuan)', ylabel_lower='Trading volume(million shares)',
         figsize=(20, 12), panel_ratios=(3, 1),
         title=title, returnfig=True,
         datetime_format='%Y-%m', xrotation=30,
@@ -573,53 +573,53 @@ def plot_ma_resonance(df, stock_info, save_path):
     plt.tight_layout()
     plt.savefig(save_path, dpi=150, bbox_inches='tight')
     plt.close()
-    print(f"  ✅ MA多周期共振图已保存: {os.path.basename(save_path)}")
+    print(f"   MAMulti-period resonance map saved: {os.path.basename(save_path)}")
 
 
-# ═══════════════════════════════════════════════════════════════
-# 主程序
-# ═══════════════════════════════════════════════════════════════
+#
+# Main program
+#
 
 if __name__ == "__main__":
     print("=" * 60)
-    print("  技术指标可视化 (mplfinance)")
-    print("  主展示标的: 贵州茅台 (600519)")
+    print("  Visualization of technical indicators (mplfinance)")
+    print("  Main exhibit item: Kweichow Moutai (600519)")
     print("=" * 60)
 
-    # 加载茅台数据
-    stock_info = {"code": "600519", "name": "贵州茅台", "market": "上交所主板"}
-    df = load_stock("600519", "贵州茅台", "A股")
-    print(f"\n📂 数据加载: {len(df)} 条, {df['Date'].iloc[0]} ~ {df['Date'].iloc[-1]}")
+    # Loading Moutai data
+    stock_info = {"code": "600519", "name": "Kweichow Moutai", "market": "SSE Main Board"}
+    df = load_stock("600519", "Kweichow Moutai", "A-share")
+    print(f"\n Data loading: {len(df)} item, {df['Date'].iloc[0]} ~ {df['Date'].iloc[-1]}")
 
-    # 数据诊断
-    diag = data_diagnosis(df, '贵州茅台(600519)')
+    # Data Diagnostics
+    diag = data_diagnosis(df, 'Kweichow Moutai(600519)')
     print_diagnosis(diag)
 
-    # 生成图表
-    print("\n>>> 开始生成图表...")
+    # Generate Chart
+    print("\n>>> Start generating the chart...")
 
     plot_comprehensive(df, stock_info,
-                       os.path.join(CHART_DIR, "600519_综合指标分析.png"))
+                       os.path.join(CHART_DIR, "600519_comprehensive index analysis.png"))
 
     plot_supplementary(df, stock_info,
-                       os.path.join(CHART_DIR, "600519_补充指标_CCI_ATR_ADX.png"))
+                       os.path.join(CHART_DIR, "600519_Supplementary indicators_CCI_ATR_ADX.png"))
 
     plot_rsi_comparison(df, stock_info,
-                        os.path.join(CHART_DIR, "600519_RSI参数对比.png"))
+                        os.path.join(CHART_DIR, "600519_RSIComparison of parameters.png"))
 
     plot_macd_comparison(df, stock_info,
-                         os.path.join(CHART_DIR, "600519_MACD参数对比.png"))
+                         os.path.join(CHART_DIR, "600519_MACDComparison of parameters.png"))
 
     plot_bollinger_comparison(df, stock_info,
-                              os.path.join(CHART_DIR, "600519_布林带参数对比.png"))
+                              os.path.join(CHART_DIR, "600519_Bollinger Bands Parameter Comparison.png"))
 
     plot_kdj_comparison(df, stock_info,
-                        os.path.join(CHART_DIR, "600519_KDJ参数对比.png"))
+                        os.path.join(CHART_DIR, "600519_KDJComparison of parameters.png"))
 
     plot_ma_resonance(df, stock_info,
-                      os.path.join(CHART_DIR, "600519_MA多周期共振.png"))
+                      os.path.join(CHART_DIR, "600519_MAmulti-period resonance.png"))
 
     print(f"\n{'=' * 60}")
-    print(f"  ✅ 全部图表生成完成！共 7 张")
-    print(f"  输出目录: {CHART_DIR}")
+    print(f"   Complete all chart generation! total 7 Zhang")
+    print(f"  Output Directory: {CHART_DIR}")
     print(f"{'=' * 60}")

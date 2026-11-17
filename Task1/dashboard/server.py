@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-数据源建设看板 —— 后端服务
-启动: python server.py
-浏览器: http://localhost:8765
+Data Source Construction Dashboard  -  -  Backend Service
+Start: python server.py
+browser: http://localhost:8765
 """
 
 import json
@@ -15,7 +15,7 @@ from flask import Flask, request, jsonify, send_file
 import pandas as pd
 import numpy as np
 
-# 尝试从 config.py 读取 Token（回退方案）
+# Try from config.py Read Token (Fallback plan)
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'scripts'))
 try:
     from config import TUSHARE_TOKEN as _CONFIG_TOKEN
@@ -24,44 +24,44 @@ except ImportError:
 
 app = Flask(__name__)
 
-# ── 数据源配置 ──
+#  Data Source Configuration
 DATA_SOURCES = {
     "akshare": {
         "name": "AKShare",
-        "type": "免费开源",
+        "type": "Free Open Source",
         "status": "active",
-        "desc": "国内开源金融数据接口，覆盖A股/港股/期货/宏观经济，无需注册",
-        "markets": ["A股", "港股"],
-        "rate_limit": "无限制",
+        "desc": "Domestic open source financial data interface, CoverageA-share/Hong Kong equities/Futures/Macroeconomic, No need to register",
+        "markets": ["A-share", "Hong Kong equities"],
+        "rate_limit": "Unlimited",
     },
     "tushare": {
         "name": "Tushare Pro",
-        "type": "免费+积分制",
+        "type": "Free+Points system",
         "status": "active",
-        "desc": "国内知名金融数据平台，数据质量高，需注册获取Token，积分决定权限",
-        "markets": ["A股", "港股"],
-        "rate_limit": "视积分等级",
+        "desc": "Domestic well-known financial data platform, High data quality, Registration required to obtainToken, Points to determine authority",
+        "markets": ["A-share", "Hong Kong equities"],
+        "rate_limit": "visual integral grade",
         "token": os.environ.get("TUSHARE_TOKEN", _CONFIG_TOKEN),
     },
 }
 
-# ── 工具函数 ──
+#  Tool Functions
 def fetch_akshare(code, market, start, end):
     import akshare as ak
-    if market == 'A股':
+    if market == 'A-share':
         df = ak.stock_zh_a_hist(symbol=code, period='daily',
                                 start_date=start, end_date=end, adjust='qfq')
-        df = df.rename(columns={'日期': 'date', '开盘': 'open', '收盘': 'close',
-                                '最高': 'high', '最低': 'low', '成交量': 'volume',
-                                '成交额': 'amount', '涨跌幅': 'pct_chg', '涨跌额': 'change',
-                                '换手率': 'turnover', '振幅': 'amplitude', '股票代码': 'ts_code'})
+        df = df.rename(columns={'Date': 'date', 'Opening': 'open', 'Close of trading': 'close',
+                                'highest': 'high', 'Minimum': 'low', 'Trading volume': 'volume',
+                                'Turnover': 'amount', 'Return': 'pct_chg', 'Price change': 'change',
+                                'Turnover rate': 'turnover', 'Amplitude': 'amplitude', 'Symbol': 'ts_code'})
     else:
         df = ak.stock_hk_hist(symbol=code, period='daily',
                               start_date=start, end_date=end, adjust='qfq')
-        df = df.rename(columns={'日期': 'date', '开盘': 'open', '收盘': 'close',
-                                '最高': 'high', '最低': 'low', '成交量': 'volume',
-                                '成交额': 'amount', '涨跌幅': 'pct_chg', '涨跌额': 'change',
-                                '换手率': 'turnover', '振幅': 'amplitude'})
+        df = df.rename(columns={'Date': 'date', 'Opening': 'open', 'Close of trading': 'close',
+                                'highest': 'high', 'Minimum': 'low', 'Trading volume': 'volume',
+                                'Turnover': 'amount', 'Return': 'pct_chg', 'Price change': 'change',
+                                'Turnover rate': 'turnover', 'Amplitude': 'amplitude'})
     df['date'] = pd.to_datetime(df['date'])
     df = df.sort_values('date')
     return df
@@ -70,9 +70,9 @@ def fetch_tushare(code, market, start, end):
     import tushare as ts
     token = DATA_SOURCES['tushare']['token']
     if not token:
-        raise RuntimeError('TUSHARE_TOKEN 未配置')
+        raise RuntimeError('TUSHARE_TOKEN Not configured')
     ts.set_token(token)
-    if market == '港股':
+    if market == 'Hong Kong equities':
         pro = ts.pro_api()
         ts_code = code.zfill(5) + '.HK'
         df = pro.hk_daily_adj(ts_code=ts_code, start_date=start, end_date=end)
@@ -84,7 +84,7 @@ def fetch_tushare(code, market, start, end):
                         adj='qfq', freq='D')
         pct_col = 'pct_chg'
     if df is None or df.empty:
-        raise ValueError('Tushare 未返回数据')
+        raise ValueError('Tushare No data returned')
     df = df.rename(columns={'trade_date': 'date', 'ts_code': 'ts_code',
                             'open': 'open', 'high': 'high', 'low': 'low',
                             'close': 'close', 'pre_close': 'pre_close',
@@ -104,7 +104,7 @@ def fetch_with_fallback(code, market, start, end, source):
             app.logger.warning('Tushare failed for %s: %s; using AKShare', code, exc)
     return fetch_akshare(code, market, start, end), 'akshare'
 
-# ── API 路由 ──
+#  API Routing
 
 @app.route('/')
 def index():
@@ -112,7 +112,7 @@ def index():
 
 @app.route('/api/sources')
 def get_sources():
-    """获取所有数据源状态"""
+    """Get all data source status"""
     sources = {}
     for key, cfg in DATA_SOURCES.items():
         sources[key] = {
@@ -127,32 +127,32 @@ def get_sources():
 
 @app.route('/api/fetch')
 def fetch_data():
-    """拉取股票数据"""
+    """Pull stock data"""
     code = request.args.get('code', '000001')
-    market = request.args.get('market', 'A股')
+    market = request.args.get('market', 'A-share')
     source = request.args.get('source', 'auto')
     start = request.args.get('start', (datetime.now() - timedelta(days=365)).strftime('%Y%m%d'))
     end = request.args.get('end', datetime.now().strftime('%Y%m%d'))
 
     try:
-        # ── 输入校验：拦截市场与代码不匹配 ──
+        #  Input validation: The intercept market does not match the code
         code = code.strip()
-        is_a = ('a' in market.lower()) or ('A股' in market)
-        is_hk = ('港' in market) or ('hk' in market.lower())
+        is_a = ('a' in market.lower()) or ('A-share' in market)
+        is_hk = ('Hong Kong' in market) or ('hk' in market.lower())
 
         if is_a and (not code.isdigit() or len(code) != 6):
-            return jsonify({'error': f'⚠️ A股代码需6位数字，您输入了「{code}」。请确认市场是否选错。'}), 400
+            return jsonify({'error': f' ASymbol required6digit, You entered{code}. Please confirm whether the market is wrong.. '}), 400
         if is_hk:
             code = code.zfill(5)
             if not code.isdigit() or len(code) != 5:
-                return jsonify({'error': f'⚠️ 港股代码需5位数字，您输入了「{code}」。请确认市场是否选错。'}), 400
+                return jsonify({'error': f' Hong Kong Stock Code Required5digit, You entered{code}. Please confirm whether the market is wrong.. '}), 400
 
         df, actual_source = fetch_with_fallback(code, market, start, end, source)
 
         if df.empty:
-            return jsonify({'error': '未获取到数据，请检查代码'}), 400
+            return jsonify({'error': 'No data retrieved, Please check the code'}), 400
 
-        # 计算指标
+        # Calculated metric
         close = df['close']
         chg = float((close.iloc[-1] - close.iloc[0]) / close.iloc[0] * 100)
         rets = close.pct_change().dropna()
@@ -160,7 +160,7 @@ def fetch_data():
         max_dd = float(((close.cummax() - close) / close.cummax()).max() * 100)
         win_rate = float((rets > 0).sum() / len(rets) * 100)
 
-        # 准备OHLC数据
+        # PrepareOHLCData
         ohlc = []
         for _, row in df.iterrows():
             ohlc.append({
@@ -198,9 +198,9 @@ def fetch_data():
 
 @app.route('/api/export')
 def export_csv():
-    """导出CSV"""
+    """ExportCSV"""
     code = request.args.get('code', '000001')
-    market = request.args.get('market', 'A股')
+    market = request.args.get('market', 'A-share')
     source = request.args.get('source', 'auto')
     start = request.args.get('start', (datetime.now() - timedelta(days=365)).strftime('%Y%m%d'))
     end = request.args.get('end', datetime.now().strftime('%Y%m%d'))
@@ -223,7 +223,7 @@ def export_csv():
 
 if __name__ == '__main__':
     print("=" * 55)
-    print("  📈 数据源建设看板")
-    print("  浏览器打开: http://localhost:8765")
+    print("   Data Source Construction Dashboard")
+    print("  Open in browser: http://localhost:8765")
     print("=" * 55)
     app.run(host='0.0.0.0', port=8765, debug=False)

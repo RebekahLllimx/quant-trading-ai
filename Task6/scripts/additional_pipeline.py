@@ -45,7 +45,7 @@ from task6_common import (
 )
 
 
-SOURCE_FILE = SOURCE_DIR / "平安集团行情数据.csv"
+SOURCE_FILE = SOURCE_DIR / "Ping An Group Quote Data.csv"
 HORIZON = 3
 TARGET_RETURN = f"future_return_{HORIZON}d"
 ROLLING_WINDOW = 180
@@ -114,7 +114,7 @@ def engineer_daily_data() -> tuple[pd.DataFrame, dict]:
         "source_file": project_relative(SOURCE_FILE),
         "source_sha256": sha256_file(SOURCE_FILE),
         "security_code": str(frame["ts_code"].iloc[0]),
-        "security_name_used_in_report": "平安银行",
+        "security_name_used_in_report": "Ping An Bank",
         "rows": int(len(frame)),
         "date_min": frame["trade_date"].min().date().isoformat(),
         "date_max": frame["trade_date"].max().date().isoformat(),
@@ -354,7 +354,7 @@ def run_additional_pipeline() -> dict:
     train = sample.iloc[: max(0, split_index - HORIZON)].copy()
     purged = sample.iloc[max(0, split_index - HORIZON):split_index].copy()
     if train.empty or test.empty or train["label_end_date"].max() >= test["trade_date"].min():
-        raise ValueError("附加题时间划分或边界清除失败")
+        raise ValueError("Additional question time division or boundary clearing failed")
     daily["Split"] = "not_labeled"
     daily.loc[daily["trade_date"].isin(train["trade_date"]), "Split"] = "train"
     daily.loc[daily["trade_date"].isin(purged["trade_date"]), "Split"] = "purged"
@@ -373,7 +373,7 @@ def run_additional_pipeline() -> dict:
         "features": FEATURES,
         "label": f"future {HORIZON}-trading-day close return > 0",
         "target_return_column": TARGET_RETURN,
-        "overlap_caveat": f"日频观察的{HORIZON}日未来标签相互重叠，样本行数大于近似独立市场窗口数。",
+        "overlap_caveat": f"of daily frequency observation{HORIZON}Day future labels overlap each other, The number of sample rows is greater than the approximate number of independent market windows.. ",
     })
     write_json(ADDON_METADATA_DIR / "data_quality_report.json", quality)
 
@@ -433,26 +433,26 @@ def run_additional_pipeline() -> dict:
     tuning_rounds = pd.DataFrame([
         {
             "round": 1,
-            "design": "5日标签+9特征+静态随机森林",
+            "design": "5Day Label+9Feature+static random forest",
             "validation_auc": roc_auc_score(
                 baseline_validation["baseline_label"].astype(int), baseline_validation_probability
             ),
             "test_auc": roc_auc_score(baseline_test["baseline_label"].astype(int), baseline_test_probability),
-            "result": "失败",
+            "result": "Failure",
         },
         {
             "round": 2,
-            "design": "3日标签+4特征+静态逻辑回归",
+            "design": "3Day Label+4Feature+Static Logistic Regression",
             "validation_auc": float(candidates.set_index("model").loc[selected_model, "validation_auc"]),
             "test_auc": roc_auc_score(test["Label"].astype(int), static_test_probability),
-            "result": "通过",
+            "result": "Through",
         },
         {
             "round": 3,
-            "design": "3日标签+4特征+180日滚动逻辑回归",
+            "design": "3Day Label+4Feature+180Daily Rolling Logistic Regression",
             "validation_auc": roc_auc_score(validation["Label"].astype(int), walk_validation_probability),
             "test_auc": roc_auc_score(test["Label"].astype(int), walk_test_probability),
-            "result": "通过",
+            "result": "Through",
         },
     ])
     tuning_rounds["selected"] = tuning_rounds["round"].eq(3)
@@ -637,7 +637,7 @@ def run_additional_pipeline() -> dict:
     metadata = {
         "created_at": datetime.now().astimezone().isoformat(),
         "random_seed": RANDOM_SEED,
-        "security": "平安银行 000001.SZ",
+        "security": "Ping An Bank 000001.SZ",
         "split": f"chronological 70% train / 30% test with a {HORIZON}-trading-day purge",
         "selected_strategy_model": selected_model,
         "selected_strategy_model_label": MODEL_LABELS[selected_model],
@@ -666,10 +666,10 @@ def run_additional_pipeline() -> dict:
             "scikit_learn": sklearn.__version__,
         },
         "required_caveats": [
-            "附加题只使用单只股票约1.5年日线，市场状态覆盖有限。",
-            f"{HORIZON}日未来标签按日滚动且彼此重叠，实际独立信息量低于样本行数。",
-            "分类概率未进行充分的样本外概率校准。阈值和最大仓位从课程方法给出的27组网格中按训练期内部验证选择，但验证窗口较短，结果可能不稳定。",
-            "该策略是教学性回测，不构成投资建议。",
+            "Additional task: only use single stock approximately1.5Annual daily line, Limited market state coverage. ",
+            f"{HORIZON}Daily future labels roll daily and overlap with each other, The actual independent information content is lower than the number of sample rows.. ",
+            "Classification probabilities were not fully calibrated for out-of-sample probabilities.. Threshold and maximum position are given according to the course method.27Select within network grid based on in-training period validation, but shorter validation window, Results may be unstable. ",
+            "The strategy is pedagogical back-testing, does not constitute investment advice. ",
         ],
     }
     write_json(ADDON_METADATA_DIR / "model_run.json", metadata)

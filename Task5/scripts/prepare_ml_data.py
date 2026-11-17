@@ -143,7 +143,7 @@ def main() -> None:
     ensure_directories()
     manifest_path = METADATA_DIR / "raw_manifest.json"
     if not manifest_path.exists():
-        raise FileNotFoundError("请先运行 fetch_stock_data.py。")
+        raise FileNotFoundError("Please run first fetch_stock_data.py. ")
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
 
     engineered = []
@@ -197,9 +197,9 @@ def main() -> None:
 
     key_duplicates = int(panel.duplicated(["Symbol", "Date"]).sum())
     if key_duplicates:
-        raise RuntimeError(f"特征面板存在 {key_duplicates} 条 Symbol-Date 重复记录。")
+        raise RuntimeError(f"Feature Panel Existence {key_duplicates} item Symbol-Date Duplicate records. ")
     if not set(panel["Label"].unique()).issubset({0, 1}):
-        raise RuntimeError("标签不是严格的 0/1。")
+        raise RuntimeError("Tags are not strict. 0/1. ")
 
     columns = [
         "Date",
@@ -214,8 +214,8 @@ def main() -> None:
     ]
     panel = panel[columns].sort_values(["Date", "Symbol"]).reset_index(drop=True)
     dataset_path = PROCESSED_DIR / "task5_ml_dataset.csv"
-    panel.to_csv(dataset_path, index=False, encoding="utf-8-sig", date_format="%Y-%m-%d")
-    pd.DataFrame(coverage).to_csv(METADATA_DIR / "symbol_coverage.csv", index=False, encoding="utf-8-sig")
+    panel.to_csv(dataset_path, index=False, encoding="utf-8", date_format="%Y-%m-%d")
+    pd.DataFrame(coverage).to_csv(METADATA_DIR / "symbol_coverage.csv", index=False, encoding="utf-8")
 
     split_order = ["train", "validation", "development", "test"]
     split_summary = (
@@ -232,7 +232,7 @@ def main() -> None:
         .reset_index()
     )
     split_summary["positive_rate"] = split_summary["positive"] / split_summary["rows"]
-    split_summary.to_csv(METADATA_DIR / "split_summary.csv", index=False, encoding="utf-8-sig", date_format="%Y-%m-%d")
+    split_summary.to_csv(METADATA_DIR / "split_summary.csv", index=False, encoding="utf-8", date_format="%Y-%m-%d")
 
     yearly = (
         panel.assign(Year=panel["Date"].dt.year)
@@ -240,7 +240,7 @@ def main() -> None:
         .agg(rows=("Label", "size"), positive=("Label", "sum"), symbols=("Symbol", "nunique"), months=("Date", "nunique"))
     )
     yearly["positive_rate"] = yearly["positive"] / yearly["rows"]
-    yearly.to_csv(METADATA_DIR / "yearly_label_summary.csv", index=False, encoding="utf-8-sig")
+    yearly.to_csv(METADATA_DIR / "yearly_label_summary.csv", index=False, encoding="utf-8")
 
     quality = {
         "created_at": datetime.now().astimezone().isoformat(),

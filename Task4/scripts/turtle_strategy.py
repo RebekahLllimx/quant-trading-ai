@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-海龟交易策略回测引擎 (Turtle Trading Strategy Backtest Engine)
+Turtle Trading Strategy Backtesting Engine (Turtle Trading Strategy Backtest Engine)
 
-核心组件:
-  1. 高低价格通道 (Donchian Channel) — 突破入场信号
-  2. ATR (平均真实波幅) — 波动率度量, 仓位计算, 止损依据
-  3. 交易信号生成 — 入场/加仓/止损/离场
-  4. 回测引擎 — 模拟交易, 成本计算
-  5. 绩效评估 — 累计回报, 年化收益, MDD, 夏普比率, 胜率, 盈亏比
+Core Components:
+  1. High and low price channel (Donchian Channel)  -  Breakout Entry Signal
+  2. ATR (Average True Range)  -  Volatility Measurement, Position calculation, Stop Loss Basis
+  3. Trading signal generation  -  Admission/Increase position/Stop-loss/Departing
+  4. Backtesting Engine  -  Simulated trading, Cost Calculation
+  5. Performance appraisal  -  Cumulative Return, Annualized return, MDD, Sharpe Ratio, Win rate, Profit/Loss Ratio
 
-参考: Richard Dennis & William Eckhardt, "The Original Turtle Trading Rules" (1983)
+Reference: Richard Dennis & William Eckhardt, "The Original Turtle Trading Rules" (1983)
 """
 
 import pandas as pd
@@ -20,20 +20,20 @@ import warnings
 warnings.filterwarnings('ignore')
 
 
-# ═══════════════════════════════════════════════════════════════
-# 1. 指标计算
-# ═══════════════════════════════════════════════════════════════
+#
+# 1. Metric Calculation
+#
 
 def calc_donchian(df: pd.DataFrame, period: int = 20) -> pd.DataFrame:
     """
-    计算唐奇安通道 (Donchian Channel) — 高低价格通道
+    Calculate the Donchian channel (Donchian Channel)  -  High and low price channel
 
-    参数:
-        df: 包含 High, Low 列的 DataFrame
-        period: 通道周期, 默认 20 (海龟 System 1 入场周期)
+    Parameters:
+        df: Contains High, Low of the column DataFrame
+        period: Channel Cycle, Default 20 (sea turtle System 1 Entry cycle)
 
-    返回:
-        pd.DataFrame: 包含 DC_High (上轨), DC_Low (下轨), DC_Mid (中轨) 三列
+    Returns:
+        pd.DataFrame: Contains DC_High (On track), DC_Low (Lower rail), DC_Mid (Middle rail) 3 columns
     """
     high = df['High'].astype(float)
     low = df['Low'].astype(float)
@@ -51,21 +51,21 @@ def calc_donchian(df: pd.DataFrame, period: int = 20) -> pd.DataFrame:
 
 def calc_atr(df: pd.DataFrame, period: int = 14) -> pd.Series:
     """
-    计算 ATR (Average True Range) — 平均真实波幅
+    calculation ATR (Average True Range)  -  Average True Range
 
     True Range = max(
-        High - Low,              # 当日振幅
-        |High - PrevClose|,      # 今高与昨收缺口 (向上跳空)
-        |Low - PrevClose|        # 今低与昨收缺口 (向下跳空)
+        High - Low,              # Intraday amplitude
+        |High - PrevClose|,      # Today&#39;s High and Yesterday&#39;s Gap (Upward gap)
+        |Low - PrevClose|        # Today&#39;s Low and Yesterday&#39;s Gap (Downward gap)
     )
-    ATR = WilderSmooth(TR, N)    # α = 1/N 的指数平滑
+    ATR = WilderSmooth(TR, N)    # alpha = 1/N exponential smoothing
 
-    参数:
-        df: 包含 High, Low, Close 列的 DataFrame
-        period: ATR 周期, 默认 14
+    Parameters:
+        df: Contains High, Low, Close of the column DataFrame
+        period: ATR cycle, Default 14
 
-    返回:
-        pd.Series: ATR 序列
+    Returns:
+        pd.Series: ATR sequence
     """
     high = df['High'].astype(float)
     low = df['Low'].astype(float)
@@ -78,7 +78,7 @@ def calc_atr(df: pd.DataFrame, period: int = 14) -> pd.Series:
         (low - close_prev).abs(),
     ], axis=1).max(axis=1)
 
-    # Wilder 平滑: α = 1/N
+    # Wilder Smooth: alpha = 1/N
     atr = tr.ewm(alpha=1.0 / period, min_periods=period, adjust=False).mean()
     atr.name = 'ATR'
     return atr.round(4)
@@ -86,27 +86,27 @@ def calc_atr(df: pd.DataFrame, period: int = 14) -> pd.Series:
 
 def calc_n_value(df: pd.DataFrame, period: int = 20) -> pd.Series:
     """
-    计算 N 值 (海龟策略的核心波动率度量)
+    calculation N value (Core volatility measurement of the Turtle strategy)
 
-    N 值就是 period 周期的 ATR, 但在海龟原版中用 20 日.
-    N 值用途:
-      - 仓位大小 = (账户 × 1%) / N
-      - 止损距离 = 2 × N
-      - 加仓间隔 = 0.5 × N
+    N value is period of the cycle ATR, but used in the original turtle 20 day.
+    N Value Usage:
+      - Position size = (Account x 1%) / N
+      - Stop Loss Distance = 2 x N
+      - Bin adding interval = 0.5 x N
 
-    参数:
-        df: 包含 High, Low, Close 列的 DataFrame
-        period: N 值周期, 默认 20
+    Parameters:
+        df: Contains High, Low, Close of the column DataFrame
+        period: N Value period, Default 20
 
-    返回:
-        pd.Series: N 值序列
+    Returns:
+        pd.Series: N value sequence
     """
     return calc_atr(df, period=period)
 
 
-# ═══════════════════════════════════════════════════════════════
-# 2. 交易信号生成
-# ═══════════════════════════════════════════════════════════════
+#
+# 2. Trading signal generation
+#
 
 def generate_signals(df: pd.DataFrame,
                      entry_period: int = 20,
@@ -115,36 +115,36 @@ def generate_signals(df: pd.DataFrame,
                      atr_stop_mult: float = 2.0,
                      use_filter: bool = True) -> pd.DataFrame:
     """
-    生成海龟策略交易信号
+    Generate Turtle Strategy Trading Signals
 
-    海龟交易规则 (简化版, 仅做多):
-      1. 入场: 收盘价突破 entry_period 日最高价通道上轨 → 买入
-      2. 加仓: 价格每上涨 0.5×ATR, 加仓一次 (最多 4 次)
-      3. 止损: 价格跌破入场价 − atr_stop_mult × ATR → 止损卖出
-      4. 离场: 收盘价跌破 exit_period 日最低价通道下轨 → 卖出
-      5. 过滤: 如果上一次突破是亏损的, 跳过下一次 System 1 入场信号 (可选)
+    Turtle Trading Rules (Simplified version, Just do more):
+      1. Admission: Close breaks above entry_period Upper rail of the daily high price channel  ->  Buy
+      2. Increase position: Every increase in price 0.5xATR, Add warehouse once (at most 4 Next)
+      3. Stop-loss: Price falls below entry price - atr_stop_mult x ATR  ->  Stop Loss Sell
+      4. Departing: The closing price fell below exit_period Lower rail of the daily low price channel  ->  Sell
+      5. filter: If the last breakout was a loss, Skip the next time System 1 Entry signal (Optional)
 
-    避免未来函数:
-      - 入场信号基于 T-1 日的通道数据 (T 日开盘前已可知)
-      - T 日以收盘价成交
+    Avoid future functions:
+      - admission signal based on T-1 Channel data of day (T It was already known before the market opened.)
+      - T Trading on the day at the closing price
 
-    参数:
-        df: 包含 OHLC 数据的 DataFrame
-        entry_period: 入场通道周期, 默认 20 (海龟 System 1)
-        exit_period: 离场通道周期, 默认 10 (海龟 System 1)
-        atr_period: ATR 周期, 默认 20
-        atr_stop_mult: 止损 ATR 倍数, 默认 2.0
-        use_filter: 是否使用亏损过滤规则
+    Parameters:
+        df: Contains OHLC of the data DataFrame
+        entry_period: Admission channel cycle, Default 20 (sea turtle System 1)
+        exit_period: Departing Channel Cycle, Default 10 (sea turtle System 1)
+        atr_period: ATR cycle, Default 20
+        atr_stop_mult: Stop-loss ATR multiple, Default 2.0
+        use_filter: Use loss filtering rules
 
-    返回:
-        pd.DataFrame: 附加信号列的 DataFrame
+    Returns:
+        pd.DataFrame: Additional signal columns DataFrame
     """
     result = df.copy()
     close = result['Close'].astype(float)
     high = result['High'].astype(float)
     low = result['Low'].astype(float)
 
-    # 计算通道
+    # Calculation channel
     dc_entry = calc_donchian(result, period=entry_period)
     dc_exit = calc_donchian(result, period=exit_period)
     n_value = calc_n_value(result, period=atr_period)
@@ -153,20 +153,20 @@ def generate_signals(df: pd.DataFrame,
     result['Exit_Low'] = dc_exit['DC_Low']
     result['N_Value'] = n_value
 
-    # 信号列初始化
+    # Signal Column Initialization
     result['Signal'] = ''          # BUY / ADD / STOP / EXIT
     result['Signal_Price'] = np.nan
 
-    # 遍历生成信号
+    # Traversal Generates Signal
     max_period = max(entry_period, exit_period, atr_period)
-    last_trade_lost = False  # 海龟过滤规则
-    # 加仓状态追踪
+    last_trade_lost = False  # Turtle Filtering Rules
+    # Position Addition Tracking
     in_position = False
     last_signal_price = 0.0
     units_count = 0
 
     for t in range(max_period + 2, len(result)):
-        # T-1 日的通道值 (避免未来函数)
+        # T-1 Channel value of the day (Avoid future functions)
         entry_high_prev = result['Entry_High'].iloc[t - 1]
         exit_low_prev = result['Exit_Low'].iloc[t - 1]
         entry_high_prev2 = result['Entry_High'].iloc[t - 2]
@@ -174,7 +174,7 @@ def generate_signals(df: pd.DataFrame,
         if pd.isna(entry_high_prev) or pd.isna(exit_low_prev):
             continue
 
-        # 入场信号: 收盘价突破 entry_period 日最高
+        # Entry signal: Close breaks above entry_period Day Highest
         price_prev = close.iloc[t - 1]
         price_prev2 = close.iloc[t - 2]
 
@@ -183,7 +183,7 @@ def generate_signals(df: pd.DataFrame,
 
         if breakout_up:
             if use_filter and last_trade_lost:
-                # 跳过此次信号 (但记录)
+                # Skip this signal (but record)
                 result.loc[result.index[t], 'Signal'] = 'FILTERED_BUY'
                 last_trade_lost = False
                 in_position = False
@@ -194,7 +194,7 @@ def generate_signals(df: pd.DataFrame,
                 last_signal_price = close.iloc[t]
                 units_count = 1
 
-        # 加仓信号: 持仓中, 价格较最近买入/加仓价上涨 >= 0.5×N
+        # Bin signal: In position, Price more recently bought/Increase in position price >= 0.5xN
         if in_position and units_count < 4:
             n_val = result['N_Value'].iloc[t]
             if (not pd.isna(n_val) and n_val > 0 and
@@ -207,9 +207,9 @@ def generate_signals(df: pd.DataFrame,
     return result
 
 
-# ═══════════════════════════════════════════════════════════════
-# 3. 回测引擎
-# ═══════════════════════════════════════════════════════════════
+#
+# 3. Backtesting Engine
+#
 
 def run_backtest(df: pd.DataFrame,
                  entry_period: int = 20,
@@ -224,63 +224,63 @@ def run_backtest(df: pd.DataFrame,
                  max_units: int = 4,
                  pyramid_atr_mult: float = 0.5) -> Dict:
     """
-    海龟策略回测引擎 (仅做多)
+    Turtle Strategy Backtesting Engine (Just do more)
 
-    海龟交易系统核心逻辑:
-      1. 入场: 价格突破 entry_period 日高点 → 全仓买入
-      2. 动态止损: 持仓期间止损价 = 入场价 − atr_stop_mult × ATR_t (只上移不下移)
-      3. 离场: 价格跌破 exit_period 日低点 → 卖出入场
-      4. 仓位: 初始仓位基于 N 值 — shares = (capital × risk%) / N
-      5. 强制平仓: 回测最后一日若仍持仓则按收盘价卖出
+    Turtle Trading System Core Logic:
+      1. Admission: Price Breakout entry_period Day High Point  ->  Full Buy
+      2. Dynamic Stop Loss: Stop loss price during position = Admission price - atr_stop_mult x ATR_t (Move up only, not down)
+      3. Departing: Prices fall below exit_period Day Low  ->  Sell Entry
+      4. Position: Initial position based on N value  -  shares = (capital x risk%) / N
+      5. Forced liquidation: If still holding positions on the last day of backtesting, sell at the closing price.
 
-    避免未来函数:
-      - 所有信号判断基于 T-1 日数据
-      - T 日以收盘价执行交易
+    Avoid future functions:
+      - All signal judgments are based on T-1 Daily data
+      - T Execute trades at the closing price on the day.
 
-    参数:
-        df: OHLCV 数据
-        entry_period: 入场通道周期 (海龟 System 1 = 20)
-        exit_period: 离场通道周期 (海龟 System 1 = 10)
-        atr_period: ATR/N 值计算周期 (默认 20)
-        atr_stop_mult: 止损倍数 (默认 2.0)
-        risk_percent: 单笔风险比例 (默认 2%)
-        initial_capital: 初始资金
-        fee_rate: 手续费率 (默认 0.03%)
-        slippage: 滑点率 (默认 0.01%)
-        use_filter: 是否使用亏损过滤规则
-        max_units: 最大加仓次数
-        pyramid_atr_mult: 加仓间隔 ATR 倍数
+    Parameters:
+        df: OHLCV Data
+        entry_period: Admission channel cycle (sea turtle System 1 = 20)
+        exit_period: Departing Channel Cycle (sea turtle System 1 = 10)
+        atr_period: ATR/N Value Calculation Period (Default 20)
+        atr_stop_mult: Stop Loss Multiples (Default 2.0)
+        risk_percent: Single-Trade Risk Ratio (Default 2%)
+        initial_capital: Initial funding
+        fee_rate: Fee rate (Default 0.03%)
+        slippage: slippage rate (Default 0.01%)
+        use_filter: Use loss filtering rules
+        max_units: Maximum number of additional positions
+        pyramid_atr_mult: Bin adding interval ATR multiple
 
-    返回:
+    Returns:
         dict: {
-            'df': 附加信号列的 DataFrame,
-            'trades': 交易明细列表,
-            'equity_curve': 每日权益,
-            'signals_buy': 买入信号列表,
-            'signals_sell': 卖出信号列表,
-            'signals_stop': 止损信号列表,
-            'final_equity': 最终权益,
-            'bh_equity_curve': 买入持有权益曲线,
-            'bh_final_equity': 买入持有最终权益,
+            'df': Additional signal columns DataFrame,
+            'trades': Transaction Detail List,
+            'equity_curve': Daily Benefits,
+            'signals_buy': Buy Signal List,
+            'signals_sell': List of Sell Signals,
+            'signals_stop': List of Stop Loss Signals,
+            'final_equity': Final interest,
+            'bh_equity_curve': Buy and hold equity curve,
+            'bh_final_equity': BUY-HOLD FINAL INTEREST,
         }
     """
     close = df['Close'].astype(float)
     high = df['High'].astype(float)
     low = df['Low'].astype(float)
 
-    # 计算指标
+    # Calculated metric
     dc_entry = calc_donchian(df, period=entry_period)
     dc_exit = calc_donchian(df, period=exit_period)
     n_value = calc_n_value(df, period=atr_period)
 
-    # 初始化状态
+    # Initialization State
     cash = initial_capital
     shares = 0
     has_position = False
     entry_price = 0.0
-    stop_price = 0.0  # 动态止损价
-    units_held = 0  # 当前加仓次数
-    last_add_price = 0.0  # 最近一次加仓价格（金字塔加仓基准）
+    stop_price = 0.0  # Dynamic Stop Price
+    units_held = 0  # Current number of position increases
+    last_add_price = 0.0  # The most recent price of the additional purchase (Pyramid plus warehouse benchmark)
     last_trade_lost = False
 
     trades = []
@@ -288,7 +288,7 @@ def run_backtest(df: pd.DataFrame,
     signals_buy = []
     signals_sell = []
     signals_stop = []
-    signals_add = []  # 金字塔加仓信号
+    signals_add = []  # Pyramid plus bin signal
 
     start_idx = max(entry_period, exit_period, atr_period) + 2
 
@@ -299,7 +299,7 @@ def run_backtest(df: pd.DataFrame,
         high_t = high.iloc[t]
         low_t = low.iloc[t]
 
-        # 计算当日权益
+        # Calculate the day&#39;s equity
         equity = cash + shares * price_t
         equity_curve.append({
             'date': date_t,
@@ -308,47 +308,47 @@ def run_backtest(df: pd.DataFrame,
             'shares': shares,
         })
 
-        # ---- 信号判断 (海龟原版: T 日高/低价触发 T-1 日通道) ----
-        # T-1 日的通道值在 T 日开盘前已知, T 日盘中高/低价触发即成交
+        # ---- Signal Judgment (Original Turtle Version: T Hidaka/Low-price trigger T-1 Day Channel) ----
+        # T-1 The channel value on the day is in T Known before the opening of the day., T day high/Low Price Trigger Deal
         entry_high_prev = dc_entry['DC_High'].iloc[t - 1]
         exit_low_prev = dc_exit['DC_Low'].iloc[t - 1]
 
         if pd.isna(entry_high_prev) or pd.isna(exit_low_prev) or pd.isna(n_t):
             continue
 
-        # 入场信号: T 日最高价突破 T-1 日入场通道上轨 (海龟原版 Stop Order)
-        # 同时要求 T-1 收盘价未超过 T-2 通道 (避免连续突破)
+        # Entry signal: T Daily high breaks above T-1 Daily admission channel on rail (Original Turtle Version Stop Order)
+        # At the same time, it requires T-1 The closing price does not exceed T-2 Channel (Avoid consecutive breakthroughs)
         prev2_high = dc_entry['DC_High'].iloc[t - 2]
         prev_close = close.iloc[t - 1]
         breakout_up = (high_t > entry_high_prev and
                        (pd.isna(prev2_high) or prev_close <= prev2_high))
 
-        # 离场信号: T 日最低价跌破 T-1 日离场通道下轨
+        # Exit Signal: T The daily low fell below T-1 Lower rail of the daily exit passage
         exit_signal = low_t < exit_low_prev
 
-        # 止损判断: 持仓期间, 当日最低价触及止损价
+        # Stop Loss Judgment: Holding period, The lowest price of the day touched the stop loss price.
         stop_hit = False
         if has_position and stop_price > 0:
             stop_hit = low_t <= stop_price
 
-        # ---- 执行交易 ----
+        # ---- Execute Trade ----
         if breakout_up and not has_position:
-            # 过滤规则: 上一笔亏损则跳过
+            # Filtering Rules: Skip if last loss occurs
             if use_filter and last_trade_lost:
                 last_trade_lost = False
                 continue
 
-            # 买入
+            # Buy
             buy_price = price_t * (1 + slippage)
-            # 仓位: 严格推导版 — Shares = RiskAmount / (k × N)
-            # RiskAmount = Cash × risk_percent
-            # StopDistance = atr_stop_mult × N_t (每股止损距离)
-            # 当止损触发时, 实际亏损 ≈ RiskAmount
+            # Position: Strictly derived version  -  Shares = RiskAmount / (k x N)
+            # RiskAmount = Cash x risk_percent
+            # StopDistance = atr_stop_mult x N_t (Stop Loss Distance Per Share)
+            # When the stop loss is triggered, Actual loss approximately RiskAmount
             if n_t > 0:
                 risk_amount = cash * risk_percent
                 stop_distance = atr_stop_mult * n_t
                 safe_shares = risk_amount / stop_distance
-                # 不超过可用资金
+                # No more than available funds
                 max_shares = cash / (buy_price * (1 + fee_rate))
                 shares = min(safe_shares, max_shares)
             else:
@@ -379,20 +379,20 @@ def run_backtest(df: pd.DataFrame,
             signals_buy.append((date_t, buy_price))
 
         elif has_position:
-            # 动态止损价上移 (只上移不下移 — 海龟止损铁律)
+            # Dynamic Stop Price Move Up (Move up only, not down  -  Turtle Stop Loss Iron Law)
             if n_t > 0 and not pd.isna(n_t):
                 new_stop = entry_price - atr_stop_mult * n_t
-                # 对于盈利头寸, 考虑使用更紧的止损
+                # For profitable positions, Consider using a tighter stop loss
                 if price_t > entry_price:
                     trailing_stop = price_t - atr_stop_mult * n_t
                     new_stop = max(new_stop, trailing_stop)
                 stop_price = max(stop_price, new_stop)
 
-            # 金字塔加仓: 价格每上涨 pyramid_atr_mult × N，加仓一个单位
+            # Pyramid plus warehouse: Every increase in price pyramid_atr_mult x N, Add one unit to the position.
             if (units_held < max_units and n_t > 0 and not pd.isna(n_t) and
                     price_t >= last_add_price + pyramid_atr_mult * n_t):
                 add_price = price_t * (1 + slippage)
-                # 仓位计算: 与初始入场相同的公式
+                # Position calculation: The same formula as the initial entry
                 if n_t > 0:
                     risk_amount = cash * risk_percent
                     stop_distance = atr_stop_mult * n_t
@@ -406,16 +406,16 @@ def run_backtest(df: pd.DataFrame,
                     add_cost = add_shares * add_price * (1 + fee_rate)
                     if add_cost <= cash:
                         cash -= add_cost
-                        # 更新加权平均入场价
+                        # Updated weighted average entry price
                         total_cost_basis = shares * entry_price + add_shares * add_price
                         shares += add_shares
                         entry_price = total_cost_basis / shares
                         units_held += 1
                         last_add_price = add_price
-                        # 海龟原版: 加仓后止损收紧至最新加仓价 − k×N
+                        # Original Turtle Version: After adding positions, the stop loss is tightened to the latest added price. - kxN
                         stop_price = add_price - atr_stop_mult * n_t
 
-                        # 更新 trade 记录
+                        # Update trade Record
                         trades[-1].setdefault('pyramid_adds', []).append({
                             'add_date': date_t,
                             'add_price': round(add_price, 4),
@@ -427,7 +427,7 @@ def run_backtest(df: pd.DataFrame,
 
                         signals_add.append((date_t, add_price))
 
-            # 检查止损
+            # Check Stop Loss
             if stop_hit:
                 sell_price = stop_price * (1 - slippage)
                 cash += shares * sell_price * (1 - fee_rate)
@@ -436,7 +436,7 @@ def run_backtest(df: pd.DataFrame,
                 trades[-1]['return_pct'] = round(
                     (shares * sell_price * (1 - fee_rate) / trades[-1]['cost'] - 1) * 100, 2
                 )
-                trades[-1]['exit_reason'] = '止损'
+                trades[-1]['exit_reason'] = 'Stop-loss'
                 last_trade_lost = trades[-1]['return_pct'] < 0
                 shares = 0
                 has_position = False
@@ -445,7 +445,7 @@ def run_backtest(df: pd.DataFrame,
                 signals_stop.append((date_t, sell_price))
                 signals_sell.append((date_t, sell_price))
 
-            # 检查离场信号
+            # Check departure signal
             elif exit_signal:
                 sell_price = price_t * (1 - slippage)
                 cash += shares * sell_price * (1 - fee_rate)
@@ -454,7 +454,7 @@ def run_backtest(df: pd.DataFrame,
                 trades[-1]['return_pct'] = round(
                     (shares * sell_price * (1 - fee_rate) / trades[-1]['cost'] - 1) * 100, 2
                 )
-                trades[-1]['exit_reason'] = '离场信号'
+                trades[-1]['exit_reason'] = 'Exit Signal'
                 last_trade_lost = trades[-1]['return_pct'] < 0
                 shares = 0
                 has_position = False
@@ -462,7 +462,7 @@ def run_backtest(df: pd.DataFrame,
                 units_held = 0
                 signals_sell.append((date_t, sell_price))
 
-    # 强制平仓
+    # Forced liquidation
     if has_position:
         final_price = close.iloc[-1] * (1 - slippage)
         cash += shares * final_price * (1 - fee_rate)
@@ -471,9 +471,9 @@ def run_backtest(df: pd.DataFrame,
         trades[-1]['return_pct'] = round(
             (shares * final_price * (1 - fee_rate) / trades[-1]['cost'] - 1) * 100, 2
         )
-        trades[-1]['exit_reason'] = '强制平仓'
+        trades[-1]['exit_reason'] = 'Forced liquidation'
 
-    # 完整权益曲线 (前 start_idx 天持有现金)
+    # complete equity curve (former start_idx Days to hold cash)
     full_equity = []
     for i in range(start_idx):
         full_equity.append({
@@ -486,7 +486,7 @@ def run_backtest(df: pd.DataFrame,
 
     final_equity = cash + shares * close.iloc[-1]
 
-    # 买入持有基准
+    # Buy-to-hold benchmark
     bh_price0 = close.iloc[0] * (1 + slippage) * (1 + fee_rate)
     bh_shares = initial_capital / bh_price0
     bh_equity = [{'date': d, 'equity': bh_shares * p}
@@ -503,7 +503,7 @@ def run_backtest(df: pd.DataFrame,
         'signals_buy': signals_buy,
         'signals_sell': signals_sell,
         'signals_stop': signals_stop,
-        'signals_add': signals_add,  # 金字塔加仓信号
+        'signals_add': signals_add,  # Pyramid plus bin signal
         'final_equity': final_equity,
         'bh_equity_curve': bh_equity,
         'bh_final_equity': bh_final,
@@ -518,52 +518,52 @@ def run_backtest(df: pd.DataFrame,
     }
 
 
-# ═══════════════════════════════════════════════════════════════
-# 4. 绩效评估指标
-# ═══════════════════════════════════════════════════════════════
+#
+# 4. Performance evaluation indicators
+#
 
 def calc_metrics(result: Dict,
                  initial_capital: float = 1_000_000,
                  risk_free_rate: float = 0.02) -> Dict:
     """
-    计算策略绩效评估指标
+    Calculating Strategy Performance Evaluation Metrics
 
-    指标:
-      - 累计回报 (Cumulative Return)
-      - 年化收益率 (Annualized Return, 252 交易日/年)
-      - 最大回撤 (Maximum Drawdown, MDD)
-      - 夏普比率 (Sharpe Ratio)
-      - 胜率 (Win Rate)
-      - 盈亏比 (Profit/Loss Ratio)
-      - 日均收益率标准差 / 年化波动率
-      - 交易次数
-      - 买入持有基准对比
+    Indicator:
+      - Cumulative Return (Cumulative Return)
+      - Annualized return rate (Annualized Return, 252 Trading day/year)
+      - Maximum Drawdown (Maximum Drawdown, MDD)
+      - Sharpe Ratio (Sharpe Ratio)
+      - Win rate (Win Rate)
+      - Profit/Loss Ratio (Profit/Loss Ratio)
+      - Average daily yield standard deviation / annualized volatility
+      - Number of transactions
+      - Buy-to-hold benchmark comparison
 
-    参数:
-        result: run_backtest() 返回的字典
-        initial_capital: 初始资金
-        risk_free_rate: 无风险利率 (默认 2%)
+    Parameters:
+        result: run_backtest() The returned dictionary
+        initial_capital: Initial funding
+        risk_free_rate: Risk-free rate (Default 2%)
 
-    返回:
-        dict: 指标字典
+    Returns:
+        dict: Metric Dictionary
     """
     trades = [t for t in result['trades'] if t['sell_date'] is not None]
     equity_values = [e['equity'] for e in result['equity_curve']]
 
     if len(equity_values) < 2:
-        return {'error': '数据不足, 无法计算指标'}
+        return {'error': 'Insufficient data, Unable to calculate indicator'}
 
     final_equity = result['final_equity']
 
-    # 累计回报
+    # Cumulative Return
     total_return = (final_equity / initial_capital - 1) * 100
 
-    # 年化收益率
+    # Annualized return rate
     days = max(1, (result['equity_curve'][-1]['date'] -
                    result['equity_curve'][0]['date']).days)
     annual_return = (np.power(final_equity / initial_capital, 252.0 / days) - 1) * 100
 
-    # 最大回撤 (MDD)
+    # Maximum Drawdown (MDD)
     peak = -np.inf
     mdd = 0
     for eq in equity_values:
@@ -573,13 +573,13 @@ def calc_metrics(result: Dict,
         if dd < mdd:
             mdd = dd
 
-    # 日收益率序列
+    # daily yield series
     daily_rets = []
     for i in range(1, len(equity_values)):
         if equity_values[i - 1] > 0:
             daily_rets.append(equity_values[i] / equity_values[i - 1] - 1)
 
-    # 夏普比率
+    # Sharpe Ratio
     sharpe = 0.0
     annual_vol = 0.0
     if len(daily_rets) > 1:
@@ -589,22 +589,22 @@ def calc_metrics(result: Dict,
         if std_ret > 0:
             sharpe = np.sqrt(252) * (mean_ret - risk_free_rate / 252) / std_ret
 
-    # 胜率
+    # Win rate
     wins = [t for t in trades if t['return_pct'] > 0]
     losses = [t for t in trades if t['return_pct'] <= 0]
     win_rate = len(wins) / len(trades) * 100 if trades else 0
 
-    # 盈亏比
+    # Profit/Loss Ratio
     avg_win = np.mean([t['return_pct'] for t in wins]) if wins else 0
     avg_loss = np.mean([abs(t['return_pct']) for t in losses]) if losses else 0
     profit_loss_ratio = avg_win / avg_loss if avg_loss > 0 else None
 
-    # 买入持有
+    # Buy and hold
     bh_total_return = (result['bh_final_equity'] / initial_capital - 1) * 100
 
-    # 止损统计
-    stop_trades = [t for t in trades if t.get('exit_reason') == '止损']
-    signal_trades = [t for t in trades if t.get('exit_reason') == '离场信号']
+    # Stop Loss Statistics
+    stop_trades = [t for t in trades if t.get('exit_reason') == 'Stop-loss']
+    signal_trades = [t for t in trades if t.get('exit_reason') == 'Exit Signal']
 
     return {
         'total_return': round(total_return, 2),
@@ -624,25 +624,25 @@ def calc_metrics(result: Dict,
     }
 
 
-# ═══════════════════════════════════════════════════════════════
-# 5. 参数扫描
-# ═══════════════════════════════════════════════════════════════
+#
+# 5. Parameter Scan
+#
 
 def param_sweep(df: pd.DataFrame,
                 entry_periods: List[int] = None,
                 exit_periods: List[int] = None,
                 atr_stop_mults: List[float] = None) -> pd.DataFrame:
     """
-    参数敏感性扫描 — 网格搜索不同参数组合的策略表现
+    parameter sensitivity scan  -  Strategy performance under different parameter combinations in grid search.
 
-    参数:
-        df: OHLCV 数据
-        entry_periods: 入场周期列表
-        exit_periods: 离场周期列表
-        atr_stop_mults: 止损倍数列表
+    Parameters:
+        df: OHLCV Data
+        entry_periods: Entry cycle list
+        exit_periods: Departing Period List
+        atr_stop_mults: List of Stop Loss Multiples
 
-    返回:
-        pd.DataFrame: 每行一组参数组合的绩效指标
+    Returns:
+        pd.DataFrame: Performance indicators for each row of parameter combinations
     """
     if entry_periods is None:
         entry_periods = [10, 15, 20, 30, 40, 55]
@@ -658,7 +658,7 @@ def param_sweep(df: pd.DataFrame,
     for ep in entry_periods:
         for xp in exit_periods:
             if xp >= ep:
-                continue  # 离场周期必须小于入场周期
+                continue  # Exit period must be shorter than entry period
             for sm in atr_stop_mults:
                 count += 1
                 try:
@@ -683,13 +683,13 @@ def param_sweep(df: pd.DataFrame,
     return pd.DataFrame(results)
 
 
-# ═══════════════════════════════════════════════════════════════
-# 6. 工具函数
-# ═══════════════════════════════════════════════════════════════
+#
+# 6. Tool Functions
+#
 
 def load_stock(code: str, name: str, market: str,
                data_dir: str = None) -> pd.DataFrame:
-    """加载股票 CSV 数据"""
+    """Load Stock CSV Data"""
     import os
     if data_dir is None:
         data_dir = os.path.join(
@@ -705,65 +705,65 @@ def load_stock(code: str, name: str, market: str,
 
 
 def print_metrics(metrics: Dict, stock_name: str = ''):
-    """格式化打印策略指标"""
-    header = f"  策略绩效: {stock_name}" if stock_name else "  策略绩效"
+    """Format Print Policy Indicator"""
+    header = f"  Strategy Performance: {stock_name}" if stock_name else "  Strategy Performance"
     print(f"\n{'='*55}")
     print(header)
     print(f"{'='*55}")
-    print(f"  累计回报:     {metrics['total_return']:>10.2f}%")
-    print(f"  年化收益率:   {metrics['annual_return']:>10.2f}%")
-    print(f"  最大回撤:     {metrics['mdd']:>10.2f}%")
-    print(f"  夏普比率:     {metrics['sharpe']:>10.4f}")
-    print(f"  年化波动率:   {metrics['annual_volatility']:>10.2f}%")
-    print(f"  胜率:         {metrics['win_rate']:>10.1f}%")
+    print(f"  Cumulative Returns:     {metrics['total_return']:>10.2f}%")
+    print(f"  Annualized return rate:   {metrics['annual_return']:>10.2f}%")
+    print(f"  Maximum Drawdown:     {metrics['mdd']:>10.2f}%")
+    print(f"  Sharpe Ratio:     {metrics['sharpe']:>10.4f}")
+    print(f"  annualized volatility:   {metrics['annual_volatility']:>10.2f}%")
+    print(f"  Win rate:         {metrics['win_rate']:>10.1f}%")
     plr_str = f'{metrics["profit_loss_ratio"]:.2f}' if metrics['profit_loss_ratio'] else 'N/A'
-    print(f"  盈亏比:       {plr_str:>10s}")
-    print(f"  交易次数:     {metrics['total_trades']:>10d}")
-    print(f"  止损退出:     {metrics['stop_exits']:>10d} 次")
-    print(f"  信号退出:     {metrics['signal_exits']:>10d} 次")
-    print(f"  买入持有:     {metrics['bh_total_return']:>10.2f}%")
+    print(f"  Profit/Loss Ratio:       {plr_str:>10s}")
+    print(f"  Number of transactions:     {metrics['total_trades']:>10d}")
+    print(f"  Stop Loss Exit:     {metrics['stop_exits']:>10d} Next")
+    print(f"  Signal Exit:     {metrics['signal_exits']:>10d} Next")
+    print(f"  Buy and hold:     {metrics['bh_total_return']:>10.2f}%")
     print(f"{'='*55}\n")
 
 
-# ═══════════════════════════════════════════════════════════════
-# 主程序 (自检)
-# ═══════════════════════════════════════════════════════════════
+#
+# Main program (Self-check)
+#
 
 def main():
     print('=' * 60)
-    print('  海龟策略回测引擎 — 自检')
+    print('  Turtle Strategy Backtesting Engine  -  Self-check')
     print('=' * 60)
 
-    # 加载贵州茅台数据
-    df = load_stock('600519', '贵州茅台', 'A股')
-    print(f'\n📂 贵州茅台: {len(df)} 条数据')
-    print(f'   日期范围: {df["Date"].iloc[0].date()} ~ {df["Date"].iloc[-1].date()}')
+    # Load Kweichow Moutai data
+    df = load_stock('600519', 'Kweichow Moutai', 'A-share')
+    print(f'\n Kweichow Moutai: {len(df)} data item')
+    print(f'   Date Range: {df["Date"].iloc[0].date()} ~ {df["Date"].iloc[-1].date()}')
 
-    # 运行回测
-    print('\n⏳ 运行海龟策略回测 (entry=20, exit=10, ATR止损=2.0)...')
+    # Run Backtest
+    print('\n Run Turtle Strategy Backtest (entry=20, exit=10, ATRStop-loss=2.0)...')
     result = run_backtest(df)
     metrics = calc_metrics(result)
 
-    print_metrics(metrics, '贵州茅台 (600519)')
+    print_metrics(metrics, 'Kweichow Moutai (600519)')
 
-    # 交易明细
+    # Transaction details
     completed = [t for t in result['trades'] if t['sell_date'] is not None]
-    print(f'\n📋 交易明细 (共 {len(completed)} 笔完整交易):')
-    print(f'{"#":>3s}  {"买入日":>12s}  {"买入价":>10s}  {"卖出日":>12s}  {"卖出价":>10s}  {"收益":>8s}  {"原因"}')
+    print(f'\n Transaction details (total {len(completed)} Complete transaction with pen):')
+    print(f'{"#":>3s}  {"Buying Day":>12s}  {"Purchase Price":>10s}  {"Sell Day":>12s}  {"Selling Price":>10s}  {"Revenue":>8s}  {"Reason"}')
     print('-' * 80)
     for i, t in enumerate(completed):
         print(f'{i+1:>3d}  {str(t["buy_date"].date()):>12s}  {t["buy_price"]:>10.2f}  '
               f'{str(t["sell_date"].date()):>12s}  {t["sell_price"]:>10.2f}  '
               f'{t["return_pct"]:>7.2f}%  {t.get("exit_reason", "N/A")}')
 
-    # 信号统计
-    print(f'\n📊 信号统计:')
-    print(f'   买入信号: {len(result["signals_buy"])} 次')
-    print(f'   加仓信号: {len(result["signals_add"])} 次')
-    print(f'   卖出信号: {len(result["signals_sell"])} 次')
-    print(f'   止损触发: {len(result["signals_stop"])} 次')
+    # Signal Statistics
+    print(f'\n Signal Statistics:')
+    print(f'   Buy signal: {len(result["signals_buy"])} Next')
+    print(f'   Bin signal: {len(result["signals_add"])} Next')
+    print(f'   Sell signal: {len(result["signals_sell"])} Next')
+    print(f'   Stop Loss Trigger: {len(result["signals_stop"])} Next')
 
-    print('\n✅ 回测完成')
+    print('\n Backtesting complete')
 
 
 if __name__ == '__main__':

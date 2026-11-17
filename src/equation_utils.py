@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Word OMML 公式工具 — 在 python-docx 中插入专业数学公式
+Word OMML Formula Tools  -  In python-docx Insert professional mathematical formulas in
 
-用法:
+Usage:
     from src.equation_utils import add_equation, rsi_formula, macd_formulas, ...
 
     for line in macd_formulas():
@@ -17,7 +17,7 @@ NSMAP = {'m': OMML}
 
 
 def _elem(tag, parent=None, text=None, **attrs):
-    """创建一个 OMML 命名空间元素"""
+    """Create one OMML Namespace element"""
     el = etree.SubElement(parent, f'{{{OMML}}}{tag}') if parent is not None \
         else etree.Element(f'{{{OMML}}}{tag}', nsmap=NSMAP)
     if text is not None:
@@ -50,13 +50,13 @@ def _fraction(num_els, den_els):
 
 def add_equation(doc, parts):
     """
-    在文档中插入一个居中的公式段落。
+    Insert a centered formula paragraph in the document.
 
-    parts: lxml 元素列表（_r() 和 _fraction() 的返回值）。
+    parts: lxml element list (_r() and _fraction() The return value) .
 
-    示例:
+    Example:
         add_equation(doc, [
-            _r("RSI = 100 − "),
+            _r("RSI = 100 - "),
             _fraction([_r("100")], [_r("1 + RS")]),
         ])
     """
@@ -76,14 +76,14 @@ def add_equation(doc, parts):
     return p
 
 
-# ═══════════════════════════════════════════════════════════════
-# 预定义公式
-# ═══════════════════════════════════════════════════════════════
+#
+# Predefined Formula
+#
 
 def rsi_formula():
     return [
         [
-            _r("RSI = 100 − "),
+            _r("RSI = 100 - "),
             _fraction([_r("100")], [_r("1 + RS")]),
         ],
         [_r("RS = AvgGain / AvgLoss")],
@@ -92,43 +92,43 @@ def rsi_formula():
 
 def macd_formulas():
     return [
-        [_r("DIF = EMA(Close, 12) − EMA(Close, 26)")],
+        [_r("DIF = EMA(Close, 12) - EMA(Close, 26)")],
         [_r("DEA = EMA(DIF, 9)")],
-        [_r("BAR = 2 × (DIF − DEA)")],
+        [_r("BAR = 2 x (DIF - DEA)")],
     ]
 
 
 def bollinger_formulas():
     return [
         [_r("MID = SMA(Close, 20)")],
-        [_r("UP = MID + k × σ    DN = MID − k × σ")],
-        [_r("%b = (Close − DN) / (UP − DN)")],
-        [_r("BandWidth = (UP − DN) / MID × 100%")],
+        [_r("UP = MID + k x sigma    DN = MID - k x sigma")],
+        [_r("%b = (Close - DN) / (UP - DN)")],
+        [_r("BandWidth = (UP - DN) / MID x 100%")],
     ]
 
 
 def atr_formula():
     return [
-        [_r("TR = max(High − Low, |High − C_{t−1}|, |Low − C_{t−1}|)")],
-        [_r("ATR = WilderSmooth(TR, N),    α = 1/N")],
+        [_r("TR = max(High - Low, |High - C_{t-1}|, |Low - C_{t-1}|)")],
+        [_r("ATR = WilderSmooth(TR, N),    alpha = 1/N")],
     ]
 
 
 def kdj_formulas():
     return [
-        [_r("RSV = (C − L₉) / (H₉ − L₉) × 100")],
-        [_r("K = SMA(RSV, 3)    D = SMA(K, 3)    J = 3K − 2D")],
+        [_r("RSV = (C - L9) / (H9 - L9) x 100")],
+        [_r("K = SMA(RSV, 3)    D = SMA(K, 3)    J = 3K - 2D")],
     ]
 
 
 def ma_formulas():
     return [
-        [_r("SMA(N) = (P₁ + P₂ + ... + P_N) / N")],
+        [_r("SMA(N) = (P1 + P2 + ... + P_N) / N")],
         [
-            _r("EMA(N) = P_t × "),
+            _r("EMA(N) = P_t x "),
             _fraction([_r("2")], [_r("N + 1")]),
-            _r(" + EMA_{t−1} × "),
-            _fraction([_r("N − 1")], [_r("N + 1")]),
+            _r(" + EMA_{t-1} x "),
+            _fraction([_r("N - 1")], [_r("N + 1")]),
         ],
     ]
 
@@ -136,17 +136,17 @@ def ma_formulas():
 def cci_formula():
     return [
         [_r("TP = (High + Low + Close) / 3")],
-        [_r("CCI = (TP − SMA(TP, N)) / (0.015 × MD)")],
-        [_r("MD = Mean(|TP − SMA(TP, N)|)  (平均绝对偏差)")],
+        [_r("CCI = (TP - SMA(TP, N)) / (0.015 x MD)")],
+        [_r("MD = Mean(|TP - SMA(TP, N)|)  (Mean Absolute Deviation)")],
     ]
 
 
 def adx_formulas():
     return [
-        [_r("+DM = max(High_t − High_{t−1}, 0)")],
-        [_r("−DM = max(Low_{t−1} − Low_t, 0)")],
-        [_r("+DI = WilderSmooth(+DM, N) / ATR × 100")],
-        [_r("−DI = WilderSmooth(−DM, N) / ATR × 100")],
-        [_r("DX = |+DI − −DI| / (+DI + −DI) × 100")],
+        [_r("+DM = max(High_t - High_{t-1}, 0)")],
+        [_r("-DM = max(Low_{t-1} - Low_t, 0)")],
+        [_r("+DI = WilderSmooth(+DM, N) / ATR x 100")],
+        [_r("-DI = WilderSmooth(-DM, N) / ATR x 100")],
+        [_r("DX = |+DI - -DI| / (+DI + -DI) x 100")],
         [_r("ADX = WilderSmooth(DX, N)")],
     ]

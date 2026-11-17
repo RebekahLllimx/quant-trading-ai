@@ -124,7 +124,7 @@ def main() -> None:
             "The universe is frozen from January 2018 liquidity and is not a historical index constituent panel.",
             "Price levels are scale-free adjusted return indexes for most symbols; only ratio features are modeled.",
             "Three initial raw files came from an earlier frozen qfq API attempt and are explicitly identified in the manifest.",
-            "Current provider limits prevented automatic company-name enrichment; stock codes remain the stable identifiers.",
+            "Current provider limits prevented automatic company-name enrichment; symbols remain the stable identifiers.",
         ],
     }
     write_json(METADATA_DIR / "validation_report.json", report)

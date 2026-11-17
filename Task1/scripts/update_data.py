@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-任务3：获取沪深股市股票交易数据、绘制收盘价曲线图、保存CSV
-使用 Tushare Pro API（主方案）+ akshare（备选方案）
+Task3: Obtain stock trading data of Shanghai and Shenzhen markets, Plot the closing price curve, SaveCSV
+use Tushare Pro API (Main Programme) + akshare (Alternative plan)
 """
 
 import os
@@ -12,303 +12,303 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 from datetime import datetime, timedelta
 
-# ==================== 配置区域 ====================
-# CI 从 TUSHARE_TOKEN 环境变量读取；本地可回退到被 gitignore 排除的 config.py。
+# ==================== Configuration Area ====================
+# CI From TUSHARE_TOKEN Environment variable reading; Local can be rolled back to gitignore excluded config.py.
 try:
     from config import TUSHARE_TOKEN as _CONFIG_TOKEN
 except ImportError:
     _CONFIG_TOKEN = ""
 TUSHARE_TOKEN = os.environ.get("TUSHARE_TOKEN", _CONFIG_TOKEN).strip()
 
-# 股票代码（示例：000001.SZ = 平安银行, 600519.SH = 贵州茅台）
-STOCK_CODE = "000001"       # 股票代码（不带交易所后缀）
-STOCK_NAME = "平安银行"     # 股票名称
+# Symbol (Example: 000001.SZ = Ping An Bank, 600519.SH = Kweichow Moutai)
+STOCK_CODE = "000001"       # Symbol (Without Exchange Suffix)
+STOCK_NAME = "Ping An Bank"     # Name of Stock
 
-# 数据时间范围：过去一年
+# Data Time Range: The past year
 END_DATE = datetime.now().strftime("%Y%m%d")
 START_DATE = (datetime.now() - timedelta(days=365)).strftime("%Y%m%d")
 
-# 输出文件路径（输出到 ../data/ 和 ../artifacts/charts/）
+# Output file path (Output to ../data/ and ../artifacts/charts/)
 OUTPUT_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR  = os.path.join(OUTPUT_DIR, '..', '..', 'data', 'csv')
 CHART_DIR = os.path.join(OUTPUT_DIR, '..', '..', 'artifacts', 'charts', 'task1')
 os.makedirs(DATA_DIR, exist_ok=True)
 os.makedirs(CHART_DIR, exist_ok=True)
-CSV_FILE = os.path.join(DATA_DIR, f"{STOCK_CODE}_{STOCK_NAME}_A股_daily.csv")
+CSV_FILE = os.path.join(DATA_DIR, f"{STOCK_CODE}_{STOCK_NAME}_A-share_daily.csv")
 CHART_FILE = os.path.join(CHART_DIR, f"{STOCK_CODE}_{STOCK_NAME}_close_price.png")
 
-# ==================== 方案A：使用 Tushare Pro ====================
+# ==================== PlanA: use Tushare Pro ====================
 def fetch_data_tushare():
-    """使用 Tushare Pro API 获取股票日线数据"""
+    """use Tushare Pro API Get stock daily data"""
     try:
         import tushare as ts
         ts.set_token(TUSHARE_TOKEN)
-        # 拼接交易所后缀：深交所 .SZ，上交所 .SH
+        # Splice Exchange Suffix: Shenzhen Stock Exchange .SZ, SSE .SH
         if STOCK_CODE.startswith(('6', '9')):
             ts_code = f"{STOCK_CODE}.SH"
         else:
             ts_code = f"{STOCK_CODE}.SZ"
 
-        print(f"[Tushare] 正在获取 {ts_code} ({STOCK_NAME}) 的数据...")
-        print(f"[Tushare] 时间范围: {START_DATE} ~ {END_DATE}")
+        print(f"[Tushare] Fetching... {ts_code} ({STOCK_NAME}) data of...")
+        print(f"[Tushare] Time range: {START_DATE} ~ {END_DATE}")
 
-        # 使用前复权日线，与现有 CSV 和回测价格口径保持一致。
+        # Use the former power recovery day line, with existing CSV Consistent with backtest price caliber.
         df = ts.pro_bar(ts_code=ts_code, start_date=START_DATE,
                         end_date=END_DATE, adj="qfq", freq="D")
 
         if df is None or df.empty:
-            raise ValueError("Tushare 返回空数据，请检查 Token 是否有效")
+            raise ValueError("Tushare return empty data, Please check. Token Is it valid?")
 
-        # 按日期升序排列
+        # In ascending order by date
         df = df.sort_values('trade_date').reset_index(drop=True)
 
-        # 重命名列为中文
+        # Rename column to Chinese
         df = df.rename(columns={
-            'trade_date': '日期',
-            'ts_code': '股票代码',
-            'open': '开盘价',
-            'high': '最高价',
-            'low': '最低价',
-            'close': '收盘价',
-            'pre_close': '前收盘价',
-            'change': '涨跌额',
-            'pct_chg': '涨跌幅',
-            'vol': '成交量(手)',
-            'amount': '成交额',
+            'trade_date': 'Date',
+            'ts_code': 'Symbol',
+            'open': 'Open',
+            'high': 'High',
+            'low': 'Low',
+            'close': 'Close',
+            'pre_close': 'Previous Close',
+            'change': 'Price change',
+            'pct_chg': 'Return',
+            'vol': 'Volume',
+            'amount': 'Turnover',
         })
 
-        # 数据类型转换
-        df['日期'] = pd.to_datetime(df['日期'])
-        df['成交量(手)'] = df['成交量(手)'].astype(float)
-        # Tushare A 股成交额为千元，转为与 AKShare 一致的元。
-        df['成交额'] = df['成交额'].astype(float) * 1000
+        # Data Type Conversion
+        df['Date'] = pd.to_datetime(df['Date'])
+        df['Volume'] = df['Volume'].astype(float)
+        # Tushare A The turnover of shares is thousands of CNY., Convert to and AKShare consistent CNY.
+        df['Turnover'] = df['Turnover'].astype(float) * 1000
 
-        print(f"[Tushare] 成功获取 {len(df)} 条交易数据")
+        print(f"[Tushare] Successfully obtained {len(df)} transaction data")
         return df
 
     except Exception as e:
-        print(f"[Tushare] 获取失败: {e}")
+        print(f"[Tushare] Failed to retrieve: {e}")
         return None
 
 
-# ==================== 方案B：使用 akshare（免费免注册） ====================
+# ==================== PlanB: use akshare (Free registration-free)  ====================
 def fetch_data_akshare():
-    """使用 akshare 获取股票日线数据（免费无需注册）"""
+    """use akshare Get stock daily data (Free without registration) """
     try:
         import akshare as ak
 
-        print(f"[AKShare] 正在获取 {STOCK_CODE} ({STOCK_NAME}) 的数据...")
-        print(f"[AKShare] 时间范围: {START_DATE} ~ {END_DATE}")
+        print(f"[AKShare] Fetching... {STOCK_CODE} ({STOCK_NAME}) data of...")
+        print(f"[AKShare] Time range: {START_DATE} ~ {END_DATE}")
 
-        # 获取A股历史日线数据（前复权）
+        # GetAStock history daily data (forward-adjusted)
         df = ak.stock_zh_a_hist(
             symbol=STOCK_CODE,
             period='daily',
             start_date=START_DATE,
             end_date=END_DATE,
-            adjust='qfq'  # 前复权
+            adjust='qfq'  # forward-adjusted
         )
 
         if df is None or df.empty:
-            raise ValueError("AKShare 返回空数据")
+            raise ValueError("AKShare return empty data")
 
-        # 重命名列为中文标准名称
+        # Rename columns to standard Chinese names
         df = df.rename(columns={
-            '日期': '日期',
-            '股票代码': '股票代码',
-            '开盘': '开盘价',
-            '最高': '最高价',
-            '最低': '最低价',
-            '收盘': '收盘价',
-            '成交量': '成交量(手)',
-            '成交额': '成交额',
-            '振幅': '振幅',
-            '涨跌幅': '涨跌幅',
-            '涨跌额': '涨跌额',
-            '换手率': '换手率',
+            'Date': 'Date',
+            'Symbol': 'Symbol',
+            'Opening': 'Open',
+            'highest': 'High',
+            'Minimum': 'Low',
+            'Close of trading': 'Close',
+            'Trading volume': 'Volume',
+            'Turnover': 'Turnover',
+            'Amplitude': 'Amplitude',
+            'Return': 'Return',
+            'Price change': 'Price change',
+            'Turnover rate': 'Turnover rate',
         })
 
-        # 日期转换
-        df['日期'] = pd.to_datetime(df['日期'])
+        # Date Conversion
+        df['Date'] = pd.to_datetime(df['Date'])
 
-        # 保留核心列
-        core_cols = ['日期', '股票代码', '开盘价', '最高价', '最低价', '收盘价',
-                     '成交量(手)', '成交额', '涨跌幅', '涨跌额', '换手率']
+        # Keep Core Columns
+        core_cols = ['Date', 'Symbol', 'Open', 'High', 'Low', 'Close',
+                     'Volume', 'Turnover', 'Return', 'Price change', 'Turnover rate']
         df = df[core_cols]
 
-        print(f"[AKShare] 成功获取 {len(df)} 条交易数据")
+        print(f"[AKShare] Successfully obtained {len(df)} transaction data")
         return df
 
     except Exception as e:
-        print(f"[AKShare] 获取失败: {e}")
+        print(f"[AKShare] Failed to retrieve: {e}")
         return None
 
 
-# ==================== 数据获取（自动选择可用方案） ====================
+# ==================== Data Acquisition (Automatically select available scenarios)  ====================
 def get_stock_data():
-    """获取股票数据，优先使用 Tushare，不可用时回退到 akshare"""
+    """Get Stock Data, Prioritize use Tushare, Falls back to when unavailable akshare"""
     df = None
 
-    # 尝试 Tushare（仅当用户已配置 Token）
+    # try Tushare (Only if the user has configured Token)
     if TUSHARE_TOKEN and TUSHARE_TOKEN not in ("YOUR_TUSHARE_TOKEN_HERE", ""):
-        print(">>> 尝试使用 Tushare Pro API...")
+        print(">>> Try using Tushare Pro API...")
         df = fetch_data_tushare()
 
-    # 回退到 akshare
+    # Revert to akshare
     if df is None:
-        print(">>> 使用 AKShare（免费数据源）...")
+        print(">>> use AKShare (Free data sources) ...")
         df = fetch_data_akshare()
 
     if df is None or df.empty:
-        raise RuntimeError("所有数据源均获取失败，请检查网络连接")
+        raise RuntimeError("Fail to get all data sources, Please check the network connection")
 
     return df
 
 
-# ==================== 绘制收盘价曲线图 ====================
+# ==================== Plot the closing price curve ====================
 def plot_close_price(df):
-    """绘制每日收盘价曲线图，并标注关键统计信息"""
-    # 设置中文字体（macOS 系统字体）
+    """Plot the daily closing price curve, and annotate key statistics"""
+    # Set Chinese font (macOS System Font)
     plt.rcParams['font.sans-serif'] = ['Heiti SC', 'STHeiti', 'PingFang SC',
                                         'Arial Unicode MS', 'SimHei', 'sans-serif']
     plt.rcParams['axes.unicode_minus'] = False
-    # 修复 DejaVu Sans Mono 无法显示中文的问题
+    # Fix DejaVu Sans Mono Unable to display problems in Chinese
     plt.rcParams['font.monospace'] = ['Heiti SC', 'STHeiti', 'sans-serif']
 
     fig, ax = plt.subplots(figsize=(14, 7))
 
-    dates = df['日期']
-    close_prices = df['收盘价']
+    dates = df['Date']
+    close_prices = df['Close']
 
-    # 绘制收盘价曲线
+    # Plot the closing price curve
     ax.plot(dates, close_prices, color='#1f77b4', linewidth=1.5,
-            marker='', markersize=2, label='每日收盘价')
+            marker='', markersize=2, label='Daily Closing Price')
 
-    # 添加移动平均线
+    # Add Moving Average
     if len(df) >= 20:
         ma20 = close_prices.rolling(window=20).mean()
         ax.plot(dates, ma20, color='#ff7f0e', linewidth=1.2, linestyle='--',
-                alpha=0.8, label='20日均线')
+                alpha=0.8, label='20daily moving average')
 
     if len(df) >= 60:
         ma60 = close_prices.rolling(window=60).mean()
         ax.plot(dates, ma60, color='#2ca02c', linewidth=1.2, linestyle='--',
-                alpha=0.8, label='60日均线')
+                alpha=0.8, label='60daily moving average')
 
-    # 标注最高点和最低点
+    # Mark Highest and Lowest Points
     max_idx = close_prices.idxmax()
     min_idx = close_prices.idxmin()
-    ax.annotate(f'最高: {close_prices[max_idx]:.2f}',
+    ax.annotate(f'highest: {close_prices[max_idx]:.2f}',
                 xy=(dates[max_idx], close_prices[max_idx]),
                 xytext=(0, 15), textcoords='offset points',
                 fontsize=9, color='red', fontweight='bold',
                 arrowprops=dict(arrowstyle='->', color='red', alpha=0.6),
                 ha='center')
 
-    ax.annotate(f'最低: {close_prices[min_idx]:.2f}',
+    ax.annotate(f'Minimum: {close_prices[min_idx]:.2f}',
                 xy=(dates[min_idx], close_prices[min_idx]),
                 xytext=(0, -20), textcoords='offset points',
                 fontsize=9, color='green', fontweight='bold',
                 arrowprops=dict(arrowstyle='->', color='green', alpha=0.6),
                 ha='center')
 
-    # 图表格式
-    ax.set_xlabel('日期', fontsize=12)
-    ax.set_ylabel('收盘价（元）', fontsize=12)
-    ax.set_title(f'图1：{STOCK_NAME}（{STOCK_CODE}）过去一年每日收盘价走势图',
+    # Chart Format
+    ax.set_xlabel('Date', fontsize=12)
+    ax.set_ylabel('Close (yuan) ', fontsize=12)
+    ax.set_title(f'Figure1: {STOCK_NAME} ({STOCK_CODE}) Daily closing price trend chart of the past year',
                  fontsize=14, fontweight='bold')
 
     ax.legend(loc='upper left', fontsize=10)
     ax.grid(True, alpha=0.3, linestyle='--')
 
-    # 日期格式
+    # Date format
     ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m'))
     ax.xaxis.set_major_locator(mdates.MonthLocator(interval=1))
     plt.setp(ax.xaxis.get_majorticklabels(), rotation=45, ha='right')
 
-    # 添加统计信息文本框
+    # Add Statistics Text Box
     stats_text = (
-        f"数据区间: {dates.iloc[0].strftime('%Y-%m-%d')} ~ {dates.iloc[-1].strftime('%Y-%m-%d')}\n"
-        f"交易天数: {len(df)} 天\n"
-        f"期初收盘价: {close_prices.iloc[0]:.2f} 元\n"
-        f"期末收盘价: {close_prices.iloc[-1]:.2f} 元\n"
-        f"最高收盘价: {close_prices.max():.2f} 元\n"
-        f"最低收盘价: {close_prices.min():.2f} 元\n"
-        f"均值: {close_prices.mean():.2f} 元\n"
-        f"标准差: {close_prices.std():.2f} 元\n"
+        f"Data Range: {dates.iloc[0].strftime('%Y-%m-%d')} ~ {dates.iloc[-1].strftime('%Y-%m-%d')}\n"
+        f"Transaction Days: {len(df)} days\n"
+        f"Opening Closing Price: {close_prices.iloc[0]:.2f} CNY\n"
+        f"Close at end of period: {close_prices.iloc[-1]:.2f} CNY\n"
+        f"Highest closing price: {close_prices.max():.2f} CNY\n"
+        f"Lowest closing price: {close_prices.min():.2f} CNY\n"
+        f"Mean: {close_prices.mean():.2f} CNY\n"
+        f"Standard deviation: {close_prices.std():.2f} CNY\n"
     )
-    # 计算涨跌幅
+    # Calculate the percentage change
     change_pct = (close_prices.iloc[-1] - close_prices.iloc[0]) / close_prices.iloc[0] * 100
-    stats_text += f"区间涨跌幅: {change_pct:+.2f}%"
+    stats_text += f"Range change rate: {change_pct:+.2f}%"
 
     props = dict(boxstyle='round,pad=0.5', facecolor='lightyellow', alpha=0.8)
-    # 统计分析放在右上角，图例在左上角，互不遮挡
+    # Statistical analysis in the upper right corner, Legend in upper left corner, mutual non-occlusion
     ax.text(0.98, 0.98, stats_text, transform=ax.transAxes, fontsize=9,
             verticalalignment='top', horizontalalignment='right',
             family='monospace', bbox=props)
 
     plt.tight_layout()
     plt.savefig(CHART_FILE, dpi=150, bbox_inches='tight')
-    print(f"[绘图] 收盘价曲线图已保存至: {CHART_FILE}")
+    print(f"[Drawing] Close graph saved: {CHART_FILE}")
     plt.close()
 
 
-# ==================== 保存CSV数据 ====================
+# ==================== SaveCSVData ====================
 def save_to_csv(df):
-    """将数据保存为CSV文件"""
-    # 格式化日期列
+    """Save dataCSVFile"""
+    # Format date column
     df_to_save = df.copy()
-    df_to_save['日期'] = df_to_save['日期'].dt.strftime('%Y-%m-%d')
+    df_to_save['Date'] = df_to_save['Date'].dt.strftime('%Y-%m-%d')
 
-    # 按日期升序保存
-    df_to_save = df_to_save.sort_values('日期')
+    # Save in ascending order by date
+    df_to_save = df_to_save.sort_values('Date')
 
     df_to_save.to_csv(CSV_FILE, index=False, encoding='utf-8-sig')
-    print(f"[CSV] 数据已保存至: {CSV_FILE}")
-    print(f"[CSV] 共 {len(df_to_save)} 条记录")
-    print(f"[CSV] 列名: {', '.join(df_to_save.columns.tolist())}")
+    print(f"[CSV] Data saved: {CSV_FILE}")
+    print(f"[CSV] total {len(df_to_save)} records")
+    print(f"[CSV] Column name: {', '.join(df_to_save.columns.tolist())}")
 
 
-# ==================== 数据概览 ====================
+# ==================== Data Overview ====================
 def print_summary(df):
-    """打印数据概览"""
+    """Print Data Overview"""
     print("\n" + "=" * 60)
-    print(f"  {STOCK_NAME}（{STOCK_CODE}）数据概览")
+    print(f"  {STOCK_NAME} ({STOCK_CODE}) Data Overview")
     print("=" * 60)
-    print(f"  数据范围: {df['日期'].min().strftime('%Y-%m-%d')} ~ {df['日期'].max().strftime('%Y-%m-%d')}")
-    print(f"  交易日数: {len(df)} 天")
-    print(f"  开盘价范围: {df['开盘价'].min():.2f} ~ {df['开盘价'].max():.2f}")
-    print(f"  收盘价范围: {df['收盘价'].min():.2f} ~ {df['收盘价'].max():.2f}")
-    print(f"  最高价范围: {df['最高价'].min():.2f} ~ {df['最高价'].max():.2f}")
-    print(f"  最低价范围: {df['最低价'].min():.2f} ~ {df['最低价'].max():.2f}")
-    print(f"  日成交量均值: {df['成交量(手)'].mean():,.0f} 手")
-    print(f"  日成交额均值: {df['成交额'].mean():,.0f} 元")
+    print(f"  Data Range: {df['Date'].min().strftime('%Y-%m-%d')} ~ {df['Date'].max().strftime('%Y-%m-%d')}")
+    print(f"  Number of trading days: {len(df)} days")
+    print(f"  Open range: {df['Open'].min():.2f} ~ {df['Open'].max():.2f}")
+    print(f"  Close range: {df['Close'].min():.2f} ~ {df['Close'].max():.2f}")
+    print(f"  High range: {df['High'].min():.2f} ~ {df['High'].max():.2f}")
+    print(f"  Low range: {df['Low'].min():.2f} ~ {df['Low'].max():.2f}")
+    print(f"  Average daily volume: {df['Volume'].mean():,.0f} hand")
+    print(f"  Average daily turnover: {df['Turnover'].mean():,.0f} CNY")
     print("=" * 60)
 
-    # 展示前5行和后5行
-    print("\n前5个交易日数据:")
+    # Before presentation5Line and after5row
+    print("\nformer5Trading Day Data:")
     print(df.head(5).to_string(index=False))
-    print("\n后5个交易日数据:")
+    print("\nafter5Trading Day Data:")
     print(df.tail(5).to_string(index=False))
 
 
-# ==================== 主程序 ====================
+# ==================== Main program ====================
 if __name__ == "__main__":
-    print(f"开始时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-    print(f"股票: {STOCK_NAME} ({STOCK_CODE})")
-    print(f"时间范围: {START_DATE} ~ {END_DATE}\n")
+    print(f"Start Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    print(f"stock: {STOCK_NAME} ({STOCK_CODE})")
+    print(f"Time range: {START_DATE} ~ {END_DATE}\n")
 
-    # 1. 获取数据
+    # 1. Get data
     df = get_stock_data()
 
-    # 2. 打印概览
+    # 2. Printing Overview
     print_summary(df)
 
-    # 3. 保存CSV
+    # 3. SaveCSV
     save_to_csv(df)
 
-    # 4. 绘制图表
+    # 4. Create a chart
     plot_close_price(df)
 
-    print(f"\n完成时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-    print("任务3全部完成！")
+    print(f"\nCompletion Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    print("Task3All completed! ")

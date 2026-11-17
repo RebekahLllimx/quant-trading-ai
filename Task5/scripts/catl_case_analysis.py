@@ -46,19 +46,19 @@ FEATURES = [
 ]
 
 FEATURE_NAMES = {
-    "return_1d": "1日收益", "return_5d": "5日收益", "return_10d": "10日收益",
-    "return_20d": "20日收益", "ma5_gap": "5日均线偏离", "ma20_gap": "20日均线偏离",
-    "ma60_gap": "60日均线偏离", "rsi14": "RSI(14)", "macd_pct": "MACD/价格",
-    "atr14_pct": "ATR(14)/价格", "volatility20": "20日波动率", "intraday_range": "日内振幅",
-    "open_close_return": "开收盘收益", "volume_ratio20": "20日量比", "amount_ratio20": "20日额比",
-    "excess_return_5d": "5日超额收益", "excess_return_20d": "20日超额收益",
-    "benchmark_return_20d": "沪深300 20日收益", "benchmark_volatility20": "沪深300 20日波动率",
-    "beta60": "60日贝塔",
+    "return_1d": "1daily earnings", "return_5d": "5daily earnings", "return_10d": "10daily earnings",
+    "return_20d": "20daily earnings", "ma5_gap": "5Daily moving average deviation", "ma20_gap": "20Daily moving average deviation",
+    "ma60_gap": "60Daily moving average deviation", "rsi14": "RSI(14)", "macd_pct": "MACD/Price",
+    "atr14_pct": "ATR(14)/Price", "volatility20": "20daily volatility", "intraday_range": "intraday amplitude",
+    "open_close_return": "Open Closing Earnings", "volume_ratio20": "20daily volume ratio", "amount_ratio20": "20daily ratio",
+    "excess_return_5d": "5Daily excess return", "excess_return_20d": "20Daily excess return",
+    "benchmark_return_20d": "Shanghai and Shenzhen300 20daily earnings", "benchmark_volatility20": "Shanghai and Shenzhen300 20daily volatility",
+    "beta60": "60Beta",
 }
 
 MODEL_NAMES = {
-    "logistic_regression": "逻辑回归", "decision_tree": "决策树",
-    "random_forest": "随机森林", "gradient_boosting": "梯度提升",
+    "logistic_regression": "Logistic Regression", "decision_tree": "Decision tree",
+    "random_forest": "Random Forest", "gradient_boosting": "gradient boost",
 }
 
 
@@ -217,17 +217,17 @@ def select_features(samples: pd.DataFrame, audit: pd.DataFrame, max_features: in
         blockers = [chosen for chosen in selected if abs(corr.loc[feature, chosen]) >= 0.80]
         stable_enough = row.years_above_0_5 >= 2
         if not stable_enough:
-            reason = "滚动验证中少于2年AUC高于0.5"
+            reason = "Less than in rolling validation2yearAUChigher0.5"
             keep = False
         elif blockers:
-            reason = f"与已保留 {blockers[0]} 高相关"
+            reason = f"Reserved with {blockers[0]} Highly relevant"
             keep = False
         elif len(selected) >= max_features:
-            reason = f"超过{max_features}个特征的预设复杂度上限"
+            reason = f"exceed{max_features}Preset complexity limit for individual features"
             keep = False
         else:
             selected.append(feature)
-            reason = "通过滚动验证与相关性去冗余"
+            reason = "Through rolling validation and redundancy removal via correlation"
             keep = True
         decisions.append({"feature": feature, "feature_cn": FEATURE_NAMES[feature], "keep_initial": keep, "reason": reason})
 
@@ -242,7 +242,7 @@ def select_features(samples: pd.DataFrame, audit: pd.DataFrame, max_features: in
                 for item in decisions:
                     if item["feature"] == feature:
                         item["keep_initial"] = True
-                        item["reason"] = "作为开发期排名靠前的低冗余备选变量保留"
+                        item["reason"] = "Retain as low-redundancy alternative variables that ranked high during development."
                 if len(selected) >= 4:
                     break
 
@@ -262,7 +262,7 @@ def select_features(samples: pd.DataFrame, audit: pd.DataFrame, max_features: in
         for item in decisions:
             if item["feature"] == removed:
                 item["keep_initial"] = False
-                item["reason"] = f"VIF={vifs[removed]:.2f}超过5，迭代删除"
+                item["reason"] = f"VIF={vifs[removed]:.2f}exceed5, Iterative Delete"
 
     decision_df = pd.DataFrame(decisions)
     decision_df["selected_final"] = decision_df["feature"].isin(selected)
@@ -483,7 +483,7 @@ def run_and_save() -> AnalysisBundle:
     }
     for name, frame in tables.items():
         target = PROCESSED_DIR / name if name in {"daily_features.csv", "weekly_samples.csv"} else RESULT_DIR / name
-        frame.to_csv(target, index=False, encoding="utf-8-sig")
+        frame.to_csv(target, index=False, encoding="utf-8")
     for key, model in fitted.items():
         with (MODEL_DIR / f"{key}.pkl").open("wb") as handle:
             pickle.dump(model, handle)

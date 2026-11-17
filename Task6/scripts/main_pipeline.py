@@ -44,34 +44,34 @@ RANK_TARGET = "Next_Ret_Rank"
 CLASS_TARGET = "Above_Quarter_Median"
 KEY_COLUMNS = ["Date", "Code"]
 VALUE_FEATURES = [
-    "企业倍数(EV除EBITDA)",
-    "市净率PB(MRQ)",
-    "市现率PCF(现金净流量TTM)",
-    "市现率PCF(经营现金流TTM)",
-    "市盈率PE(TTM)",
-    "市盈率PE(TTM,扣除非经常性损益)",
-    "市销率PS(TTM)",
+    "Enterprise Multiple(EVexceptEBITDA)",
+    "Price-to-book ratioPB(MRQ)",
+    "Market-to-market ratePCF(Net cash flowTTM)",
+    "Market-to-market ratePCF(Operating cash flowTTM)",
+    "P/E RatioPE(TTM)",
+    "P/E RatioPE(TTM,Deduct non-recurring gains and losses)",
+    "Price-to-sales ratioPS(TTM)",
 ]
 GROWTH_FEATURES = [
-    "净利润同比增长率",
-    "净资产同比增长率",
-    "利润总额(同比增长率)",
-    "基本每股收益(同比增长率)",
-    "总资产同比增长率",
-    "现金净流量同比增长率",
-    "经营活动产生的现金流量净额(同比增长率)",
-    "营业利润(同比增长率)",
-    "营业总收入(同比增长率)",
+    "Net profit year-on-year growth rate",
+    "Year-on-year growth rate of net assets",
+    "Total profit(Year-over-year growth rate)",
+    "Basic earnings per share(Year-over-year growth rate)",
+    "Year-on-year growth rate of total assets",
+    "Net cash flow year-on-year growth rate",
+    "Net cash flow from operating activities(Year-over-year growth rate)",
+    "Operating profit(Year-over-year growth rate)",
+    "Total Operating Income(Year-over-year growth rate)",
 ]
 INCOME_GROWTH_FEATURES = [
-    "净利润同比增长率",
-    "利润总额(同比增长率)",
-    "营业利润(同比增长率)",
-    "营业总收入(同比增长率)",
+    "Net profit year-on-year growth rate",
+    "Total profit(Year-over-year growth rate)",
+    "Operating profit(Year-over-year growth rate)",
+    "Total Operating Income(Year-over-year growth rate)",
 ]
 CASHFLOW_FEATURES = [
-    "现金净流量同比增长率",
-    "经营活动产生的现金流量净额(同比增长率)",
+    "Net cash flow year-on-year growth rate",
+    "Net cash flow from operating activities(Year-over-year growth rate)",
 ]
 
 
@@ -115,7 +115,7 @@ def load_and_engineer() -> tuple[pd.DataFrame, list[str], list[str], dict]:
         "rank_target_summary": {key: float(value) for key, value in frame[RANK_TARGET].describe().items()},
         "classification_positive_rate": float(frame[CLASS_TARGET].mean()),
         "rows_by_quarter": {str(date.date()): int(count) for date, count in frame.groupby("Date").size().items()},
-        "important_caveat": "原始样本未提供财务报表实际披露日，因此无法独立验证所有季末财务因子在交易时点已可得。",
+        "important_caveat": "The original sample does not provide the actual disclosure dates of financial statements, Therefore, it is impossible to independently verify that all end-of-quarter financial factors are available at the trading time.. ",
     }
     return frame, raw_features, model_features, quality
 
@@ -338,11 +338,11 @@ def run_main_pipeline() -> dict:
     frame, raw_features, model_features, quality = load_and_engineer()
     dates = [pd.Timestamp(date) for date in sorted(frame["Date"].unique())]
     if len(dates) != 10:
-        raise ValueError(f"预期10个季度，实际为{len(dates)}")
+        raise ValueError(f"Expectation10quarter, Actually is{len(dates)}")
     train_dates, test_dates = dates[:7], dates[7:]
     frame["Split"] = np.where(frame["Date"].isin(train_dates), "train", "test")
     if frame.duplicated(KEY_COLUMNS).any() or frame[model_features + [TARGET, RANK_TARGET, CLASS_TARGET]].isna().any().any():
-        raise ValueError("数据未通过唯一键或完整性检查")
+        raise ValueError("Data did not pass unique key or integrity checks")
     frame.to_csv(MAIN_PROCESSED_DIR / "main_model_dataset.csv", index=False, encoding="utf-8-sig", date_format="%Y-%m-%d")
 
     quality.update({
@@ -498,11 +498,11 @@ def run_main_pipeline() -> dict:
             "scikit_learn": sklearn.__version__,
         },
         "required_caveats": [
-            "测试集只有3个季度，年化收益、波动率和夏普比率仅作描述。",
-            "回归R²评价的是横截面收益排名目标，不是个股收益率点预测精度。",
-            "样本未提供财务报表实际披露日，无法完全排除时点可得性风险。",
-            "股票池缺少历史成分、ST、停牌、流动性和可交易性标记，可能存在幸存者偏差。",
-            "20bp为教学用合并成本假设，不等同于某一账户的实际费率。",
+            "The test set only has3quarter, Annualized return, Volatility and Sharpe ratio are for description only. ",
+            "ReturnR^2The evaluation is based on the cross-sectional return ranking target, Not the point prediction accuracy of individual stock returns. ",
+            "Samples do not provide actual financial statement disclosure dates, Cannot completely rule out look-ahead bias risk.. ",
+            "The stock pool lacks historical data., ST, Suspension, Liquidity and tradability markers, Survivor bias may exist. ",
+            "20bpAssumption of Consolidated Costs for Teaching Purposes, Not equivalent to the actual rate of a certain account. ",
         ],
     }
     write_json(MAIN_METADATA_DIR / "model_run.json", run_metadata)

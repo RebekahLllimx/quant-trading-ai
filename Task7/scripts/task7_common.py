@@ -33,10 +33,10 @@ METADATA_DIR = DATA_ROOT / "metadata"
 DASHBOARD_DATA_DIR = ROOT / "Task7" / "dashboard" / "data"
 
 SYMBOLS = {
-    "510300": {"jq": "510300.XSHG", "yahoo": "510300.SS", "name": "沪深300ETF"},
-    "510500": {"jq": "510500.XSHG", "yahoo": "510500.SS", "name": "中证500ETF"},
-    "159915": {"jq": "159915.XSHE", "yahoo": "159915.SZ", "name": "创业板ETF"},
-    "000300": {"jq": "000300.XSHG", "yahoo": "000300.SS", "name": "沪深300"},
+    "510300": {"jq": "510300.XSHG", "yahoo": "510300.SS", "name": "Shanghai and Shenzhen300ETF"},
+    "510500": {"jq": "510500.XSHG", "yahoo": "510500.SS", "name": "CSI500ETF"},
+    "159915": {"jq": "159915.XSHE", "yahoo": "159915.SZ", "name": "GEMETF"},
+    "000300": {"jq": "000300.XSHG", "yahoo": "000300.SS", "name": "Shanghai and Shenzhen300"},
 }
 
 INITIAL_CAPITAL = 500_000.0
@@ -265,7 +265,7 @@ def run_strategy_a(
         desired = bool(previous["Close"] > previous["MA"])
         equity_open = cash + shares * float(today["Open"])
         target = _target_shares(equity_open, 1.0 if desired else 0.0, today["Open"], costs)
-        reason = "T-1收盘价高于MA20" if desired else "T-1收盘价不高于MA20"
+        reason = "T-1closing price higherMA20" if desired else "T-1The closing price is not higherMA20"
         if target < shares:
             sell_shares = shares - target
             _, cash, trade = _sell(
@@ -358,16 +358,16 @@ def run_strategy_b(
         )
         if cooldown_remaining > 0:
             desired = False
-            reason = f"账户回撤保护，剩余{cooldown_remaining}日"
+            reason = f"Account drawdown Protection, Remaining{cooldown_remaining}day"
         elif stop_hit:
             desired = False
-            reason = "T-1收盘价触发ATR移动止损"
+            reason = "T-1Close Price TriggerATRTrailing Stop-Loss"
         elif not trend_on:
             desired = False
-            reason = "MA10不高于MA30"
+            reason = "MA10not higherMA30"
         else:
             desired = True
-            reason = "MA10高于MA30且风控允许"
+            reason = "MA10higherMA30And risk control is allowed"
 
         if not desired and shares > 0:
             old_shares = shares
@@ -513,9 +513,9 @@ def run_strategy_c(
                 else "CASH"
             )
             reason = (
-                f"周度动量最高：{desired}"
+                f"Highest weekly momentum: {desired}"
                 if desired != "CASH"
-                else "三只ETF动量均不为正"
+                else "Three of themETFNone of the momenta are positive."
             )
 
             for symbol in pool:
@@ -552,7 +552,7 @@ def run_strategy_c(
                         raw_price=opens[desired],
                         cash=cash,
                         costs=costs,
-                        reason="周度再平衡至50%目标仓位",
+                        reason="Weekly rebalancing to50%Target position size",
                     )
                     positions[desired] -= reduce_by
                     if trade:

@@ -164,12 +164,12 @@ def main() -> None:
     MODEL_DIR.mkdir(parents=True, exist_ok=True)
     dataset_path = PROCESSED_DIR / "task5_ml_dataset.csv"
     if not dataset_path.exists():
-        raise FileNotFoundError("请先运行 prepare_ml_data.py。")
+        raise FileNotFoundError("Please run first prepare_ml_data.py. ")
     frame = pd.read_csv(dataset_path, parse_dates=["Date", "label_end_date"])
     splits = {name: part.copy() for name, part in frame.groupby("Split", sort=False)}
     for required in ("train", "validation", "development", "test"):
         if required not in splits or splits[required].empty:
-            raise RuntimeError(f"数据集中缺少 {required} 样本。")
+            raise RuntimeError(f"Missing in the data set {required} sample. ")
 
     x_train = splits["train"][FEATURE_COLUMNS]
     y_train = splits["train"]["Label"].to_numpy()
@@ -219,7 +219,7 @@ def main() -> None:
         selected[model_name] = best
 
     candidates_path = PROCESSED_DIR / "task5_candidate_metrics.csv"
-    pd.DataFrame(selection_rows).to_csv(candidates_path, index=False, encoding="utf-8-sig")
+    pd.DataFrame(selection_rows).to_csv(candidates_path, index=False, encoding="utf-8")
 
     fit_frame = frame[frame["Split"].isin(["train", "validation", "development"])].copy()
     x_fit = fit_frame[FEATURE_COLUMNS]
@@ -341,11 +341,11 @@ def main() -> None:
 
     metrics_path = PROCESSED_DIR / "task5_model_metrics.csv"
     predictions_path = PROCESSED_DIR / "task5_test_predictions.csv"
-    pd.DataFrame(metric_rows).to_csv(metrics_path, index=False, encoding="utf-8-sig")
-    pd.concat(prediction_frames, ignore_index=True).to_csv(predictions_path, index=False, encoding="utf-8-sig", date_format="%Y-%m-%d")
-    pd.DataFrame(roc_rows).to_csv(PROCESSED_DIR / "task5_roc_points.csv", index=False, encoding="utf-8-sig")
-    pd.DataFrame(importance_rows).to_csv(PROCESSED_DIR / "task5_feature_importance.csv", index=False, encoding="utf-8-sig")
-    pd.DataFrame(yearly_rows).to_csv(PROCESSED_DIR / "task5_yearly_metrics.csv", index=False, encoding="utf-8-sig")
+    pd.DataFrame(metric_rows).to_csv(metrics_path, index=False, encoding="utf-8")
+    pd.concat(prediction_frames, ignore_index=True).to_csv(predictions_path, index=False, encoding="utf-8", date_format="%Y-%m-%d")
+    pd.DataFrame(roc_rows).to_csv(PROCESSED_DIR / "task5_roc_points.csv", index=False, encoding="utf-8")
+    pd.DataFrame(importance_rows).to_csv(PROCESSED_DIR / "task5_feature_importance.csv", index=False, encoding="utf-8")
+    pd.DataFrame(yearly_rows).to_csv(PROCESSED_DIR / "task5_yearly_metrics.csv", index=False, encoding="utf-8")
 
     run_metadata = {
         "created_at": datetime.now().astimezone().isoformat(),

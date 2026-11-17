@@ -1,2 +1,2 @@
-# src/ — 共享模块
-# 供所有 Task 复用：指标计算、报告格式化、数据工具
+# src/  -  Shared Module
+# For all Task Reuse: Metric Calculation, Report Formatting, Data Tools

@@ -1,28 +1,13 @@
-# JoinQuant平台证据与导出区
+# JoinQuant Evidence Boundary
 
-此目录接收从JoinQuant导出的回测证据和模拟盘数据。文件只保留策略分析需要的字段。
+This directory stores structured summaries exported from JoinQuant for course research. It may contain dates, strategy codes, symbols, order direction and size, execution price, costs, holdings, cash, total assets, platform status, and rejection reasons.
 
-`backtest_summary.json`记录三次已完成平台回测的结构化指标、证据文件名和模拟盘部署时的初始状态。后续运行日志与最新判断见TASK7 README；该文件不包含账号或访问方式。
+It must never contain:
 
-允许字段：
+- account identifiers, passwords, or verification codes;
+- cookies, access tokens, or browser sessions;
+- phone numbers, email addresses, or identity documents;
+- private share links; or
+- personal asset information unrelated to the research.
 
-- 日期
-- 策略代号（A/B/C）
-- 证券代码
-- 方向
-- 委托数量与成交数量
-- 委托价与成交价
-- 交易费用
-- 持仓市值、现金、总资产
-- 平台状态或拒单原因
-
-禁止内容：
-
-- 账号、密码、验证码
-- Cookie、Token或浏览器会话
-- 手机号、邮箱或身份证明
-- 私有分享链接
-- 与课程验证无关的个人资产信息
-
-在模拟盘已经部署但没有平台运行数据时，Dashboard使用
-`deployed_waiting_data`状态；不能用影子结果填充“实际模拟”收益字段。
+`backtest_summary.json` records the three completed platform backtests and the evidence status of each private simulated account. A deployed account without exported fills remains labeled `deployed_waiting_data`; public shadow-portfolio results must not be copied into the platform-performance field.

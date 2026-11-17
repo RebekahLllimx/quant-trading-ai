@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Task3 Phase 3: 生成报告用静态图表 (matplotlib)
-输出 5 张 PNG 到 artifacts/charts/task3/
+Task3 Phase 3: Generate static charts for reports (matplotlib)
+Output 5 PNG files to artifacts/charts/task3/
 """
 
 import os
@@ -16,7 +16,7 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
 from matplotlib.patches import FancyBboxPatch
 
-# 中文字体
+# Chinese fonts
 plt.rcParams['font.sans-serif'] = [
     'Heiti SC', 'STHeiti', 'PingFang SC',
     'Arial Unicode MS', 'SimHei', 'sans-serif'
@@ -28,9 +28,9 @@ DATA_DIR = os.path.join(BASE_DIR, '..', 'data', 'csv')
 CHART_DIR = os.path.join(BASE_DIR, '..', 'artifacts', 'charts', 'task3')
 os.makedirs(CHART_DIR, exist_ok=True)
 
-# ═══════════════════════════════════════════════════
-# 工具函数
-# ═══════════════════════════════════════════════════
+#
+# Tool Functions
+#
 
 def load_stock(code, name, market):
     filename = f"{code}_{name}_{market}_daily.csv"
@@ -47,7 +47,7 @@ def calc_sma(series, period):
 
 def run_backtest(df, short_period=5, long_period=15, initial_capital=1_000_000,
                  fee_rate=0.0003, slippage=0.0001):
-    """双均线策略回测（避免未来函数）"""
+    """Double-moving-average strategy backtest (Avoid future functions) """
     close = df['Close'].astype(float)
     ma_short = calc_sma(close, short_period)
     ma_long = calc_sma(close, long_period)
@@ -68,7 +68,7 @@ def run_backtest(df, short_period=5, long_period=15, initial_capital=1_000_000,
         equity = cash + shares * price
         equity_curve.append({'date': date, 'equity': equity})
 
-        # 信号判断用 T-1 和 T-2 均线（避免未来函数）
+        # For signal judgment T-1 and T-2 Moving average (Avoid future functions)
         ma_s1 = ma_short.iloc[t-1]
         ma_l1 = ma_long.iloc[t-1]
         ma_s2 = ma_short.iloc[t-2]
@@ -104,7 +104,7 @@ def run_backtest(df, short_period=5, long_period=15, initial_capital=1_000_000,
             has_position = False
             signals_sell.append((date, sell_price))
 
-    # 强制平仓
+    # Forced liquidation
     if has_position:
         final_price = close.iloc[-1] * (1 - slippage)
         cash = shares * final_price * (1 - fee_rate)
@@ -112,7 +112,7 @@ def run_backtest(df, short_period=5, long_period=15, initial_capital=1_000_000,
         trades[-1]['sell_price'] = final_price
         trades[-1]['return_pct'] = (cash / trades[-1]['cost'] - 1) * 100
 
-    # 完整权益曲线
+    # complete equity curve
     full_equity = []
     for t in range(start_idx):
         full_equity.append({'date': df['Date'].iloc[t], 'equity': initial_capital})
@@ -120,7 +120,7 @@ def run_backtest(df, short_period=5, long_period=15, initial_capital=1_000_000,
 
     final_equity = cash + shares * close.iloc[-1]
 
-    # 买入持有基准
+    # Buy-to-hold benchmark
     bh_price0 = close.iloc[0] * (1 + slippage) * (1 + fee_rate)
     bh_shares = initial_capital / bh_price0
     bh_equity = [{'date': d, 'equity': bh_shares * p}
@@ -186,57 +186,57 @@ def calc_metrics(result, initial_capital=1_000_000, risk_free_rate=0.02):
     }
 
 
-# ═══════════════════════════════════════════════════
-# 图表1: 价格 + 双均线 + 交易信号
-# ═══════════════════════════════════════════════════
+#
+# Chart1: Price + dual moving-average + Trading signals
+#
 
 def plot_strategy_signals(df, result, stock_name, stock_code, short_period=5, long_period=15):
-    print('  📊 绘制策略信号图...')
+    print('   Draw strategy signal diagram...')
     fig, ax = plt.subplots(figsize=(14, 7))
 
     dates = df['Date']
     close = df['Close'].astype(float)
 
-    ax.plot(dates, close, color='#b2bec3', linewidth=1.0, alpha=0.7, label='收盘价')
-    ax.plot(dates, result['ma_short'], color='#0984e3', linewidth=1.5, label=f'MA{short_period} (短均线)')
-    ax.plot(dates, result['ma_long'], color='#e17055', linewidth=1.5, label=f'MA{long_period} (长均线)')
+    ax.plot(dates, close, color='#b2bec3', linewidth=1.0, alpha=0.7, label='Close')
+    ax.plot(dates, result['ma_short'], color='#0984e3', linewidth=1.5, label=f'MA{short_period} (short moving average)')
+    ax.plot(dates, result['ma_long'], color='#e17055', linewidth=1.5, label=f'MA{long_period} (Long-term moving average)')
 
-    # 买入信号（红色上箭头）
+    # Buy signal (Red upward arrow)
     if result['signals_buy']:
         buy_dates, buy_prices = zip(*result['signals_buy'])
         ax.scatter(buy_dates, buy_prices, marker='^', s=120, c='#d63031',
-                   zorder=5, edgecolors='white', linewidth=0.5, label='买入(金叉)')
+                   zorder=5, edgecolors='white', linewidth=0.5, label='Buy(Golden Cross)')
 
-    # 卖出信号（绿色下箭头）
+    # Sell signal (Green Down Arrow)
     if result['signals_sell']:
         sell_dates, sell_prices = zip(*result['signals_sell'])
         ax.scatter(sell_dates, sell_prices, marker='v', s=120, c='#00b894',
-                   zorder=5, edgecolors='white', linewidth=0.5, label='卖出(死叉)')
+                   zorder=5, edgecolors='white', linewidth=0.5, label='Sell(death cross)')
 
-    ax.set_title(f'{stock_name} ({stock_code}) — 双均线交叉策略交易信号\n'
-                 f'(MA{short_period} & MA{long_period}, 前复权日线, '
+    ax.set_title(f'{stock_name} ({stock_code})  -  Dual moving-average crossover strategy trading signals\n'
+                 f'(MA{short_period} & MA{long_period}, Adjusted Close Daily Chart, '
                  f'{df["Date"].iloc[0].strftime("%Y-%m-%d")} ~ {df["Date"].iloc[-1].strftime("%Y-%m-%d")})',
                  fontsize=14, fontweight='bold')
-    ax.set_xlabel('日期', fontsize=11)
-    ax.set_ylabel('价格 (元)', fontsize=11)
+    ax.set_xlabel('Date', fontsize=11)
+    ax.set_ylabel('Price (yuan)', fontsize=11)
     ax.legend(loc='upper left', fontsize=9, framealpha=0.9)
     ax.grid(True, alpha=0.3, linestyle='--')
     ax.yaxis.set_major_formatter(mticker.FormatStrFormatter('%.0f'))
     fig.autofmt_xdate()
 
     plt.tight_layout()
-    path = os.path.join(CHART_DIR, f'{stock_code}_策略信号图.png')
+    path = os.path.join(CHART_DIR, f'{stock_code}_Strategy Signal Chart.png')
     fig.savefig(path, dpi=150, bbox_inches='tight', facecolor='white')
     plt.close(fig)
     return path
 
 
-# ═══════════════════════════════════════════════════
-# 图表2: 资产曲线对比
-# ═══════════════════════════════════════════════════
+#
+# Chart2: Asset Curve Comparison
+#
 
 def plot_equity_comparison(result, metrics, stock_name, stock_code):
-    print('  📊 绘制资产曲线对比图...')
+    print('   Draw asset curve comparison chart...')
     fig, ax = plt.subplots(figsize=(14, 5.5))
 
     eq_dates = [e['date'] for e in result['equity_curve']]
@@ -244,37 +244,37 @@ def plot_equity_comparison(result, metrics, stock_name, stock_code):
     bh_dates = [e['date'] for e in result['bh_equity_curve']]
     bh_values = [e['equity'] for e in result['bh_equity_curve']]
 
-    ax.plot(eq_dates, eq_values, color='#0984e3', linewidth=2, label='策略资产')
+    ax.plot(eq_dates, eq_values, color='#0984e3', linewidth=2, label='Strategic Assets')
     ax.plot(bh_dates, bh_values, color='#b2bec3', linewidth=1.2,
-            linestyle='--', label='买入持有')
+            linestyle='--', label='Buy and hold')
     ax.axhline(y=1_000_000, color='#636e72', linewidth=0.6, linestyle=':',
-               alpha=0.5, label='初始资金')
+               alpha=0.5, label='Initial funding')
 
-    ax.set_title(f'{stock_name} ({stock_code}) — 资产曲线对比 (策略 vs 买入持有)\n'
-                 f'策略累计回报: {metrics["total_return"]:.2f}% | '
-                 f'买入持有: {metrics["bh_total_return"]:.2f}% | '
-                 f'超额收益: {metrics["total_return"] - metrics["bh_total_return"]:.2f}%',
+    ax.set_title(f'{stock_name} ({stock_code})  -  Asset Curve Comparison (Strategy vs Buy and hold)\n'
+                 f'Strategy Cumulative Returns: {metrics["total_return"]:.2f}% | '
+                 f'Buy and hold: {metrics["bh_total_return"]:.2f}% | '
+                 f'Excess return: {metrics["total_return"] - metrics["bh_total_return"]:.2f}%',
                  fontsize=13, fontweight='bold')
-    ax.set_xlabel('日期', fontsize=11)
-    ax.set_ylabel('资产 (元)', fontsize=11)
+    ax.set_xlabel('Date', fontsize=11)
+    ax.set_ylabel('Assets (yuan)', fontsize=11)
     ax.legend(loc='upper left', fontsize=9)
     ax.grid(True, alpha=0.3, linestyle='--')
-    ax.yaxis.set_major_formatter(mticker.FuncFormatter(lambda x, _: f'{x/1e4:.0f}万'))
+    ax.yaxis.set_major_formatter(mticker.FuncFormatter(lambda x, _: f'{x/1e4:.0f}million'))
     fig.autofmt_xdate()
 
     plt.tight_layout()
-    path = os.path.join(CHART_DIR, f'{stock_code}_资产曲线对比.png')
+    path = os.path.join(CHART_DIR, f'{stock_code}_Asset Curve Comparison.png')
     fig.savefig(path, dpi=150, bbox_inches='tight', facecolor='white')
     plt.close(fig)
     return path
 
 
-# ═══════════════════════════════════════════════════
-# 图表3: 回撤曲线
-# ═══════════════════════════════════════════════════
+#
+# Chart3: Drawdown Curve
+#
 
 def plot_drawdown(result, metrics, stock_name, stock_code):
-    print('  📊 绘制回撤曲线图...')
+    print('   Plot the pullback curve...')
     fig, ax = plt.subplots(figsize=(14, 5))
 
     equity_values = [e['equity'] for e in result['equity_curve']]
@@ -291,28 +291,28 @@ def plot_drawdown(result, metrics, stock_name, stock_code):
     ax.plot(dates, dd_series, color='#d63031', linewidth=1)
     ax.axhline(y=0, color='#636e72', linewidth=0.6, linestyle='--')
 
-    ax.set_title(f'{stock_name} ({stock_code}) — 回撤曲线\n'
-                 f'最大回撤 (MDD): {metrics["mdd"]:.2f}%',
+    ax.set_title(f'{stock_name} ({stock_code})  -  Drawdown Curve\n'
+                 f'Maximum Drawdown (MDD): {metrics["mdd"]:.2f}%',
                  fontsize=13, fontweight='bold')
-    ax.set_xlabel('日期', fontsize=11)
-    ax.set_ylabel('回撤 (%)', fontsize=11)
+    ax.set_xlabel('Date', fontsize=11)
+    ax.set_ylabel('drawdown (%)', fontsize=11)
     ax.grid(True, alpha=0.3, linestyle='--')
     ax.yaxis.set_major_formatter(mticker.FormatStrFormatter('%.0f%%'))
     fig.autofmt_xdate()
 
     plt.tight_layout()
-    path = os.path.join(CHART_DIR, f'{stock_code}_回撤曲线.png')
+    path = os.path.join(CHART_DIR, f'{stock_code}_Drawdown Curve.png')
     fig.savefig(path, dpi=150, bbox_inches='tight', facecolor='white')
     plt.close(fig)
     return path
 
 
-# ═══════════════════════════════════════════════════
-# 图表4: 参数敏感性热力图
-# ═══════════════════════════════════════════════════
+#
+# Chart4: Parameter Sensitivity Heatmap
+#
 
 def plot_param_heatmap(df, stock_name, stock_code):
-    print('  📊 绘制参数敏感性热力图...')
+    print('   Draw parameter sensitivity heat map...')
     short_periods = [3, 5, 10, 15, 20, 30]
     long_periods = [10, 15, 20, 30, 40, 60]
 
@@ -333,15 +333,15 @@ def plot_param_heatmap(df, stock_name, stock_code):
 
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(16, 5.5))
 
-    # 累计回报热力图
+    # Cumulative return heatmap
     im1 = ax1.imshow(returns_matrix, cmap='RdYlGn', aspect='auto', vmin=-30, vmax=30)
     ax1.set_xticks(range(len(long_periods)))
     ax1.set_xticklabels(long_periods)
     ax1.set_yticks(range(len(short_periods)))
     ax1.set_yticklabels(short_periods)
-    ax1.set_xlabel('长均线周期', fontsize=11)
-    ax1.set_ylabel('短均线周期', fontsize=11)
-    ax1.set_title(f'{stock_name} ({stock_code}) — 累计回报 (%)', fontsize=12, fontweight='bold')
+    ax1.set_xlabel('Long moving average period', fontsize=11)
+    ax1.set_ylabel('Short moving average period', fontsize=11)
+    ax1.set_title(f'{stock_name} ({stock_code})  -  Cumulative Return (%)', fontsize=12, fontweight='bold')
     for i in range(len(short_periods)):
         for j in range(len(long_periods)):
             val = returns_matrix[i, j]
@@ -350,15 +350,15 @@ def plot_param_heatmap(df, stock_name, stock_code):
                 ax1.text(j, i, f'{val:.1f}', ha='center', va='center', fontsize=8, color=color)
     plt.colorbar(im1, ax=ax1, shrink=0.85)
 
-    # 夏普比率热力图
+    # Sharpe Ratio Heatmap
     im2 = ax2.imshow(sharpe_matrix, cmap='RdYlGn', aspect='auto', vmin=-2, vmax=2)
     ax2.set_xticks(range(len(long_periods)))
     ax2.set_xticklabels(long_periods)
     ax2.set_yticks(range(len(short_periods)))
     ax2.set_yticklabels(short_periods)
-    ax2.set_xlabel('长均线周期', fontsize=11)
-    ax2.set_ylabel('短均线周期', fontsize=11)
-    ax2.set_title(f'{stock_name} ({stock_code}) — 夏普比率', fontsize=12, fontweight='bold')
+    ax2.set_xlabel('Long moving average period', fontsize=11)
+    ax2.set_ylabel('Short moving average period', fontsize=11)
+    ax2.set_title(f'{stock_name} ({stock_code})  -  Sharpe Ratio', fontsize=12, fontweight='bold')
     for i in range(len(short_periods)):
         for j in range(len(long_periods)):
             val = sharpe_matrix[i, j]
@@ -368,18 +368,18 @@ def plot_param_heatmap(df, stock_name, stock_code):
     plt.colorbar(im2, ax=ax2, shrink=0.85)
 
     plt.tight_layout()
-    path = os.path.join(CHART_DIR, f'{stock_code}_参数敏感性热力图.png')
+    path = os.path.join(CHART_DIR, f'{stock_code}_Parameter Sensitivity Heatmap.png')
     fig.savefig(path, dpi=150, bbox_inches='tight', facecolor='white')
     plt.close(fig)
     return path
 
 
-# ═══════════════════════════════════════════════════
-# 图表5: 多股票策略收益对比
-# ═══════════════════════════════════════════════════
+#
+# Chart5: Multi-stock strategy returns comparison.
+#
 
 def plot_multi_stock(stock_list, short_period=5, long_period=15):
-    print('  📊 绘制多股票对比图...')
+    print('   Draw a multi-stock comparison chart....')
     results = []
     for code, name, market in stock_list:
         try:
@@ -395,7 +395,7 @@ def plot_multi_stock(stock_list, short_period=5, long_period=15):
                     'mdd': metrics['mdd'],
                 })
         except Exception as e:
-            print(f'    ⚠️ 跳过 {code} {name}: {e}')
+            print(f'     Skip {code} {name}: {e}')
 
     if not results:
         return None
@@ -405,97 +405,97 @@ def plot_multi_stock(stock_list, short_period=5, long_period=15):
     x = np.arange(len(results))
     width = 0.35
 
-    # 累计回报对比
+    # Cumulative Return Comparison
     bars1 = ax1.bar(x - width/2, [r['strategy'] for r in results], width,
-                    color='#0984e3', alpha=0.85, label=f'双均线策略 (MA{short_period}/{long_period})')
+                    color='#0984e3', alpha=0.85, label=f'dual moving-average strategy (MA{short_period}/{long_period})')
     bars2 = ax1.bar(x + width/2, [r['bh'] for r in results], width,
-                    color='#b2bec3', alpha=0.7, label='买入持有')
+                    color='#b2bec3', alpha=0.7, label='Buy and hold')
     ax1.set_xticks(x)
     ax1.set_xticklabels([r['label'] for r in results], fontsize=9)
-    ax1.set_ylabel('累计回报 (%)', fontsize=11)
-    ax1.set_title('多股票策略收益对比 — 累计回报', fontsize=12, fontweight='bold')
+    ax1.set_ylabel('Cumulative Return (%)', fontsize=11)
+    ax1.set_title('Multi-stock strategy returns comparison.  -  Cumulative Return', fontsize=12, fontweight='bold')
     ax1.legend(fontsize=9)
     ax1.grid(True, alpha=0.3, linestyle='--', axis='y')
     ax1.axhline(y=0, color='black', linewidth=0.5)
-    # 标注数值
+    # Dimension Value
     for bar in bars1:
         h = bar.get_height()
         ax1.text(bar.get_x() + bar.get_width()/2., h,
                  f'{h:.1f}%' if h >= 0 else f'{h:.1f}%',
                  ha='center', va='bottom' if h >= 0 else 'top', fontsize=7.5)
 
-    # 夏普比率 & MDD
+    # Sharpe Ratio & MDD
     x2 = np.arange(len(results))
     ax2.bar(x2 - width/2, [r['sharpe'] for r in results], width,
-            color='#00b894', alpha=0.8, label='夏普比率')
+            color='#00b894', alpha=0.8, label='Sharpe Ratio')
     ax2_twin = ax2.twinx()
     ax2_twin.bar(x2 + width/2, [r['mdd'] for r in results], width,
-                 color='#d63031', alpha=0.5, label='最大回撤 (%)')
+                 color='#d63031', alpha=0.5, label='Maximum Drawdown (%)')
     ax2.set_xticks(x2)
     ax2.set_xticklabels([r['label'] for r in results], fontsize=9)
-    ax2.set_ylabel('夏普比率', fontsize=11, color='#00b894')
-    ax2_twin.set_ylabel('最大回撤 (%)', fontsize=11, color='#d63031')
-    ax2.set_title('多股票策略 — 夏普比率 & 最大回撤', fontsize=12, fontweight='bold')
+    ax2.set_ylabel('Sharpe Ratio', fontsize=11, color='#00b894')
+    ax2_twin.set_ylabel('Maximum Drawdown (%)', fontsize=11, color='#d63031')
+    ax2.set_title('Multi-Stock Strategy  -  Sharpe Ratio & Maximum Drawdown', fontsize=12, fontweight='bold')
 
     lines1, labels1 = ax2.get_legend_handles_labels()
     lines2, labels2 = ax2_twin.get_legend_handles_labels()
     ax2.legend(lines1 + lines2, labels1 + labels2, loc='upper left', fontsize=9)
 
     plt.tight_layout()
-    path = os.path.join(CHART_DIR, '多股票策略对比.png')
+    path = os.path.join(CHART_DIR, 'Multi-Stock Strategy Comparison.png')
     fig.savefig(path, dpi=150, bbox_inches='tight', facecolor='white')
     plt.close(fig)
     return path
 
 
-# ═══════════════════════════════════════════════════
-# 主程序
-# ═══════════════════════════════════════════════════
+#
+# Main program
+#
 
 def main():
     print('=' * 60)
-    print('  Task3: 生成报告图表')
+    print('  Task3: Generate report charts')
     print('=' * 60)
 
-    # 主力标的：贵州茅台
-    df_moutai = load_stock('600519', '贵州茅台', 'A股')
-    print(f'\n📂 贵州茅台: {len(df_moutai)} 条数据')
+    # Main target: Kweichow Moutai
+    df_moutai = load_stock('600519', 'Kweichow Moutai', 'A-share')
+    print(f'\n Kweichow Moutai: {len(df_moutai)} data item')
 
-    # 回测
-    print('\n⏳ 运行回测 (MA5 & MA15)...')
+    # backtest
+    print('\n Run Backtest (MA5 & MA15)...')
     global short_period, long_period
     short_period, long_period = 5, 15
     result = run_backtest(df_moutai, short_period, long_period)
     metrics = calc_metrics(result)
 
-    print(f'   累计回报: {metrics["total_return"]:.2f}%')
-    print(f'   年化收益: {metrics["annual_return"]:.2f}%')
-    print(f'   最大回撤: {metrics["mdd"]:.2f}%')
-    print(f'   夏普比率: {metrics["sharpe"]:.2f}')
-    print(f'   胜率: {metrics["win_rate"]:.1f}%')
-    print(f'   交易次数: {metrics["total_trades"]}')
+    print(f'   Cumulative Returns: {metrics["total_return"]:.2f}%')
+    print(f'   Annualized return: {metrics["annual_return"]:.2f}%')
+    print(f'   Maximum Drawdown: {metrics["mdd"]:.2f}%')
+    print(f'   Sharpe Ratio: {metrics["sharpe"]:.2f}')
+    print(f'   Win rate: {metrics["win_rate"]:.1f}%')
+    print(f'   Number of transactions: {metrics["total_trades"]}')
 
-    # 生成图表
-    print('\n📊 生成图表...')
+    # Generate Chart
+    print('\n Generate Chart...')
     paths = {}
 
-    paths['signals'] = plot_strategy_signals(df_moutai, result, '贵州茅台', '600519', short_period, long_period)
-    paths['equity'] = plot_equity_comparison(result, metrics, '贵州茅台', '600519')
-    paths['drawdown'] = plot_drawdown(result, metrics, '贵州茅台', '600519')
-    paths['heatmap'] = plot_param_heatmap(df_moutai, '贵州茅台', '600519')
+    paths['signals'] = plot_strategy_signals(df_moutai, result, 'Kweichow Moutai', '600519', short_period, long_period)
+    paths['equity'] = plot_equity_comparison(result, metrics, 'Kweichow Moutai', '600519')
+    paths['drawdown'] = plot_drawdown(result, metrics, 'Kweichow Moutai', '600519')
+    paths['heatmap'] = plot_param_heatmap(df_moutai, 'Kweichow Moutai', '600519')
 
-    # 多股票对比
+    # Multi-stock comparison
     stock_list = [
-        ('600519', '贵州茅台', 'A股'),
-        ('601318', '中国平安', 'A股'),
-        ('300750', '宁德时代', 'A股'),
-        ('002594', '比亚迪', 'A股'),
-        ('00700', '腾讯控股', '港股'),
-        ('09988', '阿里巴巴', '港股'),
+        ('600519', 'Kweichow Moutai', 'A-share'),
+        ('601318', 'Ping An of China', 'A-share'),
+        ('300750', 'CATL', 'A-share'),
+        ('002594', 'BYD', 'A-share'),
+        ('00700', 'Tencent Holdings', 'Hong Kong equities'),
+        ('09988', 'Alibaba', 'Hong Kong equities'),
     ]
     paths['multi'] = plot_multi_stock(stock_list, short_period=5, long_period=15)
 
-    print(f'\n✅ 图表已保存到: {CHART_DIR}')
+    print(f'\n Chart saved: {CHART_DIR}')
     for name, p in paths.items():
         if p:
             print(f'   {name}: {os.path.basename(p)}')

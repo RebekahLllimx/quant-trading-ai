@@ -7,12 +7,12 @@
     "initial_capital": 500000,
     "frequency": "daily",
     "python_version": "Python 3",
-    "benchmark": "沪深300"
+    "benchmark": "Shanghai and Shenzhen300"
   },
   "backtests": [
     {
       "strategy": "A",
-      "name": "TASK7-A-MA20模板基线",
+      "name": "TASK7-A-MA20Template Baseline",
       "status": "completed",
       "strategy_return": -0.0066,
       "annualized_return": -0.0009,
@@ -34,12 +34,12 @@
       "information_ratio": -0.432,
       "strategy_volatility": 0.141,
       "benchmark_volatility": 0.190,
-      "max_drawdown_interval": "2020-07-13至2025-03-21",
+      "max_drawdown_interval": "2020-07-13to2025-03-21",
       "evidence_file": "Screenshot 2026-07-25 at 00.17.55.png"
     },
     {
       "strategy": "B",
-      "name": "TASK7-B-MA10_30-ATR风控",
+      "name": "TASK7-B-MA10_30-ATRRisk control",
       "status": "completed",
       "strategy_return": 0.0291,
       "annualized_return": 0.0039,
@@ -61,12 +61,12 @@
       "information_ratio": -0.329,
       "strategy_volatility": 0.047,
       "benchmark_volatility": 0.190,
-      "max_drawdown_interval": "2021-01-12至2025-05-27",
+      "max_drawdown_interval": "2021-01-12to2025-05-27",
       "evidence_file": "Screenshot 2026-07-25 at 00.16.52.png"
     },
     {
       "strategy": "C",
-      "name": "TASK7-C-ETF动量轮动15D",
+      "name": "TASK7-C-ETFmomentum rotation15D",
       "status": "completed",
       "strategy_return": 0.7184,
       "annualized_return": 0.0769,
@@ -88,27 +88,27 @@
       "information_ratio": 0.141,
       "strategy_volatility": 0.117,
       "benchmark_volatility": 0.190,
-      "max_drawdown_interval": "2024-10-08至2025-02-05",
+      "max_drawdown_interval": "2024-10-08to2025-02-05",
       "evidence_file": "Screenshot 2026-07-25 at 00.16.39.png"
     }
   ],
   "short_window_settings": {
-    "label": "7.20-7.24准实盘短窗回放",
+    "label": "7.20-7.24Quasi-Solid Short Window Playback",
     "start": "2026-07-20",
     "end": "2026-07-24",
     "initial_capital": 500000,
     "frequency": "daily",
     "python_version": "Python 3",
-    "benchmark": "沪深300",
-    "parameters": "与长期回测相同且在短窗结果出现前冻结",
-    "interpretation": "历史回测式准实盘回放，不等同于该时段已经发生的JoinQuant模拟盘成交",
+    "benchmark": "Shanghai and Shenzhen300",
+    "parameters": "Same as long-term backtesting and frozen before short-window results appear.",
+    "interpretation": "Historical backtest quasi-firm playback, Not equivalent to what has already occurred in that periodJoinQuantSimulated account transaction",
     "local_shadow_benchmark_return": 0.0265167765,
     "platform_benchmark_return": 0.0265
   },
   "short_window_backtests": [
     {
       "strategy": "A",
-      "name": "TASK7-A-MA20模板基线",
+      "name": "TASK7-A-MA20Template Baseline",
       "status": "completed",
       "strategy_return": 0.0,
       "annualized_return": 0.0,
@@ -130,14 +130,14 @@
       "information_ratio": -9.359,
       "strategy_volatility": 0.0,
       "benchmark_volatility": 0.289,
-      "max_drawdown_interval": "2026-07-20至2026-07-20",
-      "aggregate_execution_state": "策略净值保持不变，汇总页无盈利或亏损交易",
-      "local_shadow_crosscheck": "5个交易日均为CASH，最大仓位0%",
+      "max_drawdown_interval": "2026-07-20to2026-07-20",
+      "aggregate_execution_state": "Strategy net worth remains unchanged, Summary page shows no profitable or losing trades",
+      "local_shadow_crosscheck": "5The average trading day isCASH, Maximum position0%",
       "evidence_file": "Screenshot 2026-07-25 at 00.19.23.png"
     },
     {
       "strategy": "B",
-      "name": "TASK7-B-MA10_30-ATR风控",
+      "name": "TASK7-B-MA10_30-ATRRisk control",
       "status": "completed",
       "strategy_return": 0.0,
       "annualized_return": 0.0,
@@ -159,14 +159,14 @@
       "information_ratio": -9.359,
       "strategy_volatility": 0.0,
       "benchmark_volatility": 0.289,
-      "max_drawdown_interval": "2026-07-20至2026-07-20",
-      "aggregate_execution_state": "策略净值保持不变，汇总页无盈利或亏损交易",
-      "local_shadow_crosscheck": "5个交易日均为CASH，MA10始终低于MA30，最大仓位0%",
+      "max_drawdown_interval": "2026-07-20to2026-07-20",
+      "aggregate_execution_state": "Strategy net worth remains unchanged, Summary page shows no profitable or losing trades",
+      "local_shadow_crosscheck": "5The average trading day isCASH, MA10Always belowMA30, Maximum position0%",
       "evidence_file": "Screenshot 2026-07-25 at 00.19.11.png"
     },
     {
       "strategy": "C",
-      "name": "TASK7-C-ETF动量轮动15D",
+      "name": "TASK7-C-ETFmomentum rotation15D",
       "status": "completed",
       "strategy_return": 0.0,
       "annualized_return": 0.0,
@@ -188,41 +188,41 @@
       "information_ratio": -9.359,
       "strategy_volatility": 0.0,
       "benchmark_volatility": 0.289,
-      "max_drawdown_interval": "2026-07-20至2026-07-20",
-      "aggregate_execution_state": "策略净值保持不变，汇总页无盈利或亏损交易",
-      "local_shadow_crosscheck": "5个交易日均为CASH，三只ETF动量分数均为负，最大仓位0%",
+      "max_drawdown_interval": "2026-07-20to2026-07-20",
+      "aggregate_execution_state": "Strategy net worth remains unchanged, Summary page shows no profitable or losing trades",
+      "local_shadow_crosscheck": "5The average trading day isCASH, Three of themETFMomentum scores are all negative, Maximum position0%",
       "evidence_file": "Screenshot 2026-07-25 at 00.19.00.png"
     }
   ],
   "simulation_deployments": [
     {
       "strategy": "A",
-      "name": "TASK7-A-MA20模板基线",
+      "name": "TASK7-A-MA20Template Baseline",
       "status": "deployed_waiting_data",
       "deployed_at": "2026-07-24",
       "data_available": false,
-      "status_evidence": "用户在已登录页面完成并确认"
+      "status_evidence": "Users complete and confirm on the logged-in page"
     },
     {
       "strategy": "B",
-      "name": "TASK7-B-MA10_30-ATR风控",
+      "name": "TASK7-B-MA10_30-ATRRisk control",
       "status": "deployed_waiting_data",
       "deployed_at": "2026-07-24",
       "data_available": false,
-      "status_evidence": "用户在已登录页面完成并确认"
+      "status_evidence": "Users complete and confirm on the logged-in page"
     },
     {
       "strategy": "C",
-      "name": "TASK7-C-ETF动量轮动15D",
+      "name": "TASK7-C-ETFmomentum rotation15D",
       "status": "deployed_waiting_data",
       "deployed_at": "2026-07-24",
       "data_available": false,
-      "status_evidence": "用户在已登录页面完成并确认"
+      "status_evidence": "Users complete and confirm on the logged-in page"
     }
   ],
   "simulation_status": {
     "status": "deployed_waiting_data",
-    "message": "用户已在登录页面完成并确认三个私有模拟盘部署；截至2026-07-25尚无部署后的平台运行数据，等待后续A股交易时段更新。",
+    "message": "Users have completed and confirmed the deployment of three private simulated accounts on the login page.; As of2026-07-25No Post-Deployment Platform Operating Data Yet, Awaiting follow-upAStock Trading Session Update. ",
     "actual_performance_available": false
   },
   "privacy_review": {

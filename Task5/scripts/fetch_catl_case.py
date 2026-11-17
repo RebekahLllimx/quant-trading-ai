@@ -118,8 +118,8 @@ def main() -> None:
     if stock_raw is None or stock_raw.empty or benchmark_raw is None or benchmark_raw.empty:
         raise RuntimeError("Tushare returned an empty stock or benchmark frame")
 
-    stock = normalize_stock(stock_raw, "300750.SZ", "宁德时代")
-    benchmark = normalize_benchmark(benchmark_raw, "000300.SH", "沪深300")
+    stock = normalize_stock(stock_raw, "300750.SZ", "CATL")
+    benchmark = normalize_benchmark(benchmark_raw, "000300.SH", "Shanghai and Shenzhen300")
     stock_quality = quality_profile(stock, amount_required=True)
     benchmark_quality = quality_profile(benchmark, amount_required=False)
     common_dates = pd.Index(stock["Date"]).intersection(benchmark["Date"])
@@ -141,8 +141,8 @@ def main() -> None:
     if coverage["stock_common_coverage"] < 0.99 or coverage["benchmark_common_coverage"] < 0.99:
         raise RuntimeError(f"Insufficient date coverage: {coverage}")
 
-    stock.to_csv(STOCK_PATH, index=False, encoding="utf-8-sig", date_format="%Y-%m-%d")
-    benchmark.to_csv(BENCHMARK_PATH, index=False, encoding="utf-8-sig", date_format="%Y-%m-%d")
+    stock.to_csv(STOCK_PATH, index=False, encoding="utf-8", date_format="%Y-%m-%d")
+    benchmark.to_csv(BENCHMARK_PATH, index=False, encoding="utf-8", date_format="%Y-%m-%d")
     manifest = {
         "case": "CATL relative to CSI 300",
         "fetched_at": datetime.now().astimezone().isoformat(timespec="seconds"),

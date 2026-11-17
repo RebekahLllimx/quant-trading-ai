@@ -71,9 +71,9 @@ def confusion_rows(predictions: pd.DataFrame) -> pd.DataFrame:
                         "model": model,
                         "model_label": model_label,
                         "actual": actual,
-                        "actual_label": "实际不涨 0" if actual == 0 else "实际上涨 1",
+                        "actual_label": "Actual does not rise 0" if actual == 0 else "actual rise 1",
                         "predicted": predicted,
-                        "predicted_label": "预测不涨 0" if predicted == 0 else "预测上涨 1",
+                        "predicted_label": "The forecast does not rise. 0" if predicted == 0 else "Forecast rise 1",
                         "count": int(matrix[actual, predicted]),
                         "row_rate": float(matrix[actual, predicted] / denominator),
                     }
@@ -92,7 +92,7 @@ def source_spec(source_id: str, label: str, path: str, description: str, definit
             "sql": f"SELECT * FROM read_csv_auto('{path}', header=true)",
             "description": description,
             "tables_used": [path],
-            "filters": ["沪深A股", "正式样本2018-02-01至2025-12-31", "测试集2024-01-01至2025-12-31"],
+            "filters": ["Shanghai and ShenzhenA-share", "formal sample2018-02-01to2025-12-31", "Test set2024-01-01to2025-12-31"],
             "metric_definitions": definitions,
         },
     }
@@ -121,77 +121,77 @@ def main() -> None:
     model_metrics = metrics[metrics["model"].isin(model_order)].copy()
     model_metrics["test_rows"] = int(predictions[predictions["model"] == model_order[0]].shape[0])
     model_metrics["auc_above_random"] = model_metrics["auc"] - 0.5
-    model_metrics["auc_ci"] = model_metrics.apply(lambda row: f"{row['auc_ci_low']:.3f}–{row['auc_ci_high']:.3f}", axis=1)
+    model_metrics["auc_ci"] = model_metrics.apply(lambda row: f"{row['auc_ci_low']:.3f}-{row['auc_ci_high']:.3f}", axis=1)
 
     importance["feature_label"] = importance["feature"].map(
         {
-            "return_1d": "1日收益",
-            "return_5d": "5日收益",
-            "return_10d": "10日收益",
-            "return_20d": "20日收益",
-            "ma5_gap": "价格/MA5-1",
-            "ma20_gap": "价格/MA20-1",
-            "ma60_gap": "价格/MA60-1",
+            "return_1d": "1daily earnings",
+            "return_5d": "5daily earnings",
+            "return_10d": "10daily earnings",
+            "return_20d": "20daily earnings",
+            "ma5_gap": "Price/MA5-1",
+            "ma20_gap": "Price/MA20-1",
+            "ma60_gap": "Price/MA60-1",
             "rsi14": "RSI14",
-            "macd_pct": "MACD/价格",
-            "atr14_pct": "ATR14/价格",
-            "volatility20": "20日波动率",
-            "volume_ratio20": "成交量比20日",
-            "amount_ratio20": "成交额比20日",
-            "intraday_range": "日内振幅",
-            "open_close_return": "开收盘收益",
+            "macd_pct": "MACD/Price",
+            "atr14_pct": "ATR14/Price",
+            "volatility20": "20daily volatility",
+            "volume_ratio20": "Volume ratio20day",
+            "amount_ratio20": "Turnover ratio20day",
+            "intraday_range": "intraday amplitude",
+            "open_close_return": "Open Closing Earnings",
         }
     )
     importance["explanation_value"] = importance["importance"]
     importance["rank"] = importance.groupby("model")["absolute_importance"].rank(method="first", ascending=False).astype(int)
     yearly["year"] = yearly["year"].astype(str)
     yearly_labels["Year"] = yearly_labels["Year"].astype(str)
-    yearly_labels["split_label"] = yearly_labels["Split"].map({"train": "训练期", "validation": "验证期", "test": "测试期"})
-    split_summary["SplitLabel"] = split_summary["Split"].map({"train": "训练集", "validation": "验证集", "test": "测试集"})
+    yearly_labels["split_label"] = yearly_labels["Split"].map({"train": "Training period", "validation": "Verification period", "test": "Test Period"})
+    split_summary["SplitLabel"] = split_summary["Split"].map({"train": "Training set", "validation": "Validation set", "test": "Test set"})
 
     generated_at = json.loads((METADATA_DIR / "model_run.json").read_text(encoding="utf-8"))["created_at"]
     metric_source = source_spec(
         "model_metrics_source",
-        "测试集模型指标",
+        "Model Metrics on the Test Set",
         "data/task5/processed/task5_model_metrics.csv",
-        "从冻结测试集概率预测重新计算AUC与0.5阈值分类指标。",
+        "Recalculated from frozen test set probability predictionsAUCand0.5Threshold Classification Metrics. ",
         [
-            "AUC=ROC曲线下面积，使用上涨概率而不是0/1预测标签计算。",
-            "Accuracy=(TP+TN)/全部测试样本。",
-            "Precision=TP/(TP+FP)，Recall=TP/(TP+FN)，F1为二者调和平均。",
+            "AUC=ROCArea under the curve, Use the upside probability instead0/1Prediction Label Calculation. ",
+            "Accuracy=(TP+TN)/All test samples. ",
+            "Precision=TP/(TP+FP), Recall=TP/(TP+FN), F1for the two to reconcile the average. ",
         ],
     )
     prediction_source = source_spec(
         "prediction_source",
-        "测试集逐样本预测",
+        "Sample-by-sample prediction on the test set",
         "data/task5/processed/task5_test_predictions.csv",
-        "三种锁定模型对2024—2025测试样本生成的上涨概率和0.5阈值预测。",
-        ["一条记录是一只股票在一个测试交易日上的一个模型预测。", "阈值曲线只改变展示阈值，不重新训练模型。"],
+        "Three kinds of locking model pairs2024 - 2025Probability of increase generated by the test sample and0.5threshold prediction. ",
+        ["A single record is the model prediction of a stock on a test trading day.. ", "Threshold curve only changes display threshold, Don&#39;t retrain the model. "],
     )
     data_source = source_spec(
         "dataset_source",
-        "API冻结特征标签面板",
+        "APIFreeze Feature Labels Panel",
         "data/task5/processed/task5_ml_dataset.csv",
-        "由2017—2025 API行情快照构造15个仅使用当日及历史信息的比例特征。",
-        ["Label=1 当且仅当未来5个交易日调整后收益率大于0。", "时间切分为2018—2022训练、2023验证、2024—2025测试。"],
+        "by2017 - 2025 APIMarket snapshot construction15Only ratio features using current day and historical information are applied.. ",
+        ["Label=1 If and only if the future5Post-adjustment return greater than on trading days0. ", "Time is divided into2018 - 2022training, 2023Verification, 2024 - 2025Test. "],
     )
     importance_source = source_spec(
         "importance_source",
-        "模型解释结果",
+        "Model Explanation Results",
         "data/task5/processed/task5_feature_importance.csv",
-        "逻辑回归标准化系数与树模型不纯度特征重要性。",
-        ["系数和重要性描述模型依赖关系，不表示因果作用。"],
+        "Standardized coefficients of logistic regression and feature importance of impurity in tree models.. ",
+        ["Coefficients and importance describe model dependencies, does not indicate a causal effect. "],
     )
     sources = [metric_source, prediction_source, data_source, importance_source]
 
     cards = []
     for card_id, label, field, fmt, description in [
-        ("auc_card", "测试集 AUC", "auc", "number", "跨全部分类阈值的涨跌排序能力；0.5接近随机。"),
-        ("accuracy_card", "准确率", "accuracy", "percent", "在0.5分类阈值下的总体判对比例。"),
-        ("precision_card", "精确率", "precision", "percent", "预测上涨的样本中实际上涨的比例。"),
-        ("recall_card", "召回率", "recall", "percent", "实际上涨样本中被模型识别的比例。"),
-        ("f1_card", "F1", "f1", "percent", "精确率与召回率的调和平均。"),
-        ("test_rows_card", "测试样本", "test_rows", "compact", "2024—2025年股票—交易日样本数。"),
+        ("auc_card", "Test set AUC", "auc", "number", "Up and down ranking ability across all classification thresholds; 0.5Approaching Random. "),
+        ("accuracy_card", "Accuracy", "accuracy", "percent", "In0.5Overall correct classification ratio under the classification threshold. "),
+        ("precision_card", "Accuracy rate", "precision", "percent", "The proportion of samples predicted to rise that actually rise.. "),
+        ("recall_card", "Recall rate", "recall", "percent", "Proportion of actual rising samples identified by the model. "),
+        ("f1_card", "F1", "f1", "percent", "Harmonic mean of precision and recall. "),
+        ("test_rows_card", "Test sample", "test_rows", "compact", "2024 - 2025Annual Stock - Sample number of trading days. "),
     ]:
         cards.append(
             {
@@ -206,37 +206,37 @@ def main() -> None:
     charts = [
         {
             "id": "yearly_auc",
-            "title": "测试期年度AUC",
-            "subtitle": "分别检查2024与2025，观察弱信号是否只来自单一年份",
+            "title": "Test Period YearAUC",
+            "subtitle": "Check separately2024and2025, Observe whether weak signals come only from a single year",
             "type": "bar",
             "intent": "comparison",
             "dataset": "yearly_metrics",
             "sourceId": "model_metrics_source",
             "encodings": {
-                "x": {"field": "year", "type": "ordinal", "label": "年份"},
+                "x": {"field": "year", "type": "ordinal", "label": "Year"},
                 "y": {"field": "auc", "type": "quantitative", "label": "AUC", "format": "number"},
                 "tooltip": [
-                    {"field": "accuracy", "type": "quantitative", "label": "准确率", "format": "percent"},
+                    {"field": "accuracy", "type": "quantitative", "label": "Accuracy", "format": "percent"},
                     {"field": "f1", "type": "quantitative", "label": "F1", "format": "percent"},
                 ],
             },
-            "referenceLines": [{"axis": "y", "value": 0.5, "label": "随机基准", "color": "neutral", "lineStyle": "dashed"}],
+            "referenceLines": [{"axis": "y", "value": 0.5, "label": "Random Benchmark", "color": "neutral", "lineStyle": "dashed"}],
             "palette": {"kind": "semantic"},
             "layout": "half",
         },
         {
             "id": "yearly_label_rate",
-            "title": "年度未来5日上涨比例",
-            "subtitle": "标签基准率随市场阶段变化，2023年最低",
+            "title": "Yearly Future5Daily increase ratio",
+            "subtitle": "Label Baseline Rate Changes with Market Phases, 2023Annual minimum",
             "type": "bar",
             "intent": "comparison",
             "dataset": "yearly_labels",
             "sourceId": "dataset_source",
             "encodings": {
-                "x": {"field": "Year", "type": "ordinal", "label": "年份"},
-                "y": {"field": "positive_rate", "type": "quantitative", "label": "上涨比例", "format": "percent"},
-                "color": {"field": "split_label", "type": "nominal", "label": "数据段"},
-                "tooltip": [{"field": "rows", "type": "quantitative", "label": "样本数", "format": "compact"}],
+                "x": {"field": "Year", "type": "ordinal", "label": "Year"},
+                "y": {"field": "positive_rate", "type": "quantitative", "label": "Rising proportion", "format": "percent"},
+                "color": {"field": "split_label", "type": "nominal", "label": "Data Segment"},
+                "tooltip": [{"field": "rows", "type": "quantitative", "label": "Sample size", "format": "compact"}],
             },
             "referenceLines": [{"axis": "y", "value": 0.5, "label": "50%", "color": "neutral", "lineStyle": "dashed"}],
             "palette": {"kind": "categorical"},
@@ -244,80 +244,80 @@ def main() -> None:
         },
         {
             "id": "roc_chart",
-            "title": "测试集ROC曲线",
-            "subtitle": "曲线越靠近左上角，跨阈值区分能力越强",
+            "title": "Test setROCcurve",
+            "subtitle": "The closer the curve is to the upper-left corner, The greater the ability to distinguish across thresholds",
             "type": "line",
             "intent": "comparison",
             "dataset": "roc_points",
             "sourceId": "model_metrics_source",
             "encodings": {
-                "x": {"field": "fpr", "type": "quantitative", "label": "假阳性率 FPR"},
-                "y": {"field": "tpr", "type": "quantitative", "label": "真正率 TPR"},
-                "color": {"field": "model_label", "type": "nominal", "label": "模型"},
+                "x": {"field": "fpr", "type": "quantitative", "label": "false positive rate FPR"},
+                "y": {"field": "tpr", "type": "quantitative", "label": "The true rate TPR"},
+                "color": {"field": "model_label", "type": "nominal", "label": "model"},
                 "tooltip": [
-                    {"field": "threshold", "type": "quantitative", "label": "阈值"},
+                    {"field": "threshold", "type": "quantitative", "label": "Threshold"},
                     {"field": "auc", "type": "quantitative", "label": "AUC"},
                 ],
             },
-            "referenceLines": [{"axis": "y", "value": 0.5, "label": "TPR=0.5参考", "color": "neutral", "lineStyle": "dotted"}],
+            "referenceLines": [{"axis": "y", "value": 0.5, "label": "TPR=0.5Reference", "color": "neutral", "lineStyle": "dotted"}],
             "palette": {"kind": "categorical"},
             "layout": "full",
         },
         {
             "id": "confusion_heatmap",
-            "title": "0.5阈值混淆矩阵",
-            "subtitle": "颜色为同一真实类别内的占比，悬停查看计数",
+            "title": "0.5threshold confusion matrix",
+            "subtitle": "The color represents the proportion within the same true category, Hover View Count",
             "type": "heatmap",
             "intent": "comparison",
             "dataset": "confusion",
             "sourceId": "prediction_source",
             "encodings": {
-                "x": {"field": "predicted_label", "type": "nominal", "label": "预测标签"},
-                "y": {"field": "row_rate", "type": "quantitative", "label": "行占比", "format": "percent"},
-                "color": {"field": "actual_label", "type": "nominal", "label": "实际标签"},
-                "tooltip": [{"field": "count", "type": "quantitative", "label": "样本数", "format": "compact"}],
+                "x": {"field": "predicted_label", "type": "nominal", "label": "Forecast Label"},
+                "y": {"field": "row_rate", "type": "quantitative", "label": "Row Percentage", "format": "percent"},
+                "color": {"field": "actual_label", "type": "nominal", "label": "Actual Label"},
+                "tooltip": [{"field": "count", "type": "quantitative", "label": "Sample size", "format": "compact"}],
             },
             "palette": {"kind": "sequential"},
             "layout": "half",
         },
         {
             "id": "threshold_chart",
-            "title": "分类阈值敏感性",
-            "subtitle": "阈值只改变判定规则，不改变AUC或重新训练模型",
+            "title": "classification threshold sensitivity",
+            "subtitle": "Threshold only changes judgment rules, No changeAUCor retrain the model",
             "type": "line",
             "intent": "trend",
             "dataset": "threshold_metrics",
             "sourceId": "prediction_source",
             "encodings": {
-                "x": {"field": "threshold", "type": "quantitative", "label": "上涨概率阈值"},
-                "y": {"field": "metric_value", "type": "quantitative", "label": "指标值", "format": "percent"},
-                "color": {"field": "metric_label", "type": "nominal", "label": "指标"},
+                "x": {"field": "threshold", "type": "quantitative", "label": "Rising probability threshold"},
+                "y": {"field": "metric_value", "type": "quantitative", "label": "Index value", "format": "percent"},
+                "color": {"field": "metric_label", "type": "nominal", "label": "Indicator"},
                 "tooltip": [
-                    {"field": "predicted_positive_rate", "type": "quantitative", "label": "预测上涨比例", "format": "percent"},
-                    {"field": "predicted_positive", "type": "quantitative", "label": "预测上涨样本", "format": "compact"},
+                    {"field": "predicted_positive_rate", "type": "quantitative", "label": "Proportion of forecast rise", "format": "percent"},
+                    {"field": "predicted_positive", "type": "quantitative", "label": "Forecast rise sample", "format": "compact"},
                 ],
             },
-            "referenceLines": [{"axis": "x", "value": 0.5, "label": "报告阈值", "color": "neutral", "lineStyle": "dashed"}],
+            "referenceLines": [{"axis": "x", "value": 0.5, "label": "Report Threshold", "color": "neutral", "lineStyle": "dashed"}],
             "palette": {"kind": "semantic"},
             "layout": "half",
         },
         {
             "id": "importance_chart",
-            "title": "模型特征解释值",
-            "subtitle": "逻辑回归为带方向的标准化系数；树模型为非负不纯度重要性",
+            "title": "Model Feature Explanation Value",
+            "subtitle": "Logistic regression for standardized coefficients with direction; Tree Model Uses Non-Negative Impurity Importance",
             "type": "horizontalBar",
             "intent": "comparison",
             "dataset": "importance",
             "sourceId": "importance_source",
             "encodings": {
-                "x": {"field": "feature_label", "type": "nominal", "label": "特征"},
-                "y": {"field": "explanation_value", "type": "quantitative", "label": "解释值"},
+                "x": {"field": "feature_label", "type": "nominal", "label": "Feature"},
+                "y": {"field": "explanation_value", "type": "quantitative", "label": "Interpretation value"},
                 "tooltip": [
-                    {"field": "rank", "type": "quantitative", "label": "绝对重要性排名"},
-                    {"field": "importance_type", "type": "text", "label": "解释口径"},
+                    {"field": "rank", "type": "quantitative", "label": "Absolute Importance Ranking"},
+                    {"field": "importance_type", "type": "text", "label": "Explain the caliber"},
                 ],
             },
-            "referenceLines": [{"axis": "x", "value": 0, "label": "零", "color": "neutral"}],
+            "referenceLines": [{"axis": "x", "value": 0, "label": "zero", "color": "neutral"}],
             "settings": {"sort": "ascending", "showValues": True},
             "palette": {"kind": "diverging", "midpoint": 0},
             "layout": "full",
@@ -327,16 +327,16 @@ def main() -> None:
     tables = [
         {
             "id": "model_comparison",
-            "title": "三模型与多数类基线的测试结果",
-            "subtitle": "AUC使用概率；其余指标使用固定0.5阈值",
+            "title": "Testing results of the three models and the majority-class baseline.",
+            "subtitle": "AUCProbability of use; The remaining indicators use fixed0.5Threshold",
             "dataset": "model_comparison",
             "sourceId": "model_metrics_source",
             "defaultSort": {"field": "auc", "direction": "desc"},
             "density": "spacious",
             "columns": [
-                {"field": "model_label", "label": "模型", "type": "text"},
+                {"field": "model_label", "label": "model", "type": "text"},
                 {"field": "auc", "label": "AUC", "format": "number"},
-                {"field": "auc_ci", "label": "AUC 95%区间", "type": "text"},
+                {"field": "auc_ci", "label": "AUC 95%Interval", "type": "text"},
                 {"field": "accuracy", "label": "Accuracy", "format": "percent"},
                 {"field": "precision", "label": "Precision", "format": "percent"},
                 {"field": "recall", "label": "Recall", "format": "percent"},
@@ -346,19 +346,19 @@ def main() -> None:
         },
         {
             "id": "split_table",
-            "title": "训练、验证与测试数据段",
-            "subtitle": "股票—交易日样本；5日标签跨界样本已清除",
+            "title": "training, Verification and Test Data Segment",
+            "subtitle": "stock - Trading Day Sample; 5Day label cross-border sample cleared",
             "dataset": "split_summary",
             "sourceId": "dataset_source",
             "defaultSort": {"field": "start", "direction": "asc"},
             "density": "spacious",
             "columns": [
-                {"field": "SplitLabel", "label": "数据段", "type": "text"},
-                {"field": "start", "label": "起始日期", "type": "date"},
-                {"field": "end", "label": "结束日期", "type": "date"},
-                {"field": "rows", "label": "样本数", "format": "compact"},
-                {"field": "symbols", "label": "股票数", "format": "number"},
-                {"field": "positive_rate", "label": "上涨比例", "format": "percent"},
+                {"field": "SplitLabel", "label": "Data Segment", "type": "text"},
+                {"field": "start", "label": "Start Date", "type": "date"},
+                {"field": "end", "label": "End Date", "type": "date"},
+                {"field": "rows", "label": "Sample size", "format": "compact"},
+                {"field": "symbols", "label": "Number of shares", "format": "number"},
+                {"field": "positive_rate", "label": "Rising proportion", "format": "percent"},
             ],
             "layout": "full",
         },
@@ -368,7 +368,7 @@ def main() -> None:
         {
             "id": "opening",
             "type": "markdown",
-            "body": "## 结论先行\n\n三种模型的测试集AUC均接近0.5。逻辑回归最高（0.521），随机森林次之（0.519），说明技术特征只提供了很弱的方向排序信息，不能据此推断策略可盈利。使用顶部模型筛选器可联动查看年度表现、混淆矩阵、阈值敏感性和特征解释。",
+            "body": "## Summary\n\nTest sets of three modelsAUCAll are approaching.0.5. Logistic Regression Highest (0.521) , Random Forest (0.519) , It indicates that technical features only provide very weak directional ranking information., Cannot infer that the strategy is profitable based on this. Using the top model selector allows linked viewing of annual performance., Confusion matrix, Threshold Sensitivity and Feature Interpretation. ",
             "sourceId": "model_metrics_source",
         },
         {"id": "hero_metrics", "type": "metric-strip", "cardIds": [card["id"] for card in cards]},
@@ -383,7 +383,7 @@ def main() -> None:
         {
             "id": "caveats",
             "type": "markdown",
-            "body": "## 使用边界\n\n- AUC略高于0.5只说明测试期排序略优于随机，不等于扣除交易成本后可盈利。\n- 股票池按2018年1月成交额中位数冻结，不是历史沪深300成分股。\n- 多数股票使用Tushare日涨跌幅复合得到的公司行动调整收益指数；模型只使用尺度无关特征。\n- 0.5阈值下召回率较低，反映弱信号与训练/测试基准率变化；本任务没有用测试集重新调阈值。\n- 特征重要性和逻辑回归系数不表示因果作用。",
+            "body": "## Use boundaries\n\n- AUCslightly above0.5Only indicates that the ranking in the test period is slightly better than random., Not equal to profit after deducting transaction costs. \n- Stock pool by2018year1Median monthly turnover freeze, Not historical Shanghai and Shenzhen300Constituent stocks. \n- Most stock useTushareThe company action-adjusted return index compounded from daily price changes.; The model only uses scale-invariant features. \n- 0.5Lower recall under threshold, Reflecting Weak Signals and Training/Test baseline rate variation; This task did not use the test set to re-adjust thresholds. \n- Feature importance and logistic regression coefficients do not indicate causality.. ",
         },
     ]
 
@@ -392,13 +392,13 @@ def main() -> None:
         "manifest": {
             "version": 1,
             "surface": "dashboard",
-            "title": "TASK5 AI交易引擎：A股涨跌分类评估",
-            "description": "100只历史高流动性A股，未来5日涨跌分类，2024—2025严格样本外测试。",
+            "title": "Task 5 - Machine-Learning Case Studies: AStock Price Rise and Fall Classification Assessment",
+            "description": "100Only historically high liquidityA-share, The future5Daily Gain/Loss Classification, 2024 - 2025Strict out-of-sample testing. ",
             "generatedAt": generated_at,
             "filters": [
                 {
                     "id": "model_filter",
-                    "label": "模型",
+                    "label": "model",
                     "dataset": "model_metrics",
                     "field": "model_label",
                     "defaultValue": MODEL_LABELS["logistic_regression"],

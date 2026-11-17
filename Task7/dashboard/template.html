@@ -1,11 +1,11 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="TASK7 三策略表现、信号与风险观察">
+  <meta name="description" content="TASK7 3 strategy performance, Signals and Risk Observation">
   <meta name="color-scheme" content="light">
-  <title>TASK7 · 三策略观察</title>
+  <title>Task 7 - Three-Strategy Monitoring</title>
   <style>
     :root {
       --ink: #17212b;
@@ -228,114 +228,106 @@
 </head>
 <body class="loading">
   <header class="topbar">
-    <a class="brand" href="#top">TASK7 · 策略观察</a>
-    <nav class="toplinks" aria-label="页面导航">
-      <a href="#signals">当前信号</a>
-      <a href="#performance">长期表现</a>
-      <a href="#risk">风险</a>
+    <a class="brand" href="#top">TASK7  -  Strategy Watch</a>
+    <nav class="toplinks" aria-label="Page Navigation">
+      <a href="#signals">Current Signal</a>
+      <a href="#performance">Long-term performance</a>
+      <a href="#risk">Risk</a>
     </nav>
   </header>
 
   <main id="top">
     <section class="hero">
       <div>
-        <p class="eyebrow">聚宽 · 三策略对比</p>
-        <h1>策略表现与风险</h1>
-        <p class="dek">比较模板基线、MA+ATR风控和宽基ETF轮动的信号、收益与风险。页面按交易日更新，实际模拟数据与历史结果分开记录。</p>
+        <h1>Strategy Performance and Risk</h1>
       </div>
-      <aside class="status-card" aria-label="模拟盘状态">
-        <span class="status-badge">模拟盘已部署</span>
-        <h2 id="actualStatus">等待首个交易日数据</h2>
-        <div class="status-row"><span>最新完整交易日</span><strong id="latestDate">—</strong></div>
-        <div class="status-row"><span>页面更新时间</span><strong id="generatedAt">—</strong></div>
-        <div class="status-row"><span>当前页面数据</span><strong>历史回测 · 行情回放</strong></div>
+      <aside class="status-card" aria-label="Simulated account status">
+        <span class="status-badge">Simulation active</span>
+        <h2 id="actualStatus">Waiting for first trading day data</h2>
+        <div class="status-row"><span>Latest Complete Trading Day</span><strong id="latestDate"> - </strong></div>
+        <div class="status-row"><span>Page update time</span><strong id="generatedAt"> - </strong></div>
+        <div class="status-row"><span>Current page data</span><strong>Historical backtest  -  Quote Playback</strong></div>
       </aside>
     </section>
 
-    <div class="scope-note" role="note">
-      <strong>数据说明</strong>
-      <span>三个模拟盘于7月24日周五部署，周末尚无运行记录。页面当前展示历史回测和使用T−1信息生成的行情回放；实际模拟净值、持仓与成交将在平台产生数据后独立更新。</span>
-    </div>
-
     <section class="section" id="signals" aria-labelledby="signalsTitle">
       <div class="section-head">
-        <div><h2 id="signalsTitle">当前信号</h2><p>公开行情按冻结规则计算，用于观察策略决策。</p></div>
+        <div><h2 id="signalsTitle">Current Signals</h2></div>
       </div>
       <div class="strategy-grid" id="strategyGrid"></div>
     </section>
 
     <section class="section" id="performance" aria-labelledby="performanceTitle">
       <div class="section-head">
-        <div><h2 id="performanceTitle">JoinQuant长期回测</h2><p id="platformRange">统一资金、基准与成本口径。</p></div>
+        <div><h2 id="performanceTitle">JoinQuant Backtest</h2><p id="platformRange"></p></div>
       </div>
       <div class="platform-grid" id="platformGrid"></div>
     </section>
 
     <section class="section" aria-labelledby="navTitle">
       <div class="section-head">
-        <div><h2 id="navTitle">行情回放净值</h2><p>公开行情重建结果；所选窗口首日归一为100。</p></div>
-        <div class="controls" aria-label="选择时间范围">
-          <button type="button" data-range="all" aria-pressed="true">2024至今</button>
-          <button type="button" data-range="2025" aria-pressed="false">2025至今</button>
+        <div><h2 id="navTitle">Shadow Portfolio NAV</h2></div>
+        <div class="controls" aria-label="Select Time Range">
+          <button type="button" data-range="all" aria-pressed="true">2024to this day</button>
+          <button type="button" data-range="2025" aria-pressed="false">2025to this day</button>
           <button type="button" data-range="2026" aria-pressed="false">2026</button>
         </div>
       </div>
       <div class="chart-shell">
         <div class="legend" id="navLegend"></div>
-        <svg class="chart" id="navChart" role="img" aria-label="三策略与沪深300归一化净值折线图"></svg>
+        <svg class="chart" id="navChart" role="img" aria-label="3 Strategies and Shanghai-Shenzhen300Normalized Net Asset Value Line Chart"></svg>
       </div>
     </section>
 
     <section class="section" id="risk" aria-labelledby="riskTitle">
-      <div class="section-head"><div><h2 id="riskTitle">风险暴露</h2><p>回撤反映损失幅度，仓位解释市场参与程度。</p></div></div>
+      <div class="section-head"><div><h2 id="riskTitle">Risk Exposure</h2></div></div>
       <div class="two-col">
         <div class="chart-shell">
           <div class="legend" id="ddLegend"></div>
-          <svg class="chart" id="ddChart" role="img" aria-label="三策略回撤折线图"></svg>
+          <svg class="chart" id="ddChart" role="img" aria-label="Drawdown line chart of three strategies"></svg>
         </div>
         <div class="chart-shell">
           <div class="legend" id="expLegend"></div>
-          <svg class="chart" id="expChart" role="img" aria-label="三策略市场仓位折线图"></svg>
+          <svg class="chart" id="expChart" role="img" aria-label="Line chart of market positions for three strategies"></svg>
         </div>
       </div>
     </section>
 
     <section class="section" aria-labelledby="periodTitle">
-      <div class="section-head"><div><h2 id="periodTitle">分阶段结果</h2><p>开发期、验证期与参数冻结后的2026年观察。</p></div></div>
-      <div class="table-wrap"><table id="periodTable"><caption class="sr-only">三策略分阶段绩效</caption></table></div>
+      <div class="section-head"><div><h2 id="periodTitle">Period Results</h2></div></div>
+      <div class="table-wrap"><table id="periodTable"><caption class="sr-only">Three-stage performance of three strategies</caption></table></div>
     </section>
 
-    <section class="section two-col" aria-label="成本与订单">
-      <div class="table-wrap"><table id="stressTable"><caption>成本敏感性</caption></table></div>
-      <div class="table-wrap"><table id="tradeTable"><caption>最近行情回放订单</caption></table></div>
+    <section class="section two-col" aria-label="Costs and Orders">
+      <div class="table-wrap"><table id="stressTable"><caption>cost sensitivity</caption></table></div>
+      <div class="table-wrap"><table id="tradeTable"><caption>Recent market replay order</caption></table></div>
     </section>
 
     <section class="section" id="method" aria-labelledby="methodTitle">
-      <div class="section-head"><div><h2 id="methodTitle">口径说明</h2></div></div>
+      <div class="section-head"><div><h2 id="methodTitle">Method</h2></div></div>
       <div class="method">
-        <div><strong>信号</strong><span>仅使用T−1及更早的完整数据，下一交易日执行。</span></div>
-        <div><strong>成本</strong><span>佣金3bp、最低5元、单边滑点10bp，并进行成本翻倍测试。</span></div>
-        <div><strong>数据层级</strong><span>历史回测、行情回放与平台模拟记录分别展示，不混合计算。</span></div>
+        <div><strong>Signals</strong><span>Use data available through T-1 and execute on the next trading day.</span></div>
+        <div><strong>Costs</strong><span>3 bp commission, CNY 5 minimum, 10 bp one-way slippage, plus a double-cost stress test.</span></div>
+        <div><strong>Evaluation</strong><span>Backtest, market replay, and simulated-account records are reported separately.</span></div>
       </div>
     </section>
 
-    <footer>课程研究用途，不构成投资建议。</footer>
   </main>
 
   <script>
     const FALLBACK = /*__TASK7_FALLBACK__*/null;
     const COLORS = {A:"#d47a35", B:"#2c7a73", C:"#3f63a6", Benchmark:"#7d8588"};
-    const LABELS = {A:"A 模板基线", B:"B MA+ATR", C:"C ETF轮动", Benchmark:"沪深300"};
+    const LABELS = {A:"A Template Baseline", B:"B MA+ATR", C:"C ETFWheel movement", Benchmark:"Shanghai and Shenzhen300"};
     const FINDINGS = {
-      A: "高回撤，收益接近盈亏平衡",
-      B: "回撤最低，收益偏弱",
-      C: "收益领先，保持中等回撤"
+      A: "High drawdown, Earnings are near breakeven.",
+      B: "Drawdown low, Weak earnings",
+      C: "Earnings lead, Maintain medium drawdown"
     };
     let DATA = FALLBACK;
     let RANGE = "all";
 
-    const fmtPct = value => value == null ? "—" : `${(value * 100).toFixed(2)}%`;
-    const fmtNum = value => value == null ? "—" : Number(value).toLocaleString("zh-CN", {maximumFractionDigits: 0});
+    const fmtPct = value => value == null ? " - " : `${(value * 100).toFixed(2)}%`;
+    const fmtNum = value => value == null ? " - " : Number(value).toLocaleString("zh-CN", {maximumFractionDigits: 0});
     const tone = value => value > 0 ? "positive" : value < 0 ? "negative" : "";
     const escapeHtml = value => String(value ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[c]));
 
@@ -343,16 +335,16 @@
       document.getElementById("strategyGrid").innerHTML = DATA.cards.map(card => `
         <article class="card strategy" style="--series:${COLORS[card.strategy]}">
           <header>
-            <h3><span class="code">${card.strategy}</span> · ${escapeHtml(card.name)}</h3>
-            <span class="pill">行情回放</span>
+            <h3><span class="code">${card.strategy}</span>  -  ${escapeHtml(card.name)}</h3>
+            <span class="pill">Quote Playback</span>
           </header>
-          <p class="signal-label">最新标的与仓位</p>
-          <p class="signal">${escapeHtml(card.selected_name)} · ${fmtPct(card.exposure)}</p>
-          <p class="platform-status">模拟盘：${escapeHtml(card.joinquant_actual_status)}</p>
+          <p class="signal-label">Latest Underlyings and Positions</p>
+          <p class="signal">${escapeHtml(card.selected_name)}  -  ${fmtPct(card.exposure)}</p>
+          <p class="platform-status">Simulation panel: ${escapeHtml(card.joinquant_actual_status)}</p>
           <div class="metric-row">
-            <div><span>回放累计</span><strong class="${tone(card.cumulative_return)}">${fmtPct(card.cumulative_return)}</strong></div>
-            <div><span>最大回撤</span><strong class="negative">${fmtPct(card.max_drawdown)}</strong></div>
-            <div><span>最新净值</span><strong>${fmtNum(card.nav)}</strong></div>
+            <div><span>Cumulative Playback</span><strong class="${tone(card.cumulative_return)}">${fmtPct(card.cumulative_return)}</strong></div>
+            <div><span>Maximum Drawdown</span><strong class="negative">${fmtPct(card.max_drawdown)}</strong></div>
+            <div><span>Latest Net Worth</span><strong>${fmtNum(card.nav)}</strong></div>
           </div>
         </article>`).join("");
     }
@@ -361,20 +353,20 @@
       const settings = DATA.joinquant_backtest_settings || {};
       document.getElementById("platformRange").textContent =
         settings.start && settings.end
-          ? `${settings.start}—${settings.end} · 初始资金${fmtNum(settings.initial_capital)}元`
-          : "统一资金、基准与成本口径";
+          ? `${settings.start} - ${settings.end}  -  Initial funding${fmtNum(settings.initial_capital)}yuan`
+          : "Unified funding, Basis and Cost Scope";
       document.getElementById("platformGrid").innerHTML = (DATA.joinquant_backtests || []).map(item => `
         <article class="card platform-card" style="--series:${COLORS[item.strategy]}">
           <header>
-            <h3><span class="code">${item.strategy}</span> · ${escapeHtml(LABELS[item.strategy].replace(/^[A-C] /, ""))}</h3>
-            <span class="pill">已完成</span>
+            <h3><span class="code">${item.strategy}</span>  -  ${escapeHtml(LABELS[item.strategy].replace(/^[A-C] /, ""))}</h3>
+            <span class="pill">Completed</span>
           </header>
           <p class="return ${tone(item.strategy_return)}">${fmtPct(item.strategy_return)}</p>
-          <p class="return-label">累计收益</p>
+          <p class="return-label">Accumulated income</p>
           <div class="metric-row">
-            <div><span>超额收益</span><strong class="${tone(item.excess_return)}">${fmtPct(item.excess_return)}</strong></div>
-            <div><span>最大回撤</span><strong class="negative">${fmtPct(item.max_drawdown)}</strong></div>
-            <div><span>Beta</span><strong>${item.beta == null ? "—" : item.beta.toFixed(3)}</strong></div>
+            <div><span>Excess return</span><strong class="${tone(item.excess_return)}">${fmtPct(item.excess_return)}</strong></div>
+            <div><span>Maximum Drawdown</span><strong class="negative">${fmtPct(item.max_drawdown)}</strong></div>
+            <div><span>Beta</span><strong>${item.beta == null ? " - " : item.beta.toFixed(3)}</strong></div>
           </div>
           <p class="finding">${FINDINGS[item.strategy]}</p>
         </article>`).join("");
@@ -418,7 +410,7 @@
       const pad = {l:50, r:14, t:16, b:32};
       const values = Object.values(series).flat().filter(Number.isFinite);
       if (!dates.length || !values.length) {
-        svg.innerHTML = `<text x="20" y="40">暂无可绘制数据</text>`;
+        svg.innerHTML = `<text x="20" y="40">No data available for rendering</text>`;
         return;
       }
       let min = options.min != null ? options.min : Math.min(...values);
@@ -466,14 +458,14 @@
     }
 
     function renderPeriodTable() {
-      const periods = [["development","开发"],["validation","验证"],["oos","2026样本外"]];
+      const periods = [["development","Development"],["validation","Verification"],["oos","2026Out of sample"]];
       let rows = "";
       ["A","B","C"].forEach(strategy => periods.forEach(([key,label]) => {
         const m = DATA.metrics[strategy][key];
-        rows += `<tr><td>${strategy} · ${label}</td><td class="${tone(m.cumulative_return)}">${fmtPct(m.cumulative_return)}</td><td class="negative">${fmtPct(m.max_drawdown)}</td><td>${m.sharpe == null?"—":m.sharpe.toFixed(2)}</td><td>${fmtPct(m.average_exposure)}</td><td>${m.trade_orders}</td></tr>`;
+        rows += `<tr><td>${strategy}  -  ${label}</td><td class="${tone(m.cumulative_return)}">${fmtPct(m.cumulative_return)}</td><td class="negative">${fmtPct(m.max_drawdown)}</td><td>${m.sharpe == null?" - ":m.sharpe.toFixed(2)}</td><td>${fmtPct(m.average_exposure)}</td><td>${m.trade_orders}</td></tr>`;
       }));
       document.getElementById("periodTable").innerHTML =
-        `<thead><tr><th>策略 · 阶段</th><th>累计收益</th><th>最大回撤</th><th>夏普</th><th>平均仓位</th><th>订单数</th></tr></thead><tbody>${rows}</tbody>`;
+        `<thead><tr><th>Strategy  -  Stage</th><th>Accumulated income</th><th>Maximum Drawdown</th><th>Sharp</th><th>Average Position</th><th>Number of orders</th></tr></thead><tbody>${rows}</tbody>`;
     }
 
     function renderStressTable() {
@@ -483,7 +475,7 @@
         return `<tr><td>${LABELS[strategy]}</td><td class="${tone(base.cumulative_return)}">${fmtPct(base.cumulative_return)}</td><td class="${tone(stress.cumulative_return)}">${fmtPct(stress.cumulative_return)}</td><td class="negative">${fmtPct(stress.cumulative_return-base.cumulative_return)}</td></tr>`;
       }).join("");
       document.getElementById("stressTable").innerHTML +=
-        `<thead><tr><th>策略</th><th>基础成本</th><th>成本×2</th><th>收益变化</th></tr></thead><tbody>${rows}</tbody>`;
+        `<thead><tr><th>Strategy</th><th>Base Cost</th><th>Costx2</th><th>Changes in earnings</th></tr></thead><tbody>${rows}</tbody>`;
     }
 
     function renderTrades() {
@@ -491,7 +483,7 @@
         `<tr><td>${t.date}</td><td>${t.strategy}</td><td>${t.side}</td><td>${t.symbol}</td><td>${Number(t.shares).toLocaleString("zh-CN")}</td></tr>`
       ).join("");
       document.getElementById("tradeTable").innerHTML +=
-        `<thead><tr><th>日期</th><th>策略</th><th>方向</th><th>标的</th><th>股数</th></tr></thead><tbody>${rows || '<tr><td colspan="5">暂无订单</td></tr>'}</tbody>`;
+        `<thead><tr><th>Date</th><th>Strategy</th><th>direction</th><th>Target</th><th>Number of shares</th></tr></thead><tbody>${rows || '<tr><td colspan="5">No orders yet</td></tr>'}</tbody>`;
     }
 
     function render() {
@@ -506,8 +498,8 @@
           hour12:false
         });
       const statusLabels = {
-        not_imported: "等待部署或导入",
-        deployed_waiting_data: "等待首个交易日数据"
+        not_imported: "Waiting for deployment or import",
+        deployed_waiting_data: "Waiting for first trading day data"
       };
       document.getElementById("actualStatus").textContent =
         statusLabels[DATA.joinquant_actual.status] || DATA.joinquant_actual.status;

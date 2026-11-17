@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-技术指标计算模块
-支持 8 个指标: RSI, MACD, Bollinger Bands, ATR, KDJ, MA, CCI, ADX
-所有函数接收 pandas DataFrame (需包含 Date, Open, High, Low, Close, Volume 列)
-返回原始 DataFrame 附加指标列，或直接返回指标序列。
+Technical Indicator Calculation Module
+Support 8 an indicator: RSI, MACD, Bollinger Bands, ATR, KDJ, MA, CCI, ADX
+All functions receive pandas DataFrame (Must include Date, Open, High, Low, Close, Volume column)
+Return to Original DataFrame Additional Indicator Columns, or directly return the indicator sequence.
 """
 
 import pandas as pd
@@ -12,44 +12,44 @@ import numpy as np
 from typing import List, Tuple, Optional, Dict
 
 
-# ═══════════════════════════════════════════════════════════════
-# 辅助函数
-# ═══════════════════════════════════════════════════════════════
+#
+# auxiliary function
+#
 
 def _ema(series: pd.Series, period: int) -> pd.Series:
-    """指数移动平均 (EMA)，α = 2/(N+1)"""
+    """Exponential Moving Average (EMA), alpha = 2/(N+1)"""
     return series.ewm(span=period, min_periods=period, adjust=False).mean()
 
 
 def _wilder_smooth(series: pd.Series, period: int) -> pd.Series:
-    """Wilder 平滑 (α = 1/N)，用于 RSI/ATR/ADX"""
+    """Wilder Smooth (alpha = 1/N), used for RSI/ATR/ADX"""
     return series.ewm(alpha=1.0 / period, min_periods=period, adjust=False).mean()
 
 
 def _sma(series: pd.Series, period: int) -> pd.Series:
-    """简单移动平均"""
+    """simple moving average"""
     return series.rolling(window=period, min_periods=period).mean()
 
 
 def _std(series: pd.Series, period: int) -> pd.Series:
-    """滚动标准差"""
+    """rolling standard deviation"""
     return series.rolling(window=period, min_periods=period).std(ddof=0)
 
 
-# ═══════════════════════════════════════════════════════════════
-# 1. RSI — 相对强弱指数
-# ═══════════════════════════════════════════════════════════════
+#
+# 1. RSI  -  relative strength index
+#
 
 def calc_rsi(df: pd.DataFrame, period: int = 14) -> pd.Series:
     """
-    计算 RSI (Relative Strength Index)
+    calculation RSI (Relative Strength Index)
 
-    参数:
-        df: 包含 Close 列的 DataFrame
-        period: 计算周期，默认 14 (Wilder 原始参数)
+    Parameters:
+        df: Contains Close of the column DataFrame
+        period: Calculation period, Default 14 (Wilder Original parameters)
 
-    返回:
-        pd.Series: RSI 序列 [0, 100]
+    Returns:
+        pd.Series: RSI sequence [0, 100]
     """
     close = df['Close'].astype(float)
     delta = close.diff()
@@ -57,15 +57,15 @@ def calc_rsi(df: pd.DataFrame, period: int = 14) -> pd.Series:
     gain = delta.clip(lower=0)
     loss = (-delta).clip(lower=0)
 
-    # 种子: 前 N 期的 SMA
+    # seed: former N period&#39;s SMA
     avg_gain = gain.copy()
     avg_loss = loss.copy()
 
-    # Wilder 平滑: α = 1/N
+    # Wilder Smooth: alpha = 1/N
     avg_gain.iloc[period:] = gain.iloc[period:].ewm(alpha=1.0 / period, adjust=False).mean()
     avg_loss.iloc[period:] = loss.iloc[period:].ewm(alpha=1.0 / period, adjust=False).mean()
 
-    # 初始种子用 SMA
+    # For initial seed SMA
     avg_gain.iloc[:period] = np.nan
     avg_loss.iloc[:period] = np.nan
 
@@ -76,25 +76,25 @@ def calc_rsi(df: pd.DataFrame, period: int = 14) -> pd.Series:
     return rsi.round(4)
 
 
-# ═══════════════════════════════════════════════════════════════
-# 2. MACD — 指数平滑异同移动平均线
-# ═══════════════════════════════════════════════════════════════
+#
+# 2. MACD  -  Exponential smoothing moving average
+#
 
 def calc_macd(df: pd.DataFrame,
               fast: int = 12,
               slow: int = 26,
               signal: int = 9) -> pd.DataFrame:
     """
-    计算 MACD
+    calculation MACD
 
-    参数:
-        df: 包含 Close 列的 DataFrame
-        fast: 快线 EMA 周期，默认 12
-        slow: 慢线 EMA 周期，默认 26
-        signal: 信号线 EMA 周期，默认 9
+    Parameters:
+        df: Contains Close of the column DataFrame
+        fast: Express Line EMA cycle, Default 12
+        slow: Slow line EMA cycle, Default 26
+        signal: Signal line EMA cycle, Default 9
 
-    返回:
-        pd.DataFrame: 包含 DIF, DEA, BAR 三列
+    Returns:
+        pd.DataFrame: Contains DIF, DEA, BAR 3 columns
     """
     close = df['Close'].astype(float)
 
@@ -113,23 +113,23 @@ def calc_macd(df: pd.DataFrame,
     return result
 
 
-# ═══════════════════════════════════════════════════════════════
-# 3. Bollinger Bands — 布林带
-# ═══════════════════════════════════════════════════════════════
+#
+# 3. Bollinger Bands  -  Bollinger Bands
+#
 
 def calc_bollinger(df: pd.DataFrame,
                    period: int = 20,
                    k: float = 2.0) -> pd.DataFrame:
     """
-    计算布林带 (Bollinger Bands)
+    Calculating Bollinger Bands (Bollinger Bands)
 
-    参数:
-        df: 包含 Close 列的 DataFrame
-        period: 中轨周期，默认 20
-        k: 标准差倍数，默认 2.0
+    Parameters:
+        df: Contains Close of the column DataFrame
+        period: mid-rail period, Default 20
+        k: Standard deviation multiplier, Default 2.0
 
-    返回:
-        pd.DataFrame: 包含 MID, UP, DN, BandWidth, %b 五列
+    Returns:
+        pd.DataFrame: Contains MID, UP, DN, BandWidth, %b Five columns
     """
     close = df['Close'].astype(float)
 
@@ -151,20 +151,20 @@ def calc_bollinger(df: pd.DataFrame,
     return result
 
 
-# ═══════════════════════════════════════════════════════════════
-# 4. ATR — 平均真实波幅
-# ═══════════════════════════════════════════════════════════════
+#
+# 4. ATR  -  Average True Range
+#
 
 def calc_atr(df: pd.DataFrame, period: int = 14) -> pd.Series:
     """
-    计算 ATR (Average True Range)
+    calculation ATR (Average True Range)
 
-    参数:
-        df: 包含 High, Low, Close 列的 DataFrame
-        period: 计算周期，默认 14
+    Parameters:
+        df: Contains High, Low, Close of the column DataFrame
+        period: Calculation period, Default 14
 
-    返回:
-        pd.Series: ATR 序列
+    Returns:
+        pd.Series: ATR sequence
     """
     high = df['High'].astype(float)
     low = df['Low'].astype(float)
@@ -182,25 +182,25 @@ def calc_atr(df: pd.DataFrame, period: int = 14) -> pd.Series:
     return atr.round(4)
 
 
-# ═══════════════════════════════════════════════════════════════
-# 5. KDJ — 随机指标
-# ═══════════════════════════════════════════════════════════════
+#
+# 5. KDJ  -  Stochastic Indicator
+#
 
 def calc_kdj(df: pd.DataFrame,
              period: int = 9,
              smooth_k: int = 3,
              smooth_d: int = 3) -> pd.DataFrame:
     """
-    计算 KDJ 随机指标
+    calculation KDJ Stochastic Indicator
 
-    参数:
-        df: 包含 High, Low, Close 列的 DataFrame
-        period: RSV 计算周期，默认 9
-        smooth_k: K 值平滑周期，默认 3 (EMA 等效)
-        smooth_d: D 值平滑周期，默认 3 (EMA 等效)
+    Parameters:
+        df: Contains High, Low, Close of the column DataFrame
+        period: RSV Calculation period, Default 9
+        smooth_k: K Value Smoothing Period, Default 3 (EMA Equivalent)
+        smooth_d: D Value Smoothing Period, Default 3 (EMA Equivalent)
 
-    返回:
-        pd.DataFrame: 包含 K, D, J 三列 [0, 100]，J 可超出范围
+    Returns:
+        pd.DataFrame: Contains K, D, J 3 columns [0, 100], J Can be out of range
     """
     high = df['High'].astype(float)
     low = df['Low'].astype(float)
@@ -225,23 +225,23 @@ def calc_kdj(df: pd.DataFrame,
     return result
 
 
-# ═══════════════════════════════════════════════════════════════
-# 6. MA — 多周期移动平均线
-# ═══════════════════════════════════════════════════════════════
+#
+# 6. MA  -  Multi-period moving average
+#
 
 def calc_ma(df: pd.DataFrame,
             periods: List[int] = [5, 10, 20, 60, 120, 250],
             ma_type: str = 'SMA') -> pd.DataFrame:
     """
-    计算多周期移动平均线
+    Calculate a multi-period moving average
 
-    参数:
-        df: 包含 Close 列的 DataFrame
-        periods: 周期列表，默认 [5, 10, 20, 60, 120, 250]
-        ma_type: 'SMA' (简单) 或 'EMA' (指数)
+    Parameters:
+        df: Contains Close of the column DataFrame
+        periods: Cycle List, Default [5, 10, 20, 60, 120, 250]
+        ma_type: 'SMA' (Simple) or 'EMA' (index)
 
-    返回:
-        pd.DataFrame: 列名为 MA{N} 的 DataFrame
+    Returns:
+        pd.DataFrame: The column name is MA{N} of DataFrame
     """
     close = df['Close'].astype(float)
     result = pd.DataFrame(index=df.index)
@@ -254,20 +254,20 @@ def calc_ma(df: pd.DataFrame,
     return result
 
 
-# ═══════════════════════════════════════════════════════════════
-# 7. CCI — 商品通道指数
-# ═══════════════════════════════════════════════════════════════
+#
+# 7. CCI  -  Commodity Channel Index
+#
 
 def calc_cci(df: pd.DataFrame, period: int = 20) -> pd.Series:
     """
-    计算 CCI (Commodity Channel Index)
+    calculation CCI (Commodity Channel Index)
 
-    参数:
-        df: 包含 High, Low, Close 列的 DataFrame
-        period: 计算周期，默认 20
+    Parameters:
+        df: Contains High, Low, Close of the column DataFrame
+        period: Calculation period, Default 20
 
-    返回:
-        pd.Series: CCI 序列 (无界)
+    Returns:
+        pd.Series: CCI sequence (Boundless)
     """
     high = df['High'].astype(float)
     low = df['Low'].astype(float)
@@ -282,33 +282,33 @@ def calc_cci(df: pd.DataFrame, period: int = 20) -> pd.Series:
     return cci.round(4)
 
 
-# ═══════════════════════════════════════════════════════════════
-# 8. ADX — 平均趋向指数
-# ═══════════════════════════════════════════════════════════════
+#
+# 8. ADX  -  average trend index
+#
 
 def calc_adx(df: pd.DataFrame, period: int = 14) -> pd.DataFrame:
     """
-    计算 ADX / +DI / -DI (Wilder 趋向运动系统)
+    calculation ADX / +DI / -DI (Wilder trending motion system)
 
-    参数:
-        df: 包含 High, Low, Close 列的 DataFrame
-        period: 计算周期，默认 14
+    Parameters:
+        df: Contains High, Low, Close of the column DataFrame
+        period: Calculation period, Default 14
 
-    返回:
-        pd.DataFrame: 包含 ADX, PDI(+DI), MDI(-DI) 三列
+    Returns:
+        pd.DataFrame: Contains ADX, PDI(+DI), MDI(-DI) 3 columns
     """
     high = df['High'].astype(float)
     low = df['Low'].astype(float)
     close = df['Close'].astype(float)
 
-    # 第一步: 计算 True Range
+    # Step one: calculation True Range
     tr = pd.concat([
         (high - low),
         (high - close.shift(1)).abs(),
         (low - close.shift(1)).abs(),
     ], axis=1).max(axis=1)
 
-    # 第二步: 计算趋向运动 (+DM, -DM)
+    # Step two: Compute trend motion (+DM, -DM)
     up_move = high.diff()
     down_move = -low.diff()
 
@@ -321,16 +321,16 @@ def calc_adx(df: pd.DataFrame, period: int = 14) -> pd.DataFrame:
     plus_dm[mask_plus] = up_move[mask_plus]
     minus_dm[mask_minus] = down_move[mask_minus]
 
-    # 第三步: Wilder 平滑
+    # Step 3: Wilder Smooth
     atr = _wilder_smooth(tr, period)
     smoothed_plus_dm = _wilder_smooth(plus_dm, period)
     smoothed_minus_dm = _wilder_smooth(minus_dm, period)
 
-    # 第四步: 计算 ±DI
+    # Step Four: calculation DI
     pdi = (smoothed_plus_dm / atr) * 100.0
     mdi = (smoothed_minus_dm / atr) * 100.0
 
-    # 第五步: 计算 DX → ADX
+    # Step Five: calculation DX  ->  ADX
     dx = (pdi - mdi).abs() / (pdi + mdi) * 100.0
     adx = _wilder_smooth(dx, period)
 
@@ -342,9 +342,9 @@ def calc_adx(df: pd.DataFrame, period: int = 14) -> pd.DataFrame:
     return result
 
 
-# ═══════════════════════════════════════════════════════════════
-# 便利函数: 一次计算所有指标
-# ═══════════════════════════════════════════════════════════════
+#
+# Convenience functions: Calculate all metrics at once
+#
 
 def calc_all_indicators(df: pd.DataFrame,
                         rsi_period: int = 14,
@@ -356,10 +356,10 @@ def calc_all_indicators(df: pd.DataFrame,
                         cci_period: int = 20,
                         adx_period: int = 14) -> pd.DataFrame:
     """
-    一次性计算所有 8 个指标，返回合并后的 DataFrame
+    Calculate all at once 8 an indicator, Returns the merged DataFrame
 
-    返回:
-        pd.DataFrame: 原始 OHLCV 数据 + 所有指标列
+    Returns:
+        pd.DataFrame: Original OHLCV Data + All Metric Columns
     """
     result = df.copy()
     result['Date'] = pd.to_datetime(result['Date'])
@@ -408,24 +408,24 @@ def calc_all_indicators(df: pd.DataFrame,
     return result
 
 
-# ═══════════════════════════════════════════════════════════════
-# 数据诊断
-# ═══════════════════════════════════════════════════════════════
+#
+# Data Diagnostics
+#
 
 def data_diagnosis(df: pd.DataFrame, stock_name: str = "") -> Dict:
     """
-    数据诊断分析: 缺失值、描述性统计
+    data diagnostic analysis: Missing value, Descriptive Statistics
 
-    参数:
-        df: 包含 OHLCV 列的 DataFrame
-        stock_name: 股票名称 (用于打印输出)
+    Parameters:
+        df: Contains OHLCV of the column DataFrame
+        stock_name: Name of Stock (for printout)
 
-    返回:
-        dict: 诊断结果字典
+    Returns:
+        dict: Diagnostic Result Dictionary
     """
     result = {'stock_name': stock_name, 'rows': len(df)}
 
-    # 1. 缺失值检查
+    # 1. Missing Value Check
     cols_to_check = ['Open', 'High', 'Low', 'Close', 'Volume']
     missing = {}
     for col in cols_to_check:
@@ -435,7 +435,7 @@ def data_diagnosis(df: pd.DataFrame, stock_name: str = "") -> Dict:
                 missing[col] = n_missing
     result['missing_values'] = missing
 
-    # 2. 日期连续性
+    # 2. Date continuity
     if 'Date' in df.columns:
         dates = pd.to_datetime(df['Date'])
         date_range = (dates.max() - dates.min()).days
@@ -443,7 +443,7 @@ def data_diagnosis(df: pd.DataFrame, stock_name: str = "") -> Dict:
         result['date_start'] = dates.min().strftime('%Y-%m-%d')
         result['date_end'] = dates.max().strftime('%Y-%m-%d')
 
-    # 3. 描述性统计 (Close)
+    # 3. Descriptive Statistics (Close)
     if 'Close' in df.columns:
         close = df['Close'].astype(float)
         result['close_stats'] = {
@@ -455,7 +455,7 @@ def data_diagnosis(df: pd.DataFrame, stock_name: str = "") -> Dict:
             'kurtosis': round(close.kurtosis(), 4),
         }
 
-        # 日收益率
+        # daily rate of return
         ret = close.pct_change().dropna()
         result['return_stats'] = {
             'daily_mean_pct': round(ret.mean() * 100, 4),
@@ -463,12 +463,12 @@ def data_diagnosis(df: pd.DataFrame, stock_name: str = "") -> Dict:
             'annual_vol_pct': round(ret.std() * np.sqrt(252) * 100, 2),
         }
 
-        # 最大回撤
+        # Maximum Drawdown
         cummax = close.cummax()
         drawdown = (close - cummax) / cummax
         result['max_drawdown_pct'] = round(drawdown.min() * 100, 2)
 
-        # Jarque-Bera 正态性检验
+        # Jarque-Bera normality test
         from scipy import stats as scipy_stats
         jb_stat, jb_pvalue = scipy_stats.jarque_bera(ret.dropna())
         result['jarque_bera'] = {
@@ -477,14 +477,14 @@ def data_diagnosis(df: pd.DataFrame, stock_name: str = "") -> Dict:
             'is_normal': jb_pvalue > 0.05,
         }
 
-    # 4. 异常值检测 (3σ)
+    # 4. outlier detection (3sigma)
     if 'Close' in df.columns:
         close = df['Close'].astype(float)
         mean_c, std_c = close.mean(), close.std()
         outliers = close[(close < mean_c - 3 * std_c) | (close > mean_c + 3 * std_c)]
         result['outliers_3sigma'] = len(outliers)
 
-    # 5. 成交量分析
+    # 5. Volume Analysis
     if 'Volume' in df.columns:
         vol = df['Volume'].astype(float)
         result['volume_stats'] = {
@@ -497,97 +497,97 @@ def data_diagnosis(df: pd.DataFrame, stock_name: str = "") -> Dict:
 
 
 def print_diagnosis(diag: Dict):
-    """格式化打印诊断结果"""
+    """Format Print Diagnostic Results"""
     print(f"\n{'='*60}")
-    print(f"  数据诊断: {diag.get('stock_name', '')}")
+    print(f"  Data Diagnostics: {diag.get('stock_name', '')}")
     print(f"{'='*60}")
-    print(f"  记录数: {diag['rows']}")
-    print(f"  日期范围: {diag.get('date_start', 'N/A')} ~ {diag.get('date_end', 'N/A')} "
-          f"({diag.get('date_range_days', 'N/A')} 天)")
+    print(f"  Number of records: {diag['rows']}")
+    print(f"  Date Range: {diag.get('date_start', 'N/A')} ~ {diag.get('date_end', 'N/A')} "
+          f"({diag.get('date_range_days', 'N/A')} days)")
 
-    # 缺失值
+    # Missing value
     missing = diag.get('missing_values', {})
     if missing:
-        print(f"\n  ⚠️ 缺失值:")
+        print(f"\n   Missing value:")
         for col, n in missing.items():
-            print(f"    {col}: {n} 个 ({n/diag['rows']*100:.1f}%)")
+            print(f"    {col}: {n} one ({n/diag['rows']*100:.1f}%)")
     else:
-        print(f"\n  ✅ 无缺失值")
+        print(f"\n   No missing value")
 
-    # 收盘价统计
+    # Closing Price Statistics
     cs = diag.get('close_stats', {})
     if cs:
-        print(f"\n  ── 收盘价描述性统计 ──")
-        print(f"    均值: {cs['mean']:.2f}  标准差: {cs['std']:.2f}")
-        print(f"    最小: {cs['min']:.2f}  最大: {cs['max']:.2f}")
-        print(f"    偏度(Skewness): {cs['skewness']:.4f}  (正值=右偏, 负值=左偏)")
-        print(f"    峰度(Kurtosis): {cs['kurtosis']:.4f}  (正值=尖峰厚尾)")
+        print(f"\n   Closing Price Descriptive Statistics ")
+        print(f"    Mean: {cs['mean']:.2f}  Standard deviation: {cs['std']:.2f}")
+        print(f"    smallest: {cs['min']:.2f}  Maximum: {cs['max']:.2f}")
+        print(f"    Skewness(Skewness): {cs['skewness']:.4f}  (just in time=Right, Negative Values=Left deviation)")
+        print(f"    Kurtosis(Kurtosis): {cs['kurtosis']:.4f}  (just in time=Spike Thick Tail)")
 
-    # 收益率统计
+    # Yield Statistics
     rs = diag.get('return_stats', {})
     if rs:
-        print(f"\n  ── 日收益率统计 ──")
-        print(f"    日均收益率: {rs['daily_mean_pct']:.4f}%")
-        print(f"    日波动率: {rs['daily_std_pct']:.4f}%")
-        print(f"    年化波动率: {rs['annual_vol_pct']:.2f}%")
-        print(f"    最大回撤: {diag.get('max_drawdown_pct', 'N/A'):.2f}%")
+        print(f"\n   Daily Rate of Return Statistics ")
+        print(f"    average daily rate of return: {rs['daily_mean_pct']:.4f}%")
+        print(f"    daily volatility: {rs['daily_std_pct']:.4f}%")
+        print(f"    annualized volatility: {rs['annual_vol_pct']:.2f}%")
+        print(f"    Maximum Drawdown: {diag.get('max_drawdown_pct', 'N/A'):.2f}%")
 
-    # 正态性检验
+    # normality test
     jb = diag.get('jarque_bera', {})
     if jb:
-        print(f"\n  ── Jarque-Bera 正态性检验 ──")
-        print(f"    JB统计量: {jb['statistic']:.4f}")
+        print(f"\n   Jarque-Bera normality test ")
+        print(f"    JBStatistic: {jb['statistic']:.4f}")
         print(f"    p-value: {jb['p_value']:.6f}")
-        normality = "✅ 服从正态分布 (p > 0.05)" if jb['is_normal'] else "❌ 拒绝正态分布 (p ≤ 0.05)，收益率分布具有非正态特征"
-        print(f"    结论: {normality}")
+        normality = " Follows a normal distribution (p > 0.05)" if jb['is_normal'] else " reject normal distribution (p <= 0.05), Yield Distribution Exhibits Non-Normal Characteristics"
+        print(f"    Conclusion: {normality}")
 
-    # 异常值
-    print(f"\n  ── 异常值检测 ──")
-    print(f"    3σ 异常值数量: {diag.get('outliers_3sigma', 'N/A')}")
+    # Outlier
+    print(f"\n   outlier detection ")
+    print(f"    3sigma Number of outliers: {diag.get('outliers_3sigma', 'N/A')}")
 
-    # 成交量
+    # Trading volume
     vs = diag.get('volume_stats', {})
     if vs:
-        print(f"\n  ── 成交量 ──")
-        print(f"    日均成交量: {vs['mean']:.0f}")
-        print(f"    最大成交量: {vs['max']:.0f} (日期: {vs.get('max_date', 'N/A')})")
+        print(f"\n   Trading volume ")
+        print(f"    Average daily trading volume: {vs['mean']:.0f}")
+        print(f"    Maximum trading volume: {vs['max']:.0f} (Date: {vs.get('max_date', 'N/A')})")
 
     print(f"{'='*60}\n")
 
 
-# ═══════════════════════════════════════════════════════════════
-# 主程序入口 (自检)
-# ═══════════════════════════════════════════════════════════════
+#
+# Main Program Entry (Self-check)
+#
 
 if __name__ == "__main__":
     import os
     import sys
 
-    # 加载一只股票做测试
+    # Load 1 stocks for testing.
     DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'data', 'csv')
-    test_file = os.path.join(DATA_DIR, '600519_贵州茅台_A股_daily.csv')
+    test_file = os.path.join(DATA_DIR, '600519_Kweichow Moutai_A-share_daily.csv')
 
     if os.path.exists(test_file):
-        print(f"📂 测试数据: 600519 贵州茅台")
+        print(f" Test data: 600519 Kweichow Moutai")
         df = pd.read_csv(test_file, encoding='utf-8-sig')
-        print(f"   原始行数: {len(df)}, 列: {list(df.columns)}")
+        print(f"   Original number of rows: {len(df)}, column: {list(df.columns)}")
 
-        # 数据诊断
-        diag = data_diagnosis(df, '贵州茅台 (600519)')
+        # Data Diagnostics
+        diag = data_diagnosis(df, 'Kweichow Moutai (600519)')
         print_diagnosis(diag)
 
-        # 计算所有指标
-        print(">>> 计算所有 8 个指标...")
+        # Calculate all indicators
+        print(">>> Calculate all 8 an indicator...")
         df_full = calc_all_indicators(df)
 
-        # 显示最新5行的关键指标
+        # Show Latest5Row Key Indicators
         cols_show = ['Date', 'Close', 'RSI', 'DIF', 'DEA', 'BB_UP', 'BB_MID', 'BB_DN',
                      'ATR', 'K', 'D', 'J', 'MA5', 'MA20', 'CCI', 'ADX', 'PDI', 'MDI']
         available = [c for c in cols_show if c in df_full.columns]
-        print(f"\n  最新 5 行指标数据:")
+        print(f"\n  latest 5 Row Indicator Data:")
         print(df_full[available].tail(5).to_string(index=False))
 
-        print(f"\n  ✅ 所有指标计算完成，共 {len(df_full.columns)} 列")
+        print(f"\n   All indicator calculations completed, total {len(df_full.columns)} column")
     else:
-        print(f"❌ 测试文件不存在: {test_file}")
-        print("  请先运行 update_data.py 更新数据")
+        print(f" The test file does not exist.: {test_file}")
+        print("  Please run first update_data.py Update data")

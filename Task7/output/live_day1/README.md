@@ -1,19 +1,19 @@
-# TASK7 模拟盘首日数据提交说明
+# TASK7 Instructions for submitting data on the first day of simulation
 
-首个完整 A 股交易日结束后，请把三套私有模拟盘的截图放在本目录。建议按以下方式命名：
+The first complete A After the end of the stock trading day, Please place screenshots of the three private simulated accounts in this directory.. It is recommended to name it as follows:
 
-- `A_overview.png`、`B_overview.png`、`C_overview.png`
-- `A_positions.png`、`B_positions.png`、`C_positions.png`
-- `A_orders_logs.png`、`B_orders_logs.png`、`C_orders_logs.png`
+- `A_overview.png`, `B_overview.png`, `C_overview.png`
+- `A_positions.png`, `B_positions.png`, `C_positions.png`
+- `A_orders_logs.png`, `B_orders_logs.png`, `C_orders_logs.png`
 
-每个策略至少需要以下信息：
+Each Strategy Requires at Least the Following Information:
 
-1. 数据日期、策略名称和运行状态；
-2. 初始资产、当日收盘总资产、可用现金、持仓市值；
-3. 当日收益率和累计收益率（若平台已经显示）；
-4. 持仓代码、数量、成本价、市值和账户仓位；
-5. 当日委托数、成交数、撤单/拒单数，以及价格、数量和失败原因；
-6. 当日日志中的调度、信号和异常记录；
-7. 同日基准收益（若平台已经显示）。
+1. Data Date, Policy Name and Running Status;
+2. Initial assets, Closing total assets of the day, Available cash, Market value of position;
+3. Daily returns and cumulative returns (If the platform is already displayed) ;
+4. Position code, Quantity, Cost price, Market Capitalization and Account Positions;
+5. Number of orders placed that day, Number of transactions, Cancel order/Reject singular, and price, Quantity and reason for failure;
+6. Scheduling in the daily log, Signal and Exception Recording;
+7. Same-day benchmark earnings (If the platform is already displayed) .
 
-请勿放入密码、Cookie、手机号、身份证明、账号访问方式或私有分享链接。若当天没有成交，也请提供订单和日志截图，以便区分“信号未触发”“订单未成交”和“程序未运行”。
+Do not put the password, Cookie, Mobile phone number, Proof of identity, Account access methods or private sharing links. If there is no transaction on the same day, Please also provide order and log screenshots, In order to distinguish"Signal not triggered""Order not filled"and"The program is not running.".

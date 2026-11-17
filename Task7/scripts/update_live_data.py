@@ -339,8 +339,8 @@ def main() -> int:
                     float_format="%.8f",
                 )
             else:
-                print(f"ℹ️ {code}: no new trading day; snapshot unchanged")
-            print(f"✅ {code}: {len(frame)} rows through {report['last_date']}")
+                print(f"i {code}: no new trading day; snapshot unchanged")
+            print(f" {code}: {len(frame)} rows through {report['last_date']}")
         except Exception as exc:
             if args.use_existing_on_error and path.exists():
                 frame = pd.read_csv(path)
@@ -348,7 +348,7 @@ def main() -> int:
                 report = validate_frame(code, frame)
                 report["status"] = "stale_fallback"
                 report["fetch_error"] = str(exc)
-                print(f"⚠️ {code}: kept existing snapshot ({exc})")
+                print(f" {code}: kept existing snapshot ({exc})")
             else:
                 raise
         report["sha256"] = sha256_file(path)
@@ -379,9 +379,9 @@ def main() -> int:
                 float_format="%.8f",
             )
         else:
-            print("ℹ️ 000300: no new trading day; snapshot unchanged")
+            print("i 000300: no new trading day; snapshot unchanged")
         print(
-            f"✅ 000300: {len(benchmark)} rows through {report['last_date']}"
+            f" 000300: {len(benchmark)} rows through {report['last_date']}"
         )
     except Exception as exc:
         if args.use_existing_on_error and benchmark_path.exists():
@@ -390,7 +390,7 @@ def main() -> int:
             report = validate_frame("000300", benchmark)
             report["status"] = "stale_fallback"
             report["fetch_error"] = str(exc)
-            print(f"⚠️ 000300: kept existing snapshot ({exc})")
+            print(f" 000300: kept existing snapshot ({exc})")
         else:
             raise
     report["sha256"] = sha256_file(benchmark_path)

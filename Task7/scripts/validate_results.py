@@ -99,7 +99,7 @@ def main() -> int:
         status = (
             len(payload.get("cards", [])) == 3
             and bool(payload.get("latest_complete_date"))
-            and "不是JoinQuant实际成交结果"
+            and "No.JoinQuantActual Transaction Results"
             in payload.get("method", {}).get("actual_vs_shadow", "")
         )
         checks.append(
@@ -137,11 +137,11 @@ def main() -> int:
     }
     write_json(METADATA_DIR / "validation_report.json", report)
     if failures:
-        print("❌ TASK7 validation failed")
+        print(" TASK7 validation failed")
         for failure in failures:
             print(f"  - {failure}")
         return 1
-    print(f"✅ TASK7 validation passed ({len(checks)} checks)")
+    print(f" TASK7 validation passed ({len(checks)} checks)")
     return 0
 
 

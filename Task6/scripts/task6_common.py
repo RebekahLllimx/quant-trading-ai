@@ -38,16 +38,16 @@ BUFFER_RANK = 50
 ONE_WAY_COST = 0.002
 
 MODEL_LABELS = {
-    "linear_regression": "线性回归",
-    "ridge": "Ridge回归",
-    "decision_tree": "决策树",
-    "random_forest": "随机森林",
-    "hist_gradient_boosting": "梯度提升",
-    "logistic_regression": "逻辑回归",
-    "market_equal_weight": "全市场等权",
-    "buy_and_hold": "买入持有",
-    "moving_average": "均线策略",
-    "ml_timing": "ML择时策略",
+    "linear_regression": "Linear regression",
+    "ridge": "RidgeReturn",
+    "decision_tree": "Decision tree",
+    "random_forest": "Random Forest",
+    "hist_gradient_boosting": "gradient boost",
+    "logistic_regression": "Logistic Regression",
+    "market_equal_weight": "Market-wide equal rights",
+    "buy_and_hold": "Buy and hold",
+    "moving_average": "Moving Average Strategy",
+    "ml_timing": "MLtiming strategy",
 }
 
 

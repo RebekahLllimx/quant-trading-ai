@@ -1,11 +1,11 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="TASK7 三策略表现、信号与风险观察">
+  <meta name="description" content="TASK7 3 strategy performance, Signals and Risk Observation">
   <meta name="color-scheme" content="light">
-  <title>TASK7 · 三策略观察</title>
+  <title>Task 7 - Three-Strategy Monitoring</title>
   <style>
     :root {
       --ink: #17212b;
@@ -228,125 +228,117 @@
 </head>
 <body class="loading">
   <header class="topbar">
-    <a class="brand" href="#top">TASK7 · 策略观察</a>
-    <nav class="toplinks" aria-label="页面导航">
-      <a href="#signals">当前信号</a>
-      <a href="#performance">长期表现</a>
-      <a href="#risk">风险</a>
+    <a class="brand" href="#top">TASK7  -  Strategy Watch</a>
+    <nav class="toplinks" aria-label="Page Navigation">
+      <a href="#signals">Current Signal</a>
+      <a href="#performance">Long-term performance</a>
+      <a href="#risk">Risk</a>
     </nav>
   </header>
 
   <main id="top">
     <section class="hero">
       <div>
-        <p class="eyebrow">聚宽 · 三策略对比</p>
-        <h1>策略表现与风险</h1>
-        <p class="dek">比较模板基线、MA+ATR风控和宽基ETF轮动的信号、收益与风险。页面按交易日更新，实际模拟数据与历史结果分开记录。</p>
+        <h1>Strategy Performance and Risk</h1>
       </div>
-      <aside class="status-card" aria-label="模拟盘状态">
-        <span class="status-badge">模拟盘已部署</span>
-        <h2 id="actualStatus">等待首个交易日数据</h2>
-        <div class="status-row"><span>最新完整交易日</span><strong id="latestDate">—</strong></div>
-        <div class="status-row"><span>页面更新时间</span><strong id="generatedAt">—</strong></div>
-        <div class="status-row"><span>当前页面数据</span><strong>历史回测 · 行情回放</strong></div>
+      <aside class="status-card" aria-label="Simulated account status">
+        <span class="status-badge">Simulation active</span>
+        <h2 id="actualStatus">Waiting for first trading day data</h2>
+        <div class="status-row"><span>Latest Complete Trading Day</span><strong id="latestDate"> - </strong></div>
+        <div class="status-row"><span>Page update time</span><strong id="generatedAt"> - </strong></div>
+        <div class="status-row"><span>Current page data</span><strong>Historical backtest  -  Quote Playback</strong></div>
       </aside>
     </section>
 
-    <div class="scope-note" role="note">
-      <strong>数据说明</strong>
-      <span>三个模拟盘于7月24日周五部署，周末尚无运行记录。页面当前展示历史回测和使用T−1信息生成的行情回放；实际模拟净值、持仓与成交将在平台产生数据后独立更新。</span>
-    </div>
-
     <section class="section" id="signals" aria-labelledby="signalsTitle">
       <div class="section-head">
-        <div><h2 id="signalsTitle">当前信号</h2><p>公开行情按冻结规则计算，用于观察策略决策。</p></div>
+        <div><h2 id="signalsTitle">Current Signals</h2></div>
       </div>
       <div class="strategy-grid" id="strategyGrid"></div>
     </section>
 
     <section class="section" id="performance" aria-labelledby="performanceTitle">
       <div class="section-head">
-        <div><h2 id="performanceTitle">JoinQuant长期回测</h2><p id="platformRange">统一资金、基准与成本口径。</p></div>
+        <div><h2 id="performanceTitle">JoinQuant Backtest</h2><p id="platformRange"></p></div>
       </div>
       <div class="platform-grid" id="platformGrid"></div>
     </section>
 
     <section class="section" aria-labelledby="navTitle">
       <div class="section-head">
-        <div><h2 id="navTitle">行情回放净值</h2><p>公开行情重建结果；所选窗口首日归一为100。</p></div>
-        <div class="controls" aria-label="选择时间范围">
-          <button type="button" data-range="all" aria-pressed="true">2024至今</button>
-          <button type="button" data-range="2025" aria-pressed="false">2025至今</button>
+        <div><h2 id="navTitle">Shadow Portfolio NAV</h2></div>
+        <div class="controls" aria-label="Select Time Range">
+          <button type="button" data-range="all" aria-pressed="true">2024to this day</button>
+          <button type="button" data-range="2025" aria-pressed="false">2025to this day</button>
           <button type="button" data-range="2026" aria-pressed="false">2026</button>
         </div>
       </div>
       <div class="chart-shell">
         <div class="legend" id="navLegend"></div>
-        <svg class="chart" id="navChart" role="img" aria-label="三策略与沪深300归一化净值折线图"></svg>
+        <svg class="chart" id="navChart" role="img" aria-label="3 Strategies and Shanghai-Shenzhen300Normalized Net Asset Value Line Chart"></svg>
       </div>
     </section>
 
     <section class="section" id="risk" aria-labelledby="riskTitle">
-      <div class="section-head"><div><h2 id="riskTitle">风险暴露</h2><p>回撤反映损失幅度，仓位解释市场参与程度。</p></div></div>
+      <div class="section-head"><div><h2 id="riskTitle">Risk Exposure</h2></div></div>
       <div class="two-col">
         <div class="chart-shell">
           <div class="legend" id="ddLegend"></div>
-          <svg class="chart" id="ddChart" role="img" aria-label="三策略回撤折线图"></svg>
+          <svg class="chart" id="ddChart" role="img" aria-label="Drawdown line chart of three strategies"></svg>
         </div>
         <div class="chart-shell">
           <div class="legend" id="expLegend"></div>
-          <svg class="chart" id="expChart" role="img" aria-label="三策略市场仓位折线图"></svg>
+          <svg class="chart" id="expChart" role="img" aria-label="Line chart of market positions for three strategies"></svg>
         </div>
       </div>
     </section>
 
     <section class="section" aria-labelledby="periodTitle">
-      <div class="section-head"><div><h2 id="periodTitle">分阶段结果</h2><p>开发期、验证期与参数冻结后的2026年观察。</p></div></div>
-      <div class="table-wrap"><table id="periodTable"><caption class="sr-only">三策略分阶段绩效</caption></table></div>
+      <div class="section-head"><div><h2 id="periodTitle">Period Results</h2></div></div>
+      <div class="table-wrap"><table id="periodTable"><caption class="sr-only">Three-stage performance of three strategies</caption></table></div>
     </section>
 
-    <section class="section two-col" aria-label="成本与订单">
-      <div class="table-wrap"><table id="stressTable"><caption>成本敏感性</caption></table></div>
-      <div class="table-wrap"><table id="tradeTable"><caption>最近行情回放订单</caption></table></div>
+    <section class="section two-col" aria-label="Costs and Orders">
+      <div class="table-wrap"><table id="stressTable"><caption>cost sensitivity</caption></table></div>
+      <div class="table-wrap"><table id="tradeTable"><caption>Recent market replay order</caption></table></div>
     </section>
 
     <section class="section" id="method" aria-labelledby="methodTitle">
-      <div class="section-head"><div><h2 id="methodTitle">口径说明</h2></div></div>
+      <div class="section-head"><div><h2 id="methodTitle">Method</h2></div></div>
       <div class="method">
-        <div><strong>信号</strong><span>仅使用T−1及更早的完整数据，下一交易日执行。</span></div>
-        <div><strong>成本</strong><span>佣金3bp、最低5元、单边滑点10bp，并进行成本翻倍测试。</span></div>
-        <div><strong>数据层级</strong><span>历史回测、行情回放与平台模拟记录分别展示，不混合计算。</span></div>
+        <div><strong>Signals</strong><span>Use data available through T-1 and execute on the next trading day.</span></div>
+        <div><strong>Costs</strong><span>3 bp commission, CNY 5 minimum, 10 bp one-way slippage, plus a double-cost stress test.</span></div>
+        <div><strong>Evaluation</strong><span>Backtest, market replay, and simulated-account records are reported separately.</span></div>
       </div>
     </section>
 
-    <footer>课程研究用途，不构成投资建议。</footer>
   </main>
 
   <script>
     const FALLBACK = {
-  "title": "TASK7 · 三策略持续观察",
+  "title": "TASK7  -  3 strategy continuous observation",
   "generated_at_utc": "2026-11-16T20:06:22.559423+00:00",
   "latest_complete_date": "2026-11-16",
-  "data_status": "影子数据已更新；三次JoinQuant回测已完成；三个私有模拟盘已部署并等待首批运行数据",
-  "privacy": "公开页不包含JoinQuant账号、私有链接、密码、Cookie或手机号。",
+  "data_status": "Shadow data updated; Three timesJoinQuantTest back completed; Three private simulated accounts have been deployed and are awaiting the first batch of running data.",
+  "privacy": "Public page does not containJoinQuantAccount, Private Link, password, Cookieor mobile number. ",
   "method": {
     "initial_capital": 500000,
-    "signal_timing": "仅使用T-1及更早数据，下一交易日开盘执行",
+    "signal_timing": "Use onlyT-1and earlier data, To be executed at the open of the next trading day",
     "cost": {
       "commission_rate": 0.0003,
       "min_commission": 5.0,
       "slippage_rate": 0.001
     },
-    "actual_vs_shadow": "页面当前收益均为公开行情重建的历史/影子结果，不是JoinQuant实际成交结果。"
+    "actual_vs_shadow": "Current page returns are all historical reconstructions based on public market data./Shadow result, No.JoinQuantActual Transaction Results. "
   },
   "cards": [
     {
       "strategy": "A",
-      "name": "平台模板基线",
+      "name": "platform-template baseline",
       "as_of": "2026-11-16",
       "signal": "CASH",
       "selected": "CASH",
-      "selected_name": "现金",
+      "selected_name": "Cash",
       "exposure": 0.0,
       "nav": 340636.22359678964,
       "cumulative_return": -0.31872755280642073,
@@ -354,16 +346,16 @@
       "annualized_volatility": 0.1301443192215289,
       "beta": 0.4541554051569763,
       "trade_orders": 454,
-      "data_layer": "自动影子跟踪",
-      "joinquant_actual_status": "已部署，等待平台数据"
+      "data_layer": "Automatic shadow tracking",
+      "joinquant_actual_status": "Deployed, Waiting for platform data"
     },
     {
       "strategy": "B",
-      "name": "双均线 + ATR风控",
+      "name": "dual moving-average + ATRRisk control",
       "as_of": "2026-11-16",
       "signal": "CASH",
       "selected": "CASH",
-      "selected_name": "现金",
+      "selected_name": "Cash",
       "exposure": 0.0,
       "nav": 496492.757930335,
       "cumulative_return": 0.010613480169605838,
@@ -371,16 +363,16 @@
       "annualized_volatility": 0.044830251067903566,
       "beta": 0.15343023823266141,
       "trade_orders": 226,
-      "data_layer": "自动影子跟踪",
-      "joinquant_actual_status": "已部署，等待平台数据"
+      "data_layer": "Automatic shadow tracking",
+      "joinquant_actual_status": "Deployed, Waiting for platform data"
     },
     {
       "strategy": "C",
-      "name": "宽基ETF动量轮动",
+      "name": "broad-marketETFmomentum rotation",
       "as_of": "2026-11-16",
       "signal": "CASH",
       "selected": "CASH",
-      "selected_name": "现金",
+      "selected_name": "Cash",
       "exposure": 0.0,
       "nav": 732869.9131094519,
       "cumulative_return": 0.46573982621890386,
@@ -388,8 +380,8 @@
       "annualized_volatility": 0.11448101875222451,
       "beta": 0.40097753286846927,
       "trade_orders": 524,
-      "data_layer": "自动影子跟踪",
-      "joinquant_actual_status": "已部署，等待平台数据"
+      "data_layer": "Automatic shadow tracking",
+      "joinquant_actual_status": "Deployed, Waiting for platform data"
     }
   ],
   "metrics": {
@@ -8599,7 +8591,7 @@
       "gross_value": 351644.60339999996,
       "commission": 105.49338101999999,
       "slippage_cost": 351.99660000000114,
-      "reason": "三只ETF动量均不为正"
+      "reason": "Three of themETFNone of the momenta are positive."
     },
     {
       "date": "2026-09-23",
@@ -8612,7 +8604,7 @@
       "gross_value": 380767.387,
       "commission": 114.23021609999999,
       "slippage_cost": 380.3869999999803,
-      "reason": "周度动量最高：159915"
+      "reason": "Highest weekly momentum: 159915"
     },
     {
       "date": "2026-08-26",
@@ -8625,7 +8617,7 @@
       "gross_value": 367624.008,
       "commission": 110.28720239999998,
       "slippage_cost": 367.99200000002156,
-      "reason": "三只ETF动量均不为正"
+      "reason": "Three of themETFNone of the momenta are positive."
     },
     {
       "date": "2026-08-25",
@@ -8638,7 +8630,7 @@
       "gross_value": 153486.36,
       "commission": 46.04590799999999,
       "slippage_cost": 153.6399999999979,
-      "reason": "T-1收盘价触发ATR移动止损"
+      "reason": "T-1Close Price TriggerATRTrailing Stop-Loss"
     },
     {
       "date": "2026-08-20",
@@ -8651,7 +8643,7 @@
       "gross_value": 340102.557,
       "commission": 102.03076709999998,
       "slippage_cost": 340.4429999999965,
-      "reason": "T-1收盘价不高于MA20"
+      "reason": "T-1The closing price is not higherMA20"
     },
     {
       "date": "2026-08-19",
@@ -8664,7 +8656,7 @@
       "gross_value": 394209.816,
       "commission": 118.26294479999999,
       "slippage_cost": 393.8159999999518,
-      "reason": "周度动量最高：159915"
+      "reason": "Highest weekly momentum: 159915"
     },
     {
       "date": "2026-08-19",
@@ -8677,7 +8669,7 @@
       "gross_value": 396821.781,
       "commission": 119.04653429999999,
       "slippage_cost": 397.2189999999639,
-      "reason": "周度动量最高：159915"
+      "reason": "Highest weekly momentum: 159915"
     },
     {
       "date": "2026-08-19",
@@ -8690,7 +8682,7 @@
       "gross_value": 158808.65,
       "commission": 47.64259499999999,
       "slippage_cost": 158.64999999998622,
-      "reason": "MA10高于MA30且风控允许"
+      "reason": "MA10higherMA30And risk control is allowed"
     },
     {
       "date": "2026-08-12",
@@ -8703,7 +8695,7 @@
       "gross_value": 392209.81799999997,
       "commission": 117.66294539999998,
       "slippage_cost": 391.8179999999503,
-      "reason": "周度动量最高：510500"
+      "reason": "Highest weekly momentum: 510500"
     },
     {
       "date": "2026-08-11",
@@ -8716,7 +8708,7 @@
       "gross_value": 474.52500000000003,
       "commission": 5.0,
       "slippage_cost": 0.4749999999999588,
-      "reason": "T-1收盘价高于MA20"
+      "reason": "T-1closing price higherMA20"
     },
     {
       "date": "2026-08-10",
@@ -8729,7 +8721,7 @@
       "gross_value": 347827.4799999999,
       "commission": 104.34824399999997,
       "slippage_cost": 347.47999999994227,
-      "reason": "T-1收盘价高于MA20"
+      "reason": "T-1closing price higherMA20"
     },
     {
       "date": "2026-07-15",
@@ -8742,7 +8734,7 @@
       "gross_value": 385776.14003266505,
       "commission": 115.7328420097995,
       "slippage_cost": 386.1623023349729,
-      "reason": "三只ETF动量均不为正"
+      "reason": "Three of themETFNone of the momenta are positive."
     },
     {
       "date": "2026-07-10",
@@ -8755,7 +8747,7 @@
       "gross_value": 120370.51438461,
       "commission": 36.111154315383,
       "slippage_cost": 120.49100538999991,
-      "reason": "MA10不高于MA30"
+      "reason": "MA10not higherMA30"
     },
     {
       "date": "2026-07-08",
@@ -8768,7 +8760,7 @@
       "gross_value": 11922.561332682,
       "commission": 5.0,
       "slippage_cost": 11.910650681999257,
-      "reason": "周度动量最高：510500"
+      "reason": "Highest weekly momentum: 510500"
     },
     {
       "date": "2026-07-06",
@@ -8781,7 +8773,7 @@
       "gross_value": 120170.05245244998,
       "commission": 36.05101573573499,
       "slippage_cost": 120.05000244998155,
-      "reason": "MA10高于MA30且风控允许"
+      "reason": "MA10higherMA30And risk control is allowed"
     },
     {
       "date": "2026-07-03",
@@ -8794,7 +8786,7 @@
       "gross_value": 347412.23424575996,
       "commission": 104.22367027372798,
       "slippage_cost": 347.7599942400076,
-      "reason": "T-1收盘价不高于MA20"
+      "reason": "T-1The closing price is not higherMA20"
     },
     {
       "date": "2026-07-03",
@@ -8807,7 +8799,7 @@
       "gross_value": 134622.240770232,
       "commission": 40.386672231069596,
       "slippage_cost": 134.75699776800295,
-      "reason": "T-1收盘价触发ATR移动止损"
+      "reason": "T-1Close Price TriggerATRTrailing Stop-Loss"
     },
     {
       "date": "2026-07-01",
@@ -8820,7 +8812,7 @@
       "gross_value": 9931.906540611,
       "commission": 5.0,
       "slippage_cost": 9.941848388999475,
-      "reason": "周度再平衡至50%目标仓位"
+      "reason": "Weekly rebalancing to50%Target position size"
     },
     {
       "date": "2026-06-25",
@@ -8833,7 +8825,7 @@
       "gross_value": 138885.44809639498,
       "commission": 41.66563442891849,
       "slippage_cost": 138.74670139499096,
-      "reason": "MA10高于MA30且风控允许"
+      "reason": "MA10higherMA30And risk control is allowed"
     },
     {
       "date": "2026-06-24",
@@ -8846,7 +8838,7 @@
       "gross_value": 400394.50933081604,
       "commission": 120.1183527992448,
       "slippage_cost": 399.9945148159924,
-      "reason": "周度动量最高：510500"
+      "reason": "Highest weekly momentum: 510500"
     },
     {
       "date": "2026-06-17",
@@ -8859,7 +8851,7 @@
       "gross_value": 489.31017602400004,
       "commission": 5.0,
       "slippage_cost": 0.4897999759999827,
-      "reason": "T-1收盘价高于MA20"
+      "reason": "T-1closing price higherMA20"
     },
     {
       "date": "2026-06-17",
@@ -8872,7 +8864,7 @@
       "gross_value": 408191.39700299996,
       "commission": 122.45741910089998,
       "slippage_cost": 408.59999700000316,
-      "reason": "三只ETF动量均不为正"
+      "reason": "Three of themETFNone of the momenta are positive."
     },
     {
       "date": "2026-06-16",
@@ -8885,7 +8877,7 @@
       "gross_value": 355086.73777376796,
       "commission": 106.52602133213038,
       "slippage_cost": 354.732005767955,
-      "reason": "T-1收盘价高于MA20"
+      "reason": "T-1closing price higherMA20"
     },
     {
       "date": "2026-06-11",
@@ -8898,7 +8890,7 @@
       "gross_value": 137123.533158048,
       "commission": 41.13705994741439,
       "slippage_cost": 137.26079395200088,
-      "reason": "MA10不高于MA30"
+      "reason": "MA10not higherMA30"
     },
     {
       "date": "2026-06-10",
@@ -8911,7 +8903,7 @@
       "gross_value": 8643.63488989,
       "commission": 5.0,
       "slippage_cost": 8.634999889999406,
-      "reason": "周度动量最高：159915"
+      "reason": "Highest weekly momentum: 159915"
     },
     {
       "date": "2026-06-10",
@@ -8924,7 +8916,7 @@
       "gross_value": 138089.950846848,
       "commission": 41.426985254054394,
       "slippage_cost": 137.95199884799558,
-      "reason": "MA10高于MA30且风控允许"
+      "reason": "MA10higherMA30And risk control is allowed"
     },
     {
       "date": "2026-06-09",
@@ -8937,7 +8929,7 @@
       "gross_value": 201315.680264538,
       "commission": 60.3947040793614,
       "slippage_cost": 201.51719746199,
-      "reason": "T-1收盘价触发ATR移动止损"
+      "reason": "T-1Close Price TriggerATRTrailing Stop-Loss"
     },
     {
       "date": "2026-06-08",
@@ -8950,7 +8942,7 @@
       "gross_value": 355062.57903496805,
       "commission": 106.51877371049041,
       "slippage_cost": 355.41799703198865,
-      "reason": "T-1收盘价不高于MA20"
+      "reason": "T-1The closing price is not higherMA20"
     },
     {
       "date": "2026-06-04",
@@ -8963,7 +8955,7 @@
       "gross_value": 491.40811498499994,
       "commission": 5.0,
       "slippage_cost": 0.491900015000013,
-      "reason": "T-1收盘价高于MA20"
+      "reason": "T-1closing price higherMA20"
     },
     {
       "date": "2026-06-03",
@@ -8976,7 +8968,7 @@
       "gross_value": 2454.542874126,
       "commission": 5.0,
       "slippage_cost": 2.456999874000232,
-      "reason": "周度再平衡至50%目标仓位"
+      "reason": "Weekly rebalancing to50%Target position size"
     },
     {
       "date": "2026-06-03",
@@ -8989,7 +8981,7 @@
       "gross_value": 367260.30827485997,
       "commission": 110.17809248245798,
       "slippage_cost": 366.89341485994333,
-      "reason": "T-1收盘价高于MA20"
+      "reason": "T-1closing price higherMA20"
     },
     {
       "date": "2026-06-02",
@@ -9002,7 +8994,7 @@
       "gross_value": 367091.04904245003,
       "commission": 110.127314712735,
       "slippage_cost": 367.4585075499972,
-      "reason": "T-1收盘价不高于MA20"
+      "reason": "T-1The closing price is not higherMA20"
     },
     {
       "date": "2026-05-27",
@@ -9015,7 +9007,7 @@
       "gross_value": 8097.89394006,
       "commission": 5.0,
       "slippage_cost": 8.10599993999972,
-      "reason": "周度再平衡至50%目标仓位"
+      "reason": "Weekly rebalancing to50%Target position size"
     },
     {
       "date": "2026-05-26",
@@ -9028,7 +9020,7 @@
       "gross_value": 371226.86960358993,
       "commission": 111.36806088107697,
       "slippage_cost": 370.85601358993614,
-      "reason": "T-1收盘价高于MA20"
+      "reason": "T-1closing price higherMA20"
     },
     {
       "date": "2026-05-22",
@@ -9041,7 +9033,7 @@
       "gross_value": 371384.24938461,
       "commission": 111.41527481538299,
       "slippage_cost": 371.75600538998754,
-      "reason": "T-1收盘价不高于MA20"
+      "reason": "T-1The closing price is not higherMA20"
     },
     {
       "date": "2026-05-20",
@@ -9054,7 +9046,7 @@
       "gross_value": 391449.055989992,
       "commission": 117.43471679699759,
       "slippage_cost": 391.0579979919534,
-      "reason": "周度动量最高：159915"
+      "reason": "Highest weekly momentum: 159915"
     },
     {
       "date": "2026-05-20",
@@ -9067,7 +9059,7 @@
       "gross_value": 387156.261946248,
       "commission": 116.1468785838744,
       "slippage_cost": 387.54380575199576,
-      "reason": "周度动量最高：159915"
+      "reason": "Highest weekly momentum: 159915"
     },
     {
       "date": "2026-05-19",
@@ -9080,7 +9072,7 @@
       "gross_value": 205063.756359462,
       "commission": 61.51912690783859,
       "slippage_cost": 204.8588974619687,
-      "reason": "MA10高于MA30且风控允许"
+      "reason": "MA10higherMA30And risk control is allowed"
     },
     {
       "date": "2026-05-18",
@@ -9093,7 +9085,7 @@
       "gross_value": 165874.959683316,
       "commission": 49.7624879049948,
       "slippage_cost": 166.0410006840019,
-      "reason": "T-1收盘价触发ATR移动止损"
+      "reason": "T-1Close Price TriggerATRTrailing Stop-Loss"
     },
     {
       "date": "2026-05-13",
@@ -9106,7 +9098,7 @@
       "gross_value": 394567.2434383679,
       "commission": 118.37017303151036,
       "slippage_cost": 394.1730703679184,
-      "reason": "周度动量最高：510500"
+      "reason": "Highest weekly momentum: 510500"
     }
   ],
   "joinquant_backtest_settings": {
@@ -9115,12 +9107,12 @@
     "initial_capital": 500000,
     "frequency": "daily",
     "python_version": "Python 3",
-    "benchmark": "沪深300"
+    "benchmark": "Shanghai and Shenzhen300"
   },
   "joinquant_backtests": [
     {
       "strategy": "A",
-      "name": "TASK7-A-MA20模板基线",
+      "name": "TASK7-A-MA20Template Baseline",
       "status": "completed",
       "strategy_return": -0.0066,
       "annualized_return": -0.0009,
@@ -9142,12 +9134,12 @@
       "information_ratio": -0.432,
       "strategy_volatility": 0.141,
       "benchmark_volatility": 0.19,
-      "max_drawdown_interval": "2020-07-13至2025-03-21",
+      "max_drawdown_interval": "2020-07-13to2025-03-21",
       "evidence_file": "Screenshot 2026-07-25 at 00.17.55.png"
     },
     {
       "strategy": "B",
-      "name": "TASK7-B-MA10_30-ATR风控",
+      "name": "TASK7-B-MA10_30-ATRRisk control",
       "status": "completed",
       "strategy_return": 0.0291,
       "annualized_return": 0.0039,
@@ -9169,12 +9161,12 @@
       "information_ratio": -0.329,
       "strategy_volatility": 0.047,
       "benchmark_volatility": 0.19,
-      "max_drawdown_interval": "2021-01-12至2025-05-27",
+      "max_drawdown_interval": "2021-01-12to2025-05-27",
       "evidence_file": "Screenshot 2026-07-25 at 00.16.52.png"
     },
     {
       "strategy": "C",
-      "name": "TASK7-C-ETF动量轮动15D",
+      "name": "TASK7-C-ETFmomentum rotation15D",
       "status": "completed",
       "strategy_return": 0.7184,
       "annualized_return": 0.0769,
@@ -9196,7 +9188,7 @@
       "information_ratio": 0.141,
       "strategy_volatility": 0.117,
       "benchmark_volatility": 0.19,
-      "max_drawdown_interval": "2024-10-08至2025-02-05",
+      "max_drawdown_interval": "2024-10-08to2025-02-05",
       "evidence_file": "Screenshot 2026-07-25 at 00.16.39.png"
     }
   ],
@@ -9269,22 +9261,22 @@
     }
   },
   "joinquant_short_window_settings": {
-    "label": "7.20-7.24准实盘短窗回放",
+    "label": "7.20-7.24Quasi-Solid Short Window Playback",
     "start": "2026-07-20",
     "end": "2026-07-24",
     "initial_capital": 500000,
     "frequency": "daily",
     "python_version": "Python 3",
-    "benchmark": "沪深300",
-    "parameters": "与长期回测相同且在短窗结果出现前冻结",
-    "interpretation": "历史回测式准实盘回放，不等同于该时段已经发生的JoinQuant模拟盘成交",
+    "benchmark": "Shanghai and Shenzhen300",
+    "parameters": "Same as long-term backtesting and frozen before short-window results appear.",
+    "interpretation": "Historical backtest quasi-firm playback, Not equivalent to what has already occurred in that periodJoinQuantSimulated account transaction",
     "local_shadow_benchmark_return": 0.0265167765,
     "platform_benchmark_return": 0.0265
   },
   "joinquant_short_window_backtests": [
     {
       "strategy": "A",
-      "name": "TASK7-A-MA20模板基线",
+      "name": "TASK7-A-MA20Template Baseline",
       "status": "completed",
       "strategy_return": 0.0,
       "annualized_return": 0.0,
@@ -9306,14 +9298,14 @@
       "information_ratio": -9.359,
       "strategy_volatility": 0.0,
       "benchmark_volatility": 0.289,
-      "max_drawdown_interval": "2026-07-20至2026-07-20",
-      "aggregate_execution_state": "策略净值保持不变，汇总页无盈利或亏损交易",
-      "local_shadow_crosscheck": "5个交易日均为CASH，最大仓位0%",
+      "max_drawdown_interval": "2026-07-20to2026-07-20",
+      "aggregate_execution_state": "Strategy net worth remains unchanged, Summary page shows no profitable or losing trades",
+      "local_shadow_crosscheck": "5The average trading day isCASH, Maximum position0%",
       "evidence_file": "Screenshot 2026-07-25 at 00.19.23.png"
     },
     {
       "strategy": "B",
-      "name": "TASK7-B-MA10_30-ATR风控",
+      "name": "TASK7-B-MA10_30-ATRRisk control",
       "status": "completed",
       "strategy_return": 0.0,
       "annualized_return": 0.0,
@@ -9335,14 +9327,14 @@
       "information_ratio": -9.359,
       "strategy_volatility": 0.0,
       "benchmark_volatility": 0.289,
-      "max_drawdown_interval": "2026-07-20至2026-07-20",
-      "aggregate_execution_state": "策略净值保持不变，汇总页无盈利或亏损交易",
-      "local_shadow_crosscheck": "5个交易日均为CASH，MA10始终低于MA30，最大仓位0%",
+      "max_drawdown_interval": "2026-07-20to2026-07-20",
+      "aggregate_execution_state": "Strategy net worth remains unchanged, Summary page shows no profitable or losing trades",
+      "local_shadow_crosscheck": "5The average trading day isCASH, MA10Always belowMA30, Maximum position0%",
       "evidence_file": "Screenshot 2026-07-25 at 00.19.11.png"
     },
     {
       "strategy": "C",
-      "name": "TASK7-C-ETF动量轮动15D",
+      "name": "TASK7-C-ETFmomentum rotation15D",
       "status": "completed",
       "strategy_return": 0.0,
       "annualized_return": 0.0,
@@ -9364,56 +9356,56 @@
       "information_ratio": -9.359,
       "strategy_volatility": 0.0,
       "benchmark_volatility": 0.289,
-      "max_drawdown_interval": "2026-07-20至2026-07-20",
-      "aggregate_execution_state": "策略净值保持不变，汇总页无盈利或亏损交易",
-      "local_shadow_crosscheck": "5个交易日均为CASH，三只ETF动量分数均为负，最大仓位0%",
+      "max_drawdown_interval": "2026-07-20to2026-07-20",
+      "aggregate_execution_state": "Strategy net worth remains unchanged, Summary page shows no profitable or losing trades",
+      "local_shadow_crosscheck": "5The average trading day isCASH, Three of themETFMomentum scores are all negative, Maximum position0%",
       "evidence_file": "Screenshot 2026-07-25 at 00.19.00.png"
     }
   ],
   "simulation_deployments": [
     {
       "strategy": "A",
-      "name": "TASK7-A-MA20模板基线",
+      "name": "TASK7-A-MA20Template Baseline",
       "status": "deployed_waiting_data",
       "deployed_at": "2026-07-24",
       "data_available": false,
-      "status_evidence": "用户在已登录页面完成并确认"
+      "status_evidence": "Users complete and confirm on the logged-in page"
     },
     {
       "strategy": "B",
-      "name": "TASK7-B-MA10_30-ATR风控",
+      "name": "TASK7-B-MA10_30-ATRRisk control",
       "status": "deployed_waiting_data",
       "deployed_at": "2026-07-24",
       "data_available": false,
-      "status_evidence": "用户在已登录页面完成并确认"
+      "status_evidence": "Users complete and confirm on the logged-in page"
     },
     {
       "strategy": "C",
-      "name": "TASK7-C-ETF动量轮动15D",
+      "name": "TASK7-C-ETFmomentum rotation15D",
       "status": "deployed_waiting_data",
       "deployed_at": "2026-07-24",
       "data_available": false,
-      "status_evidence": "用户在已登录页面完成并确认"
+      "status_evidence": "Users complete and confirm on the logged-in page"
     }
   ],
   "joinquant_actual": {
     "status": "deployed_waiting_data",
-    "message": "用户已在登录页面完成并确认三个私有模拟盘部署；截至2026-07-25尚无部署后的平台运行数据，等待后续A股交易时段更新。",
+    "message": "Users have completed and confirmed the deployment of three private simulated accounts on the login page.; As of2026-07-25No Post-Deployment Platform Operating Data Yet, Awaiting follow-upAStock Trading Session Update. ",
     "actual_performance_available": false
   }
 };
     const COLORS = {A:"#d47a35", B:"#2c7a73", C:"#3f63a6", Benchmark:"#7d8588"};
-    const LABELS = {A:"A 模板基线", B:"B MA+ATR", C:"C ETF轮动", Benchmark:"沪深300"};
+    const LABELS = {A:"A Template Baseline", B:"B MA+ATR", C:"C ETFWheel movement", Benchmark:"Shanghai and Shenzhen300"};
     const FINDINGS = {
-      A: "高回撤，收益接近盈亏平衡",
-      B: "回撤最低，收益偏弱",
-      C: "收益领先，保持中等回撤"
+      A: "High drawdown, Earnings are near breakeven.",
+      B: "Drawdown low, Weak earnings",
+      C: "Earnings lead, Maintain medium drawdown"
     };
     let DATA = FALLBACK;
     let RANGE = "all";
 
-    const fmtPct = value => value == null ? "—" : `${(value * 100).toFixed(2)}%`;
-    const fmtNum = value => value == null ? "—" : Number(value).toLocaleString("zh-CN", {maximumFractionDigits: 0});
+    const fmtPct = value => value == null ? " - " : `${(value * 100).toFixed(2)}%`;
+    const fmtNum = value => value == null ? " - " : Number(value).toLocaleString("zh-CN", {maximumFractionDigits: 0});
     const tone = value => value > 0 ? "positive" : value < 0 ? "negative" : "";
     const escapeHtml = value => String(value ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[c]));
 
@@ -9421,16 +9413,16 @@
       document.getElementById("strategyGrid").innerHTML = DATA.cards.map(card => `
         <article class="card strategy" style="--series:${COLORS[card.strategy]}">
           <header>
-            <h3><span class="code">${card.strategy}</span> · ${escapeHtml(card.name)}</h3>
-            <span class="pill">行情回放</span>
+            <h3><span class="code">${card.strategy}</span>  -  ${escapeHtml(card.name)}</h3>
+            <span class="pill">Quote Playback</span>
           </header>
-          <p class="signal-label">最新标的与仓位</p>
-          <p class="signal">${escapeHtml(card.selected_name)} · ${fmtPct(card.exposure)}</p>
-          <p class="platform-status">模拟盘：${escapeHtml(card.joinquant_actual_status)}</p>
+          <p class="signal-label">Latest Underlyings and Positions</p>
+          <p class="signal">${escapeHtml(card.selected_name)}  -  ${fmtPct(card.exposure)}</p>
+          <p class="platform-status">Simulation panel: ${escapeHtml(card.joinquant_actual_status)}</p>
           <div class="metric-row">
-            <div><span>回放累计</span><strong class="${tone(card.cumulative_return)}">${fmtPct(card.cumulative_return)}</strong></div>
-            <div><span>最大回撤</span><strong class="negative">${fmtPct(card.max_drawdown)}</strong></div>
-            <div><span>最新净值</span><strong>${fmtNum(card.nav)}</strong></div>
+            <div><span>Cumulative Playback</span><strong class="${tone(card.cumulative_return)}">${fmtPct(card.cumulative_return)}</strong></div>
+            <div><span>Maximum Drawdown</span><strong class="negative">${fmtPct(card.max_drawdown)}</strong></div>
+            <div><span>Latest Net Worth</span><strong>${fmtNum(card.nav)}</strong></div>
           </div>
         </article>`).join("");
     }
@@ -9439,20 +9431,20 @@
       const settings = DATA.joinquant_backtest_settings || {};
       document.getElementById("platformRange").textContent =
         settings.start && settings.end
-          ? `${settings.start}—${settings.end} · 初始资金${fmtNum(settings.initial_capital)}元`
-          : "统一资金、基准与成本口径";
+          ? `${settings.start} - ${settings.end}  -  Initial funding${fmtNum(settings.initial_capital)}yuan`
+          : "Unified funding, Basis and Cost Scope";
       document.getElementById("platformGrid").innerHTML = (DATA.joinquant_backtests || []).map(item => `
         <article class="card platform-card" style="--series:${COLORS[item.strategy]}">
           <header>
-            <h3><span class="code">${item.strategy}</span> · ${escapeHtml(LABELS[item.strategy].replace(/^[A-C] /, ""))}</h3>
-            <span class="pill">已完成</span>
+            <h3><span class="code">${item.strategy}</span>  -  ${escapeHtml(LABELS[item.strategy].replace(/^[A-C] /, ""))}</h3>
+            <span class="pill">Completed</span>
           </header>
           <p class="return ${tone(item.strategy_return)}">${fmtPct(item.strategy_return)}</p>
-          <p class="return-label">累计收益</p>
+          <p class="return-label">Accumulated income</p>
           <div class="metric-row">
-            <div><span>超额收益</span><strong class="${tone(item.excess_return)}">${fmtPct(item.excess_return)}</strong></div>
-            <div><span>最大回撤</span><strong class="negative">${fmtPct(item.max_drawdown)}</strong></div>
-            <div><span>Beta</span><strong>${item.beta == null ? "—" : item.beta.toFixed(3)}</strong></div>
+            <div><span>Excess return</span><strong class="${tone(item.excess_return)}">${fmtPct(item.excess_return)}</strong></div>
+            <div><span>Maximum Drawdown</span><strong class="negative">${fmtPct(item.max_drawdown)}</strong></div>
+            <div><span>Beta</span><strong>${item.beta == null ? " - " : item.beta.toFixed(3)}</strong></div>
           </div>
           <p class="finding">${FINDINGS[item.strategy]}</p>
         </article>`).join("");
@@ -9496,7 +9488,7 @@
       const pad = {l:50, r:14, t:16, b:32};
       const values = Object.values(series).flat().filter(Number.isFinite);
       if (!dates.length || !values.length) {
-        svg.innerHTML = `<text x="20" y="40">暂无可绘制数据</text>`;
+        svg.innerHTML = `<text x="20" y="40">No data available for rendering</text>`;
         return;
       }
       let min = options.min != null ? options.min : Math.min(...values);
@@ -9544,14 +9536,14 @@
     }
 
     function renderPeriodTable() {
-      const periods = [["development","开发"],["validation","验证"],["oos","2026样本外"]];
+      const periods = [["development","Development"],["validation","Verification"],["oos","2026Out of sample"]];
       let rows = "";
       ["A","B","C"].forEach(strategy => periods.forEach(([key,label]) => {
         const m = DATA.metrics[strategy][key];
-        rows += `<tr><td>${strategy} · ${label}</td><td class="${tone(m.cumulative_return)}">${fmtPct(m.cumulative_return)}</td><td class="negative">${fmtPct(m.max_drawdown)}</td><td>${m.sharpe == null?"—":m.sharpe.toFixed(2)}</td><td>${fmtPct(m.average_exposure)}</td><td>${m.trade_orders}</td></tr>`;
+        rows += `<tr><td>${strategy}  -  ${label}</td><td class="${tone(m.cumulative_return)}">${fmtPct(m.cumulative_return)}</td><td class="negative">${fmtPct(m.max_drawdown)}</td><td>${m.sharpe == null?" - ":m.sharpe.toFixed(2)}</td><td>${fmtPct(m.average_exposure)}</td><td>${m.trade_orders}</td></tr>`;
       }));
       document.getElementById("periodTable").innerHTML =
-        `<thead><tr><th>策略 · 阶段</th><th>累计收益</th><th>最大回撤</th><th>夏普</th><th>平均仓位</th><th>订单数</th></tr></thead><tbody>${rows}</tbody>`;
+        `<thead><tr><th>Strategy  -  Stage</th><th>Accumulated income</th><th>Maximum Drawdown</th><th>Sharp</th><th>Average Position</th><th>Number of orders</th></tr></thead><tbody>${rows}</tbody>`;
     }
 
     function renderStressTable() {
@@ -9561,7 +9553,7 @@
         return `<tr><td>${LABELS[strategy]}</td><td class="${tone(base.cumulative_return)}">${fmtPct(base.cumulative_return)}</td><td class="${tone(stress.cumulative_return)}">${fmtPct(stress.cumulative_return)}</td><td class="negative">${fmtPct(stress.cumulative_return-base.cumulative_return)}</td></tr>`;
       }).join("");
       document.getElementById("stressTable").innerHTML +=
-        `<thead><tr><th>策略</th><th>基础成本</th><th>成本×2</th><th>收益变化</th></tr></thead><tbody>${rows}</tbody>`;
+        `<thead><tr><th>Strategy</th><th>Base Cost</th><th>Costx2</th><th>Changes in earnings</th></tr></thead><tbody>${rows}</tbody>`;
     }
 
     function renderTrades() {
@@ -9569,7 +9561,7 @@
         `<tr><td>${t.date}</td><td>${t.strategy}</td><td>${t.side}</td><td>${t.symbol}</td><td>${Number(t.shares).toLocaleString("zh-CN")}</td></tr>`
       ).join("");
       document.getElementById("tradeTable").innerHTML +=
-        `<thead><tr><th>日期</th><th>策略</th><th>方向</th><th>标的</th><th>股数</th></tr></thead><tbody>${rows || '<tr><td colspan="5">暂无订单</td></tr>'}</tbody>`;
+        `<thead><tr><th>Date</th><th>Strategy</th><th>direction</th><th>Target</th><th>Number of shares</th></tr></thead><tbody>${rows || '<tr><td colspan="5">No orders yet</td></tr>'}</tbody>`;
     }
 
     function render() {
@@ -9584,8 +9576,8 @@
           hour12:false
         });
       const statusLabels = {
-        not_imported: "等待部署或导入",
-        deployed_waiting_data: "等待首个交易日数据"
+        not_imported: "Waiting for deployment or import",
+        deployed_waiting_data: "Waiting for first trading day data"
       };
       document.getElementById("actualStatus").textContent =
         statusLabels[DATA.joinquant_actual.status] || DATA.joinquant_actual.status;

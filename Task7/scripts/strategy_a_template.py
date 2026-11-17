@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""TASK7 Strategy A — JoinQuant template baseline.
+"""TASK7 Strategy A  -  JoinQuant template baseline.
 
 Paste this file into a JoinQuant strategy editor. The strategy intentionally
 keeps the template's high market exposure so that it can serve as a baseline.
@@ -44,13 +44,13 @@ def previous_bars(context, count):
 def can_trade(security, side):
     data = get_current_data()[security]
     if data.paused or data.last_price is None or data.last_price <= 0:
-        log.warning("%s不可交易：停牌或价格无效" % security)
+        log.warning("%sNon-tradable: Suspension or Price Invalidation" % security)
         return False
     if side == "BUY" and data.last_price >= data.high_limit:
-        log.warning("%s涨停，取消买单" % security)
+        log.warning("%sUpper limit, Cancel the bill" % security)
         return False
     if side == "SELL" and data.last_price <= data.low_limit:
-        log.warning("%s跌停，取消卖单" % security)
+        log.warning("%sLimit, Cancel Sell Order" % security)
         return False
     return True
 
@@ -58,7 +58,7 @@ def can_trade(security, side):
 def trade(context):
     bars = previous_bars(context, g.ma_window)
     if bars is None or len(bars) < g.ma_window:
-        log.warning("历史数据不足，跳过")
+        log.warning("Insufficient historical data, Skip")
         return
     close = float(bars["close"][-1])
     ma20 = float(bars["close"].mean())
@@ -78,7 +78,7 @@ def trade(context):
 def audit_orders(context):
     for order_id, order in get_orders().items():
         log.info(
-            "A订单 | id=%s security=%s amount=%s filled=%s status=%s"
+            "AOrder | id=%s security=%s amount=%s filled=%s status=%s"
             % (
                 order_id,
                 order.security,

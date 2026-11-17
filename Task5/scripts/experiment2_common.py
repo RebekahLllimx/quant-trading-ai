@@ -57,10 +57,10 @@ FEATURE_COLUMNS = [
 ]
 
 MODEL_LABELS = {
-    "logistic_regression": "逻辑回归",
-    "decision_tree": "决策树",
-    "random_forest": "随机森林",
-    "constant_baseline": "常数概率基线",
+    "logistic_regression": "Logistic Regression",
+    "decision_tree": "Decision tree",
+    "random_forest": "Random Forest",
+    "constant_baseline": "constant probability baseline",
 }
 
 

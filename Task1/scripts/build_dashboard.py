@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-生成交互式可视化网站 —— A股+港股K线图分析
-使用 Plotly 实现交互式蜡烛图、多股对比、市场切换
-输出单个独立 HTML 文件，无需服务器
+Generate an interactive visualization website  -  -  A-share+Hong Kong equitiesKline graph analysis
+use Plotly Implement an interactive candlestick chart, Multi-strand contrast, Market Switch
+Output single independent HTML File, No server required
 """
 
 import os
@@ -18,12 +18,12 @@ OUTPUT_DIR = PROJECT_ROOT / "Task1"
 DATA_DIR = PROJECT_ROOT / "data" / "csv"
 HTML_FILE = OUTPUT_DIR / "stock_dashboard.html"
 
-# 读取所有CSV数据
+# Read allCSVData
 STOCKS = []
 csv_dir = DATA_DIR
 for f in sorted(os.listdir(csv_dir)):
     if f.endswith('_daily.csv') and ('A_daily' in f or 'HK_daily' in f):
-        # 解析文件名：代码_名称_市场_daily.csv
+        # Parse File Name: code_Name_Market_daily.csv
         parts = f.replace('_daily.csv', '').rsplit('_', 1)
         mkt = parts[-1]  # A or HK
         name_code = parts[0]
@@ -34,9 +34,9 @@ for f in sorted(os.listdir(csv_dir)):
             df = pd.read_csv(csv_path)
             df['Date'] = pd.to_datetime(df['Date'])
             df = df.sort_values('Date')
-            market = 'A股' if mkt == 'A' else '港股'
+            market = 'A-share' if mkt == 'A' else 'Hong Kong equities'
 
-            # 计算指标
+            # Calculated metric
             close = df['Close']
             chg = round((close.iloc[-1] - close.iloc[0]) / close.iloc[0] * 100, 2)
             ret = close.pct_change()
@@ -52,21 +52,21 @@ for f in sorted(os.listdir(csv_dir)):
                 'data': df,
             })
         except Exception as e:
-            print(f"  跳过 {f}: {e}")
+            print(f"  Skip {f}: {e}")
 
-print(f"读取了 {len(STOCKS)} 只股票数据")
+print(f"Read {len(STOCKS)} Stock only data")
 
-# 分离A股和港股
-a_stocks = [s for s in STOCKS if s['market'] == 'A股']
-hk_stocks = [s for s in STOCKS if s['market'] == '港股']
+# separationA-shares and Hong Kong equities
+a_stocks = [s for s in STOCKS if s['market'] == 'A-share']
+hk_stocks = [s for s in STOCKS if s['market'] == 'Hong Kong equities']
 
-# ==================== 构建 HTML ====================
+# ==================== Build HTML ====================
 html = r'''<!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>A股与港股K线图交互式分析仪表板</title>
+<title>A-shares and Hong Kong equitiesKLine Diagram Interactive Analysis Dashboard</title>
 <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
 <style>
 :root {
@@ -121,128 +121,128 @@ select:focus, button:focus { outline: 2px solid var(--accent); }
 
 <div class="header">
   <div>
-    <h1>📈 A股 vs 港股 K线图交互分析</h1>
-    <div class="subtitle">数据来源: Tushare Pro / AKShare | 前复权价格 | ''' + \
+    <h1> A-share vs Hong Kong equities Kline graph interaction analysis</h1>
+    <div class="subtitle">Data Source: Tushare Pro / AKShare | Adjusted price | ''' + \
     f'{STOCKS[0]["data"]["Date"].min().strftime("%Y-%m-%d")} ~ {STOCKS[0]["data"]["Date"].max().strftime("%Y-%m-%d")}'
 html2 = r'''</div>
   </div>
   <div style="text-align:right;">
     <div style="font-size:1.2em;font-weight:700;">''' + str(len(STOCKS)) + r'''</div>
-    <div style="color:var(--muted);font-size:0.8em;">只股票覆盖</div>
+    <div style="color:var(--muted);font-size:0.8em;">Only stock coverage</div>
   </div>
 </div>
 
 <div class="tabs">
-  <button class="tab-btn active" onclick="switchTab('overview')">📊 总览</button>
-  <button class="tab-btn" onclick="switchTab('astock')">🇨🇳 A股详情</button>
-  <button class="tab-btn" onclick="switchTab('hkstock')">🇭🇰 港股详情</button>
-  <button class="tab-btn" onclick="switchTab('compare')">⚖️ 市场对比</button>
+  <button class="tab-btn active" onclick="switchTab('overview')"> Overview</button>
+  <button class="tab-btn" onclick="switchTab('astock')"> AStock Details</button>
+  <button class="tab-btn" onclick="switchTab('hkstock')"> Hong Kong Stock Details</button>
+  <button class="tab-btn" onclick="switchTab('compare')"> Market Comparison</button>
 </div>
 
-<!-- ═══════════ 总览 ═══════════ -->
+<!--  Overview  -->
 <div id="tab-overview" class="tab-content active">
   <div class="grid grid-2">
     <div class="card">
-      <h3>📊 统计汇总表</h3>
+      <h3> Statistical Summary Table</h3>
       <div style="max-height:420px;overflow-y:auto;" id="summary-table"></div>
     </div>
     <div class="card">
-      <h3>📈 涨跌幅对比</h3>
+      <h3> Gain/Loss Comparison</h3>
       <div class="plot-container" id="plot-bar-chg"></div>
     </div>
   </div>
   <div class="grid grid-2" style="margin-top:20px;">
     <div class="card">
-      <h3>🎯 风险收益象限（波动率 vs 涨跌幅）</h3>
+      <h3> Risk-return quadrant (Volatility vs Return) </h3>
       <div class="plot-container" id="plot-risk-return"></div>
     </div>
     <div class="card">
-      <h3>📉 最大回撤对比</h3>
+      <h3> Maximum drawdown comparison</h3>
       <div class="plot-container" id="plot-bar-dd"></div>
     </div>
   </div>
 </div>
 
-<!-- ═══════════ A股详情 ═══════════ -->
+<!--  AStock Details  -->
 <div id="tab-astock" class="tab-content">
   <div style="margin-bottom:16px;">
-    <label style="color:var(--muted);margin-right:8px;">选择股票：</label>
+    <label style="color:var(--muted);margin-right:8px;">Select Stock: </label>
     <select id="a-stock-selector" onchange="updateAStockChart()"></select>
   </div>
   <div class="grid grid-2">
     <div class="card" style="grid-column:1/-1;">
-      <h3>🕯️ 日K线蜡烛图 + 成交量</h3>
+      <h3> dayKLine Candle Chart + Trading volume</h3>
       <div class="plot-container" id="plot-a-candle"></div>
     </div>
   </div>
   <div class="grid grid-2" style="margin-top:20px;">
     <div class="card">
-      <h3>📊 日收益率分布</h3>
+      <h3> Daily Return Distribution</h3>
       <div class="plot-container" id="plot-a-return-dist"></div>
     </div>
     <div class="card">
-      <h3>📈 累计收益率曲线</h3>
+      <h3> cumulative yield curve</h3>
       <div class="plot-container" id="plot-a-cumret"></div>
     </div>
   </div>
 </div>
 
-<!-- ═══════════ 港股详情 ═══════════ -->
+<!--  Hong Kong Stock Details  -->
 <div id="tab-hkstock" class="tab-content">
   <div style="margin-bottom:16px;">
-    <label style="color:var(--muted);margin-right:8px;">选择股票：</label>
+    <label style="color:var(--muted);margin-right:8px;">Select Stock: </label>
     <select id="hk-stock-selector" onchange="updateHKStockChart()"></select>
   </div>
   <div class="grid grid-2">
     <div class="card" style="grid-column:1/-1;">
-      <h3>🕯️ 日K线蜡烛图 + 成交量</h3>
+      <h3> dayKLine Candle Chart + Trading volume</h3>
       <div class="plot-container" id="plot-hk-candle"></div>
     </div>
   </div>
   <div class="grid grid-2" style="margin-top:20px;">
     <div class="card">
-      <h3>📊 日收益率分布</h3>
+      <h3> Daily Return Distribution</h3>
       <div class="plot-container" id="plot-hk-return-dist"></div>
     </div>
     <div class="card">
-      <h3>📈 累计收益率曲线</h3>
+      <h3> cumulative yield curve</h3>
       <div class="plot-container" id="plot-hk-cumret"></div>
     </div>
   </div>
 </div>
 
-<!-- ═══════════ 市场对比 ═══════════ -->
+<!--  Market Comparison  -->
 <div id="tab-compare" class="tab-content">
   <div class="grid grid-2">
     <div class="card" style="grid-column:1/-1;">
-      <h3>📈 A股 vs 港股 归一化价格对比（基准=100）</h3>
+      <h3> A-share vs Hong Kong equities normalized price comparison (Benchmark=100) </h3>
       <div class="plot-container" id="plot-norm-compare"></div>
     </div>
   </div>
   <div class="grid grid-2" style="margin-top:20px;">
     <div class="card">
-      <h3>A股板块涨跌幅分布</h3>
+      <h3>AStock sector rise and fall distribution</h3>
       <div class="plot-container" id="plot-a-pie"></div>
     </div>
     <div class="card">
-      <h3>港股板块涨跌幅分布</h3>
+      <h3>Hong Kong equity sector rise and fall distribution</h3>
       <div class="plot-container" id="plot-hk-pie"></div>
     </div>
   </div>
   <div class="grid grid-2" style="margin-top:20px;">
     <div class="card">
-      <h3>⚖️ 两市平均指标对比</h3>
+      <h3> Comparison of average indicators of two markets</h3>
       <div class="plot-container" id="plot-mkt-compare"></div>
     </div>
     <div class="card">
-      <h3>💡 关键发现</h3>
+      <h3> Key Findings</h3>
       <div style="font-size:0.9em;line-height:1.8;" id="insights-text"></div>
     </div>
   </div>
 </div>
 
 <div class="footer">
-  数据来源: Tushare Pro & AKShare | 前复权价格 | 生成时间: ''' + datetime.now().strftime('%Y-%m-%d %H:%M') + r''' | 量化交易课程任务
+  Data Source: Tushare Pro & AKShare | Adjusted price | Generation time: ''' + datetime.now().strftime('%Y-%m-%d %H:%M') + r''' | Quantitative Trading Course Assignments
 </div>
 
 <script>
@@ -250,16 +250,16 @@ html2 = r'''</div>
 const STOCKS = ''' + json.dumps([{k: s[k] for k in ['code','name','market','days','chg','ann_vol','max_dd','start_close','end_close','max_close','min_close']} for s in STOCKS], ensure_ascii=False) + r''';
 '''
 
-# 嵌入OHLC数据
+# embedOHLCData
 for i, s in enumerate(STOCKS):
     df_json = s['data'][['Date', 'Open', 'High', 'Low', 'Close', 'Volume']].copy()
     df_json['Date'] = df_json['Date'].dt.strftime('%Y-%m-%d')
     records = df_json.to_dict('records')
     html += f"STOCKS[{i}]['ohlc'] = {json.dumps(records, ensure_ascii=False)};\n"
 
-# A股/HK股索引
-a_idx = [i for i, s in enumerate(STOCKS) if s['market'] == 'A股']
-hk_idx = [i for i, s in enumerate(STOCKS) if s['market'] == '港股']
+# A-share/HKStock Index
+a_idx = [i for i, s in enumerate(STOCKS) if s['market'] == 'A-share']
+hk_idx = [i for i, s in enumerate(STOCKS) if s['market'] == 'Hong Kong equities']
 html += f"const A_IDX = {json.dumps(a_idx)};\n"
 html += f"const HK_IDX = {json.dumps(hk_idx)};\n"
 
@@ -288,9 +288,9 @@ function switchTab(tab) {
 
 // ==================== OVERVIEW ====================
 function buildSummaryTable() {
-  let html = '<table><thead><tr><th>代码</th><th>名称</th><th>市场</th><th>涨跌幅</th><th>年化波动</th><th>最大回撤</th><th>期初</th><th>期末</th></tr></thead><tbody>';
+  let html = '<table><thead><tr><th>code</th><th>Name</th><th>Market</th><th>Return</th><th>Annualized volatility</th><th>Maximum Drawdown</th><th>Beginning of Period</th><th>End of term</th></tr></thead><tbody>';
   STOCKS.forEach(s => {
-    const mktClass = s.market === 'A股' ? 'pill-a' : 'pill-hk';
+    const mktClass = s.market === 'A-share' ? 'pill-a' : 'pill-hk';
     const chgClass = s.chg >= 0 ? 'up' : 'down';
     html += `<tr>
       <td>${s.code}</td><td><strong>${s.name}</strong></td>
@@ -305,20 +305,20 @@ function buildSummaryTable() {
 }
 
 function plotBarChg() {
-  const names = STOCKS.map(s => s.name + ' (' + (s.market === 'A股' ? 'A' : 'HK') + ')');
+  const names = STOCKS.map(s => s.name + ' (' + (s.market === 'A-share' ? 'A' : 'HK') + ')');
   const chgs = STOCKS.map(s => s.chg);
   const colors = chgs.map(c => c >= 0 ? '#26a69a' : '#ef5350');
   const data = [{ type: 'bar', x: chgs, y: names, orientation: 'h', marker: { color: colors },
     text: chgs.map(c => (c>=0?'+':'') + c.toFixed(2) + '%'), textposition: 'outside',
     textfont: { color: '#e0e6ed' }, hovertemplate: '%{y}: %{x:.2f}%<extra></extra>' }];
-  const layout = { ...LAYOUT_DARK, height: 420, xaxis: { ...LAYOUT_DARK.xaxis, title: '涨跌幅(%)' },
+  const layout = { ...LAYOUT_DARK, height: 420, xaxis: { ...LAYOUT_DARK.xaxis, title: 'Return(%)' },
     yaxis: { ...LAYOUT_DARK.yaxis, autorange: 'reversed' } };
   Plotly.newPlot('plot-bar-chg', data, layout, { responsive: true, displayModeBar: false });
 }
 
 function plotRiskReturn() {
   const traces = [];
-  ['A股','港股'].forEach(mkt => {
+  ['A-share','Hong Kong equities'].forEach(mkt => {
     const subset = STOCKS.filter(s => s.market === mkt);
     traces.push({
       type: 'scatter', mode: 'markers+text',
@@ -326,31 +326,31 @@ function plotRiskReturn() {
       text: subset.map(s => s.name), textposition: 'top center',
       textfont: { size: 11, color: '#e0e6ed' },
       marker: { size: subset.map(s => Math.abs(s.chg) * 1.5 + 10),
-        color: mkt === 'A股' ? '#ef5350' : '#ab47bc', opacity: 0.75 },
-      name: mkt, hovertemplate: '%{text}<br>波动: %{x:.1f}%<br>涨跌: %{y:.2f}%<extra></extra>'
+        color: mkt === 'A-share' ? '#ef5350' : '#ab47bc', opacity: 0.75 },
+      name: mkt, hovertemplate: '%{text}<br>fluctuation: %{x:.1f}%<br>Ups and downs: %{y:.2f}%<extra></extra>'
     });
   });
-  // 四象限参考线
+  // Four-quadrant reference line
   traces.push({ type: 'scatter', x: [0, 60], y: [0, 0], mode: 'lines',
     line: { color: '#555', dash: 'dash', width: 1 }, showlegend: false, hoverinfo: 'none' });
-  const layout = { ...LAYOUT_DARK, height: 420, xaxis: { ...LAYOUT_DARK.xaxis, title: '年化波动率(%)' },
-    yaxis: { ...LAYOUT_DARK.yaxis, title: '涨跌幅(%)' } };
+  const layout = { ...LAYOUT_DARK, height: 420, xaxis: { ...LAYOUT_DARK.xaxis, title: 'annualized volatility(%)' },
+    yaxis: { ...LAYOUT_DARK.yaxis, title: 'Return(%)' } };
   Plotly.newPlot('plot-risk-return', traces, layout, { responsive: true, displayModeBar: false });
 }
 
 function plotBarDD() {
-  const names = STOCKS.map(s => s.name + ' (' + (s.market === 'A股' ? 'A' : 'HK') + ')');
+  const names = STOCKS.map(s => s.name + ' (' + (s.market === 'A-share' ? 'A' : 'HK') + ')');
   const dds = STOCKS.map(s => s.max_dd);
   const data = [{ type: 'bar', x: dds, y: names, orientation: 'h',
     marker: { color: dds.map(d => d > 30 ? '#ef5350' : '#ffd54f') },
     text: dds.map(d => d.toFixed(2) + '%'), textposition: 'outside',
-    textfont: { color: '#e0e6ed' }, hovertemplate: '%{y}: 最大回撤 %{x:.2f}%<extra></extra>' }];
-  const layout = { ...LAYOUT_DARK, height: 420, xaxis: { ...LAYOUT_DARK.xaxis, title: '最大回撤(%)' },
+    textfont: { color: '#e0e6ed' }, hovertemplate: '%{y}: Maximum Drawdown %{x:.2f}%<extra></extra>' }];
+  const layout = { ...LAYOUT_DARK, height: 420, xaxis: { ...LAYOUT_DARK.xaxis, title: 'Maximum Drawdown(%)' },
     yaxis: { ...LAYOUT_DARK.yaxis, autorange: 'reversed' } };
   Plotly.newPlot('plot-bar-dd', data, layout, { responsive: true, displayModeBar: false });
 }
 
-// ==================== A股/HK股 个股详情 ====================
+// ==================== A-share/HKstock Stock Details ====================
 function buildStockSelector(selectorId, idxList) {
   const sel = document.getElementById(selectorId);
   sel.innerHTML = idxList.map(i => `<option value="${i}">${STOCKS[i].code} ${STOCKS[i].name}</option>`).join('');
@@ -366,23 +366,23 @@ function updateStockChart(stockIdx, candleDiv, retDiv, cumDiv) {
   const closes = ohlc.map(d => d.Close);
   const vols = ohlc.map(d => d.Volume / 10000);
 
-  // 蜡烛图
+  // Candlestick chart
   const candle = {
     type: 'candlestick', name: s.name,
     x: dates, open: opens, high: highs, low: lows, close: closes,
     increasing: { line: { color: '#ef5350' }, fillcolor: '#ef5350' },
     decreasing: { line: { color: '#26a69a' }, fillcolor: '#26a69a' },
     hovertext: dates.map((d,i) =>
-      `${d}<br>O:${opens[i].toFixed(2)} H:${highs[i].toFixed(2)} L:${lows[i].toFixed(2)} C:${closes[i].toFixed(2)}<br>涨跌: ${((closes[i]-opens[i])/opens[i]*100).toFixed(2)}%`),
+      `${d}<br>O:${opens[i].toFixed(2)} H:${highs[i].toFixed(2)} L:${lows[i].toFixed(2)} C:${closes[i].toFixed(2)}<br>Ups and downs: ${((closes[i]-opens[i])/opens[i]*100).toFixed(2)}%`),
     hoverinfo: 'text',
   };
-  // 成交量
+  // Trading volume
   const volBars = {
-    type: 'bar', x: dates, y: vols, name: '成交量',
+    type: 'bar', x: dates, y: vols, name: 'Trading volume',
     marker: { color: dates.map((d,i) => closes[i] >= opens[i] ? 'rgba(239,83,80,0.5)' : 'rgba(38,166,154,0.5)') },
-    yaxis: 'y2', hovertemplate: '成交量: %{y:.0f}万股<extra></extra>',
+    yaxis: 'y2', hovertemplate: 'Trading volume: %{y:.0f}million shares<extra></extra>',
   };
-  // 均线
+  // Moving average
   const ma20 = calcMA(closes, 20);
   const ma60 = calcMA(closes, 60);
   const ma20Line = { type: 'scatter', x: dates, y: ma20, mode: 'lines',
@@ -394,39 +394,39 @@ function updateStockChart(stockIdx, candleDiv, retDiv, cumDiv) {
 
   const layout = {
     ...LAYOUT_DARK, height: 550,
-    title: `${s.name} (${s.code}) — ${s.market} | 涨跌幅: ${s.chg>=0?'+':''}${s.chg.toFixed(2)}% | 波动: ${s.ann_vol.toFixed(2)}% | 最大回撤: ${s.max_dd.toFixed(2)}%`,
+    title: `${s.name} (${s.code})  -  ${s.market} | Return: ${s.chg>=0?'+':''}${s.chg.toFixed(2)}% | fluctuation: ${s.ann_vol.toFixed(2)}% | Maximum Drawdown: ${s.max_dd.toFixed(2)}%`,
     xaxis: { ...LAYOUT_DARK.xaxis, rangeslider: { visible: false }, type: 'date' },
-    yaxis: { ...LAYOUT_DARK.yaxis, title: '价格', side: 'left' },
-    yaxis2: { title: '成交量(万股)', overlaying: 'y', side: 'right', showgrid: false,
+    yaxis: { ...LAYOUT_DARK.yaxis, title: 'Price', side: 'left' },
+    yaxis2: { title: 'Trading volume(million shares)', overlaying: 'y', side: 'right', showgrid: false,
       gridcolor: 'rgba(0,0,0,0)', range: [0, Math.max(...vols) * 3.5] },
     legend: { x: 0.01, y: 0.99, bgcolor: 'rgba(26,38,52,0.8)' },
   };
   Plotly.newPlot(candleDiv, [candle, volBars, ma20Line, ma60Line], layout,
     { responsive: true, modeBarButtonsToRemove: ['lasso2d','select2d'] });
 
-  // 收益率分布
+  // Yield Distribution
   const rets = [];
   for (let i = 1; i < closes.length; i++) rets.push((closes[i] - closes[i-1]) / closes[i-1] * 100);
   const retData = [{ type: 'histogram', x: rets, nbinsx: 40,
     marker: { color: 'rgba(79,195,247,0.7)', line: { color: '#4fc3f7', width: 1 } },
-    hovertemplate: '收益率区间: %{x:.2f}%<br>频次: %{y}<extra></extra>' }];
+    hovertemplate: 'yield range: %{x:.2f}%<br>Frequency: %{y}<extra></extra>' }];
   const retLayout = { ...LAYOUT_DARK, height: 350,
-    title: `日收益率分布 (均值: ${(rets.reduce((a,b)=>a+b,0)/rets.length).toFixed(3)}%, 标准差: ${(Math.sqrt(rets.reduce((a,b)=>a+Math.pow(b-rets.reduce((c,d)=>c+d,0)/rets.length,2),0)/rets.length)).toFixed(3)}%)`,
-    xaxis: { ...LAYOUT_DARK.xaxis, title: '日收益率(%)' },
-    yaxis: { ...LAYOUT_DARK.yaxis, title: '频次' } };
+    title: `Daily Return Distribution (Mean: ${(rets.reduce((a,b)=>a+b,0)/rets.length).toFixed(3)}%, Standard deviation: ${(Math.sqrt(rets.reduce((a,b)=>a+Math.pow(b-rets.reduce((c,d)=>c+d,0)/rets.length,2),0)/rets.length)).toFixed(3)}%)`,
+    xaxis: { ...LAYOUT_DARK.xaxis, title: 'daily rate of return(%)' },
+    yaxis: { ...LAYOUT_DARK.yaxis, title: 'Frequency' } };
   Plotly.newPlot(retDiv, retData, retLayout, { responsive: true, displayModeBar: false });
 
-  // 累计收益率
+  // Cumulative rate of return
   const cumRet = [0];
   for (let i = 1; i < closes.length; i++) cumRet.push(cumRet[i-1] + (closes[i]-closes[i-1])/closes[i-1]*100);
   const cumData = [{ type: 'scatter', x: dates, y: cumRet, mode: 'lines', fill: 'tozeroy',
     line: { color: cumRet[cumRet.length-1] >= 0 ? '#ef5350' : '#26a69a', width: 2 },
     fillcolor: cumRet[cumRet.length-1] >= 0 ? 'rgba(239,83,80,0.1)' : 'rgba(38,166,154,0.1)',
-    hovertemplate: '%{x}<br>累计收益: %{y:.2f}%<extra></extra>' }];
+    hovertemplate: '%{x}<br>Accumulated income: %{y:.2f}%<extra></extra>' }];
   const cumLayout = { ...LAYOUT_DARK, height: 350,
-    title: `累计收益率 (总: ${cumRet[cumRet.length-1].toFixed(2)}%)`,
-    xaxis: { ...LAYOUT_DARK.xaxis, title: '日期' },
-    yaxis: { ...LAYOUT_DARK.yaxis, title: '累计收益率(%)' } };
+    title: `Cumulative rate of return (total: ${cumRet[cumRet.length-1].toFixed(2)}%)`,
+    xaxis: { ...LAYOUT_DARK.xaxis, title: 'Date' },
+    yaxis: { ...LAYOUT_DARK.yaxis, title: 'Cumulative rate of return(%)' } };
   Plotly.newPlot(cumDiv, cumData, cumLayout, { responsive: true, displayModeBar: false });
 }
 
@@ -439,7 +439,7 @@ function updateHKStockChart() {
   updateStockChart(idx, 'plot-hk-candle', 'plot-hk-return-dist', 'plot-hk-cumret');
 }
 
-// ==================== 市场对比 ====================
+// ==================== Market Comparison ====================
 function plotNormCompare() {
   const traces = [];
   STOCKS.forEach((s, i) => {
@@ -448,7 +448,7 @@ function plotNormCompare() {
     traces.push({
       type: 'scatter', x: s.ohlc.map(d => d.Date), y: norm, mode: 'lines',
       name: `${s.name}(${s.market})`, line: { width: 1.5, color: COLORS[i % COLORS.length] },
-      hovertemplate: '%{fullData.name}<br>%{x}<br>归一化: %{y:.1f}<extra></extra>',
+      hovertemplate: '%{fullData.name}<br>%{x}<br>Normalization: %{y:.1f}<extra></extra>',
     });
   });
   traces.push({ type: 'scatter',
@@ -456,8 +456,8 @@ function plotNormCompare() {
     y: [100, 100], mode: 'lines', line: { color: '#555', dash: 'dash', width: 1 },
     showlegend: false, hoverinfo: 'none' });
   const layout = { ...LAYOUT_DARK, height: 480,
-    xaxis: { ...LAYOUT_DARK.xaxis, title: '日期' },
-    yaxis: { ...LAYOUT_DARK.yaxis, title: '归一化价格(基准=100)' },
+    xaxis: { ...LAYOUT_DARK.xaxis, title: 'Date' },
+    yaxis: { ...LAYOUT_DARK.yaxis, title: 'Normalized Price(Benchmark=100)' },
     legend: { x: 0.01, y: 0.99, bgcolor: 'rgba(26,38,52,0.8)', font: { size: 10 } } };
   Plotly.newPlot('plot-norm-compare', traces, layout, { responsive: true, displayModeBar: false });
 }
@@ -465,21 +465,21 @@ function plotNormCompare() {
 function plotPieCharts() {
   const aSubset = A_IDX.map(i => STOCKS[i]);
   const hkSubset = HK_IDX.map(i => STOCKS[i]);
-  // A股
+  // A-share
   Plotly.newPlot('plot-a-pie', [{
     type: 'pie', labels: aSubset.map(s => s.name), values: aSubset.map(s => Math.abs(s.chg)),
     textinfo: 'label+percent', hole: 0.4,
     marker: { colors: aSubset.map(s => s.chg >= 0 ? '#26a69a' : '#ef5350') },
     textfont: { color: '#e0e6ed', size: 12 },
-    hovertemplate: '%{label}<br>涨跌幅: %{value:.2f}%<extra></extra>',
+    hovertemplate: '%{label}<br>Return: %{value:.2f}%<extra></extra>',
   }], { ...LAYOUT_DARK, height: 350 }, { responsive: true, displayModeBar: false });
-  // 港股
+  // Hong Kong equities
   Plotly.newPlot('plot-hk-pie', [{
     type: 'pie', labels: hkSubset.map(s => s.name), values: hkSubset.map(s => Math.abs(s.chg)),
     textinfo: 'label+percent', hole: 0.4,
     marker: { colors: hkSubset.map(s => s.chg >= 0 ? '#26a69a' : '#ef5350') },
     textfont: { color: '#e0e6ed', size: 12 },
-    hovertemplate: '%{label}<br>涨跌幅: %{value:.2f}%<extra></extra>',
+    hovertemplate: '%{label}<br>Return: %{value:.2f}%<extra></extra>',
   }], { ...LAYOUT_DARK, height: 350 }, { responsive: true, displayModeBar: false });
 }
 
@@ -493,40 +493,40 @@ function plotMktCompare() {
 
   const mean = arr => arr.reduce((a,b) => a+b, 0) / arr.length;
   const traces = [
-    { type: 'bar', x: ['平均涨跌幅','平均波动率','平均最大回撤'], y: [mean(aChgs), mean(aVols), mean(aDDs)],
-      name: 'A股', marker: { color: '#ef5350' }, text: [mean(aChgs).toFixed(2)+'%', mean(aVols).toFixed(2)+'%', mean(aDDs).toFixed(2)+'%'],
+    { type: 'bar', x: ['Average Gain/Loss','average volatility','Average Maximum drawdown'], y: [mean(aChgs), mean(aVols), mean(aDDs)],
+      name: 'A-share', marker: { color: '#ef5350' }, text: [mean(aChgs).toFixed(2)+'%', mean(aVols).toFixed(2)+'%', mean(aDDs).toFixed(2)+'%'],
       textposition: 'outside', textfont: { color: '#e0e6ed' } },
-    { type: 'bar', x: ['平均涨跌幅','平均波动率','平均最大回撤'], y: [mean(hkChgs), mean(hkVols), mean(hkDDs)],
-      name: '港股', marker: { color: '#ab47bc' }, text: [mean(hkChgs).toFixed(2)+'%', mean(hkVols).toFixed(2)+'%', mean(hkDDs).toFixed(2)+'%'],
+    { type: 'bar', x: ['Average Gain/Loss','average volatility','Average Maximum drawdown'], y: [mean(hkChgs), mean(hkVols), mean(hkDDs)],
+      name: 'Hong Kong equities', marker: { color: '#ab47bc' }, text: [mean(hkChgs).toFixed(2)+'%', mean(hkVols).toFixed(2)+'%', mean(hkDDs).toFixed(2)+'%'],
       textposition: 'outside', textfont: { color: '#e0e6ed' } },
   ];
   const layout = { ...LAYOUT_DARK, height: 350, barmode: 'group',
-    yaxis: { ...LAYOUT_DARK.yaxis, title: '百分比(%)' } };
+    yaxis: { ...LAYOUT_DARK.yaxis, title: 'percentage(%)' } };
   Plotly.newPlot('plot-mkt-compare', traces, layout, { responsive: true, displayModeBar: false });
 }
 
 const insightsHtml = `'''
 
-# 生成洞察
-a_avg_chg = np.mean([s['chg'] for s in STOCKS if s['market'] == 'A股'])
-hk_avg_chg = np.mean([s['chg'] for s in STOCKS if s['market'] == '港股'])
-a_best = max([s for s in STOCKS if s['market'] == 'A股'], key=lambda x: x['chg'])
-a_worst = min([s for s in STOCKS if s['market'] == 'A股'], key=lambda x: x['chg'])
-hk_best = max([s for s in STOCKS if s['market'] == '港股'], key=lambda x: x['chg'])
-hk_worst = min([s for s in STOCKS if s['market'] == '港股'], key=lambda x: x['chg'])
-a_avg_vol = np.mean([s['ann_vol'] for s in STOCKS if s['market'] == 'A股'])
-hk_avg_vol = np.mean([s['ann_vol'] for s in STOCKS if s['market'] == '港股'])
+# Generate Insights
+a_avg_chg = np.mean([s['chg'] for s in STOCKS if s['market'] == 'A-share'])
+hk_avg_chg = np.mean([s['chg'] for s in STOCKS if s['market'] == 'Hong Kong equities'])
+a_best = max([s for s in STOCKS if s['market'] == 'A-share'], key=lambda x: x['chg'])
+a_worst = min([s for s in STOCKS if s['market'] == 'A-share'], key=lambda x: x['chg'])
+hk_best = max([s for s in STOCKS if s['market'] == 'Hong Kong equities'], key=lambda x: x['chg'])
+hk_worst = min([s for s in STOCKS if s['market'] == 'Hong Kong equities'], key=lambda x: x['chg'])
+a_avg_vol = np.mean([s['ann_vol'] for s in STOCKS if s['market'] == 'A-share'])
+hk_avg_vol = np.mean([s['ann_vol'] for s in STOCKS if s['market'] == 'Hong Kong equities'])
 
 insights = f"""
-<p>🔍 <b>样本概况：</b>A股5只（涵盖银行、白酒、新能源、保险、电池），港股5只（互联网、电商、本地生活、交易所、电信）。</p>
-<p>📊 <b>平均表现：</b>A股样本均值 <span style="color:{'#26a69a' if a_avg_chg>=0 else '#ef5350'};font-weight:700;">{a_avg_chg:+.2f}%</span>，
-港股样本均值 <span style="color:{'#26a69a' if hk_avg_chg>=0 else '#ef5350'};font-weight:700;">{hk_avg_chg:+.2f}%</span>。</p>
-<p>🏆 <b>A股最佳：</b>{a_best['name']}（{a_best['code']}）<span style="color:#26a69a;">+{a_best['chg']:.2f}%</span>，新能源电池板块一枝独秀。</p>
-<p>📉 <b>A股最差：</b>{a_worst['name']}（{a_worst['code']}）<span style="color:#ef5350;">{a_worst['chg']:.2f}%</span>，新能源整车竞争加剧。</p>
-<p>🏆 <b>港股最佳：</b>{hk_best['name']}（{hk_best['code']}）<span style="color:#26a69a;">{hk_best['chg']:.2f}%</span>，防御性电信蓝筹。</p>
-<p>📉 <b>港股最差：</b>{hk_worst['name']}（{hk_worst['code']}）<span style="color:#ef5350;">{hk_worst['chg']:.2f}%</span>，本地生活赛道估值重创。</p>
-<p>⚡ <b>波动特征：</b>A股平均波动率 {a_avg_vol:.1f}%，港股 {hk_avg_vol:.1f}%——港股科技股波动显著更高。</p>
-<p>💡 <b>核心启示：</b>跨市场分散投资可降低组合波动；A股新能源独立行情突出；港股高波动高回撤，需更强风险承受力。</p>
+<p> <b>Sample Overview: </b>A-share5only (Bank Coverage, Baijiu, New energy, Insurance, battery) , Hong Kong equities5only (the Internet, E-commerce, Local Life, Exchange, Telecommunications) . </p>
+<p> <b>Average performance: </b>ASample mean of stocks <span style="color:{'#26a69a' if a_avg_chg>=0 else '#ef5350'};font-weight:700;">{a_avg_chg:+.2f}%</span>,
+Sample mean of Hong Kong equities <span style="color:{'#26a69a' if hk_avg_chg>=0 else '#ef5350'};font-weight:700;">{hk_avg_chg:+.2f}%</span>. </p>
+<p> <b>ABest unit: </b>{a_best['name']} ({a_best['code']}) <span style="color:#26a69a;">+{a_best['chg']:.2f}%</span>, The new energy battery sector stands out as a leader. </p>
+<p> <b>AThe worst stock: </b>{a_worst['name']} ({a_worst['code']}) <span style="color:#ef5350;">{a_worst['chg']:.2f}%</span>, New energy vehicle competition intensifies. </p>
+<p> <b>Best Hong Kong Stock: </b>{hk_best['name']} ({hk_best['code']}) <span style="color:#26a69a;">{hk_best['chg']:.2f}%</span>, Defensive Telecom Blue Chip. </p>
+<p> <b>Hong Kong equities are the worst: </b>{hk_worst['name']} ({hk_worst['code']}) <span style="color:#ef5350;">{hk_worst['chg']:.2f}%</span>, Local life track valuation hit hard. </p>
+<p> <b>Volatility Characteristics: </b>AAverage stock volatility {a_avg_vol:.1f}%, Hong Kong equities {hk_avg_vol:.1f}% -  - Hong Kong tech stocks show significantly higher volatility. </p>
+<p> <b>Core revelation: </b>Diversified investment across markets can reduce portfolio volatility; ANew energy stocks have shown a standout independent market performance.; Hong Kong equities high volatility high drawdown, Need more risk tolerance. </p>
 """
 html += f"const insightsHtml = `{insights}`;\n"
 
@@ -562,10 +562,10 @@ document.addEventListener('DOMContentLoaded', () => {
 </html>
 '''
 
-# 保存HTML
+# SaveHTML
 with open(HTML_FILE, 'w', encoding='utf-8') as f:
     f.write(html)
 
-print(f"交互式网站已生成: {HTML_FILE}")
-print(f"文件大小: {os.path.getsize(HTML_FILE) / 1024 / 1024:.1f} MB")
-print("用浏览器打开即可使用！")
+print(f"Interactive Web site generated: {HTML_FILE}")
+print(f"File size: {os.path.getsize(HTML_FILE) / 1024 / 1024:.1f} MB")
+print("Open with browser to use! ")

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build the TASK5 finance-attempts portfolio dashboard page."""
+"""Build the TASK5 finance-attempts portdashboard page."""
 
 from __future__ import annotations
 
@@ -24,10 +24,10 @@ OUTPUT = PAGES / "finance.html"
 PLUGIN_ROOT = data_analytics_plugin_root()
 
 MODEL_NAMES = {
-    "logistic_regression": "逻辑回归",
-    "decision_tree": "决策树",
-    "random_forest": "随机森林",
-    "gradient_boosting": "梯度提升",
+    "logistic_regression": "Logistic Regression",
+    "decision_tree": "Decision tree",
+    "random_forest": "Random Forest",
+    "gradient_boosting": "gradient boost",
 }
 
 
@@ -47,7 +47,7 @@ def source(source_id: str, label: str, path: str, description: str, definitions:
             "sql": f"SELECT * FROM read_csv_auto('{path}', header=true)",
             "description": description,
             "tables_used": [path],
-            "filters": ["2025年样本外测试", "按时间划分", "AUC使用预测概率"],
+            "filters": ["2025annual out-of-sample testing", "Divided by time", "AUCUsing Predicted Probability"],
             "metric_definitions": definitions,
         },
     }
@@ -66,17 +66,17 @@ def main() -> None:
     catl_run = json.loads((ROOT / "data/task5/catl/results/summary.json").read_text(encoding="utf-8"))
 
     first = first_metrics[first_metrics.model.isin(MODEL_NAMES)].copy()
-    first["attempt"] = "截面60日排名"
+    first["attempt"] = "Section60Daily Ranking"
     first["model_cn"] = first["model"].map(MODEL_NAMES)
     first = first.rename(columns={"auc": "roc_auc"})
 
     second = second_metrics[second_metrics.model.isin(MODEL_NAMES)].copy()
-    second["attempt"] = "20日绝对涨跌"
+    second["attempt"] = "20Daily Absolute Change"
     second["model_cn"] = second["model"].map(MODEL_NAMES)
     second = second.rename(columns={"auc": "roc_auc"})
 
     catl = catl_metrics[catl_metrics.model.isin(MODEL_NAMES)].copy()
-    catl["attempt"] = "宁德时代20日超额收益"
+    catl["attempt"] = "CATL20Daily excess return"
 
     model_results = pd.concat(
         [
@@ -87,7 +87,7 @@ def main() -> None:
         ignore_index=True,
     )
     model_results["auc_ci"] = model_results.apply(
-        lambda row: f"{row.auc_ci_low:.3f}—{row.auc_ci_high:.3f}", axis=1
+        lambda row: f"{row.auc_ci_low:.3f} - {row.auc_ci_high:.3f}", axis=1
     )
 
     best_rows = (
@@ -97,9 +97,9 @@ def main() -> None:
         .copy()
     )
     attempt_order = {
-        "截面60日排名": 1,
-        "20日绝对涨跌": 2,
-        "宁德时代20日超额收益": 3,
+        "Section60Daily Ranking": 1,
+        "20Daily Absolute Change": 2,
+        "CATL20Daily excess return": 3,
     }
     best_rows["order"] = best_rows.attempt.map(attempt_order)
     best_rows = best_rows.sort_values("order")
@@ -108,45 +108,45 @@ def main() -> None:
         [
             {
                 "order": 1,
-                "attempt": "截面60日排名",
-                "stock_scope": "冻结沪深A股股票池",
-                "observation": "股票×月末",
-                "target": "未来60交易日收益位于同期前30%或后30%",
+                "attempt": "Section60Daily Ranking",
+                "stock_scope": "Freeze Shanghai and ShenzhenA-share pool",
+                "observation": "stockxEnd of the month",
+                "target": "The future60Trading day earnings are before the same period.30%or after30%",
                 "fit_samples": int(first_run["fit_rows"]),
                 "test_samples": int(first_run["test_rows"]),
-                "test_period": "2025年，9个月末",
-                "best_model": "随机森林",
+                "test_period": "2025year, 9end of month",
+                "best_model": "Random Forest",
                 "best_auc": float(first.loc[first.roc_auc.idxmax(), "roc_auc"]),
-                "auc_ci": f"{first.loc[first.roc_auc.idxmax(), 'auc_ci_low']:.3f}—{first.loc[first.roc_auc.idxmax(), 'auc_ci_high']:.3f}",
-                "reading": "对应截面选股，但区间跨过0.5",
+                "auc_ci": f"{first.loc[first.roc_auc.idxmax(), 'auc_ci_low']:.3f} - {first.loc[first.roc_auc.idxmax(), 'auc_ci_high']:.3f}",
+                "reading": "Corresponding cross-section stock selection, But the interval crossed0.5",
             },
             {
                 "order": 2,
-                "attempt": "20日绝对涨跌",
-                "stock_scope": "冻结沪深A股股票池",
-                "observation": "股票×月末",
-                "target": "未来20交易日收益是否大于0",
+                "attempt": "20Daily Absolute Change",
+                "stock_scope": "Freeze Shanghai and ShenzhenA-share pool",
+                "observation": "stockxEnd of the month",
+                "target": "The future20Is the return on a trading day greater than0",
                 "fit_samples": int(second_run["fit_rows"]),
                 "test_samples": int(second_run["test_rows"]),
-                "test_period": "2025年，11个月末",
-                "best_model": "逻辑回归",
+                "test_period": "2025year, 11end of month",
+                "best_model": "Logistic Regression",
                 "best_auc": float(second.loc[second.roc_auc.idxmax(), "roc_auc"]),
-                "auc_ci": f"{second.loc[second.roc_auc.idxmax(), 'auc_ci_low']:.3f}—{second.loc[second.roc_auc.idxmax(), 'auc_ci_high']:.3f}",
-                "reading": "样本增加，但只保留很弱的线性信号",
+                "auc_ci": f"{second.loc[second.roc_auc.idxmax(), 'auc_ci_low']:.3f} - {second.loc[second.roc_auc.idxmax(), 'auc_ci_high']:.3f}",
+                "reading": "Sample increase, But only retain very weak linear signals",
             },
             {
                 "order": 3,
-                "attempt": "宁德时代20日超额收益",
-                "stock_scope": "300750.SZ与沪深300",
-                "observation": "单股×周末",
-                "target": "未来20交易日收益是否超过沪深300",
+                "attempt": "CATL20Daily excess return",
+                "stock_scope": "300750.SZWith Shanghai and Shenzhen300",
+                "observation": "Single strandxWeekend",
+                "target": "The future20Whether trading day returns exceed CSI300",
                 "fit_samples": int(catl_run["final_train_samples_after_purge"]),
                 "test_samples": int(catl_run["test_samples"]),
-                "test_period": "2025年，48个周度样本",
-                "best_model": "决策树",
+                "test_period": "2025year, 48Weekly sample",
+                "best_model": "Decision tree",
                 "best_auc": float(catl_run["best_test_auc"]),
-                "auc_ci": "0.349—0.691",
-                "reading": "单股差异更小，但有效时间窗口太少",
+                "auc_ci": "0.349 - 0.691",
+                "reading": "The single-strand difference is smaller., But the effective time window is too small",
             },
         ]
     )
@@ -163,82 +163,82 @@ def main() -> None:
         ]
     )
 
-    attempts.to_csv(DATA / "finance_attempts.csv", index=False, encoding="utf-8-sig")
-    model_results.to_csv(DATA / "finance_model_results.csv", index=False, encoding="utf-8-sig")
-    summary.to_csv(DATA / "finance_summary.csv", index=False, encoding="utf-8-sig")
+    attempts.to_csv(DATA / "finance_attempts.csv", index=False, encoding="utf-8")
+    model_results.to_csv(DATA / "finance_model_results.csv", index=False, encoding="utf-8")
+    summary.to_csv(DATA / "finance_summary.csv", index=False, encoding="utf-8")
 
     sources = [
         source(
             "attempts_source",
-            "三次金融分类设计",
+            "Three financial classification designs",
             "Task5/dashboard/data/finance_attempts.csv",
-            "由三组冻结模型结果整理的任务口径、样本和最佳测试AUC。",
+            "Task calibration organized from results of three frozen models, Samples and Best TestsAUC. ",
             [
-                "第一次Y为未来60日截面前30%与后30%。",
-                "第二次Y为未来20日绝对收益是否为正。",
-                "第三次Y为宁德时代未来20日收益是否超过沪深300。",
+                "The first timeYFor the future60Before the day section30%With later30%. ",
+                "The second timeYFor the future20Is the daily absolute return positive?. ",
+                "Third timeYFor the future of Ningde era20Whether daily earnings exceed Shanghai and Shenzhen.300. ",
             ],
         ),
         source(
             "models_source",
-            "三次金融尝试的模型指标",
+            "Model metrics of three financial attempts",
             "Task5/dashboard/data/finance_model_results.csv",
-            "整理各次尝试中锁定模型的2025年样本外AUC。",
-            ["ROC-AUC使用正类概率计算。", "置信区间使用时间块Bootstrap。"],
+            "Organize Models Locked in Each Attempt2025Out-of-sample for the yearAUC. ",
+            ["ROC-AUCUsing positive class probability calculations. ", "Confidence Interval Using Time BlocksBootstrap. "],
         ),
         source(
             "summary_source",
-            "金融页摘要指标",
+            "Financial Page Summary Metrics",
             "Task5/dashboard/data/finance_summary.csv",
-            "三次尝试的最佳AUC摘要。",
-            ["各次最佳AUC按对应测试集中的最高模型值计算。"],
+            "The best of three attempts.AUCAbstract. ",
+            ["Each bestAUCCalculated according to the highest model value in the corresponding test set. "],
         ),
     ]
 
     cards = [
-        {"id": "attempts", "description": "分别改变了Y、观察频率或股票范围。", "dataset": "summary", "sourceId": "summary_source", "metrics": [{"label": "任务定义", "field": "attempts", "format": "compact"}]},
-        {"id": "first", "description": "月末截面的60日收益排名。", "dataset": "summary", "sourceId": "summary_source", "metrics": [{"label": "第一次最佳AUC", "field": "first_auc", "format": "number"}]},
-        {"id": "second", "description": "月末未来20日绝对涨跌。", "dataset": "summary", "sourceId": "summary_source", "metrics": [{"label": "第二次最佳AUC", "field": "second_auc", "format": "number"}]},
-        {"id": "catl", "description": "宁德时代未来20日超额收益。", "dataset": "summary", "sourceId": "summary_source", "metrics": [{"label": "单股案例最佳AUC", "field": "catl_auc", "format": "number"}]},
+        {"id": "attempts", "description": "changed separatelyY, Watch Frequency or Stock Range. ", "dataset": "summary", "sourceId": "summary_source", "metrics": [{"label": "Task Definition", "field": "attempts", "format": "compact"}]},
+        {"id": "first", "description": "end-of-month section60Daily Return Ranking. ", "dataset": "summary", "sourceId": "summary_source", "metrics": [{"label": "Best on the first tryAUC", "field": "first_auc", "format": "number"}]},
+        {"id": "second", "description": "Future at the end of the month20Daily Absolute Change. ", "dataset": "summary", "sourceId": "summary_source", "metrics": [{"label": "Second bestAUC", "field": "second_auc", "format": "number"}]},
+        {"id": "catl", "description": "Ningde Era Future20Daily excess return. ", "dataset": "summary", "sourceId": "summary_source", "metrics": [{"label": "Single-strand cases are best.AUC", "field": "catl_auc", "format": "number"}]},
     ]
 
     charts = [
         {
             "id": "best_auc",
-            "title": "三次金融分类的最佳测试AUC",
-            "subtitle": "任务口径不同，数值用于观察可学习性，不直接排名",
+            "title": "Best tests of the three financial classificationsAUC",
+            "subtitle": "Task caliber is different, Numerical values are used to observe learnability, No direct ranking",
             "type": "bar",
             "intent": "comparison",
             "dataset": "best_results",
             "sourceId": "attempts_source",
             "encodings": {
-                "x": {"field": "attempt", "type": "nominal", "label": "任务定义"},
+                "x": {"field": "attempt", "type": "nominal", "label": "Task Definition"},
                 "y": {"field": "roc_auc", "type": "quantitative", "label": "ROC-AUC"},
                 "tooltip": [
-                    {"field": "model_cn", "type": "text", "label": "最佳模型"},
-                    {"field": "auc_ci", "type": "text", "label": "95%区间"},
+                    {"field": "model_cn", "type": "text", "label": "The best model"},
+                    {"field": "auc_ci", "type": "text", "label": "95%Interval"},
                 ],
             },
-            "referenceLines": [{"axis": "y", "value": 0.5, "label": "随机排序", "color": "neutral", "lineStyle": "dashed"}],
+            "referenceLines": [{"axis": "y", "value": 0.5, "label": "Random Sort", "color": "neutral", "lineStyle": "dashed"}],
             "palette": {"kind": "semantic"},
             "layout": "full",
         },
         {
             "id": "all_models",
-            "title": "各任务中的模型AUC",
-            "subtitle": "复杂模型并未在三个样本外测试中持续领先",
+            "title": "Models in each taskAUC",
+            "subtitle": "Complex models did not consistently outperform in three out-of-sample tests.",
             "type": "bar",
             "intent": "comparison",
             "dataset": "model_results",
             "sourceId": "models_source",
             "encodings": {
-                "x": {"field": "attempt", "type": "nominal", "label": "任务定义"},
+                "x": {"field": "attempt", "type": "nominal", "label": "Task Definition"},
                 "y": {"field": "roc_auc", "type": "quantitative", "label": "ROC-AUC"},
-                "color": {"field": "model_cn", "type": "nominal", "label": "模型"},
-                "tooltip": [{"field": "auc_ci", "type": "text", "label": "95%区间"}],
+                "color": {"field": "model_cn", "type": "nominal", "label": "model"},
+                "tooltip": [{"field": "auc_ci", "type": "text", "label": "95%Interval"}],
             },
             "settings": {"grouped": True},
-            "referenceLines": [{"axis": "y", "value": 0.5, "label": "随机排序", "color": "neutral", "lineStyle": "dashed"}],
+            "referenceLines": [{"axis": "y", "value": 0.5, "label": "Random Sort", "color": "neutral", "lineStyle": "dashed"}],
             "palette": {"kind": "categorical"},
             "layout": "full",
         },
@@ -247,41 +247,41 @@ def main() -> None:
     tables = [
         {
             "id": "attempt_table",
-            "title": "三次任务的口径与结果",
-            "subtitle": "样本量必须结合观察频率和标签重叠程度解释",
+            "title": "Caliber and results of three tasks",
+            "subtitle": "Sample size must be interpreted in conjunction with observation frequency and label overlap.",
             "dataset": "attempts",
             "sourceId": "attempts_source",
             "defaultSort": {"field": "order", "direction": "asc"},
             "density": "spacious",
             "layout": "full",
             "columns": [
-                {"field": "order", "label": "序号", "format": "number"},
-                {"field": "attempt", "label": "任务", "type": "text"},
-                {"field": "stock_scope", "label": "股票范围", "type": "text"},
-                {"field": "observation", "label": "观察单位", "type": "text"},
-                {"field": "target", "label": "Y定义", "type": "text"},
-                {"field": "fit_samples", "label": "拟合样本", "format": "compact"},
-                {"field": "test_samples", "label": "测试样本", "format": "compact"},
-                {"field": "best_model", "label": "最高AUC模型", "type": "text"},
+                {"field": "order", "label": "Serial number", "format": "number"},
+                {"field": "attempt", "label": "Task", "type": "text"},
+                {"field": "stock_scope", "label": "Stock Range", "type": "text"},
+                {"field": "observation", "label": "Observation unit", "type": "text"},
+                {"field": "target", "label": "YDefinition", "type": "text"},
+                {"field": "fit_samples", "label": "Fit sample", "format": "compact"},
+                {"field": "test_samples", "label": "Test sample", "format": "compact"},
+                {"field": "best_model", "label": "highestAUCmodel", "type": "text"},
                 {"field": "best_auc", "label": "AUC", "format": "number"},
-                {"field": "auc_ci", "label": "95%区间", "type": "text"},
-                {"field": "reading", "label": "解读", "type": "text"},
+                {"field": "auc_ci", "label": "95%Interval", "type": "text"},
+                {"field": "reading", "label": "Interpretation", "type": "text"},
             ],
         },
         {
             "id": "model_table",
-            "title": "全部模型的样本外AUC",
-            "subtitle": "每一行对应一个任务定义和一个锁定模型",
+            "title": "Out of sample for all modelsAUC",
+            "subtitle": "Each row corresponds to a task definition and a locked model.",
             "dataset": "model_results",
             "sourceId": "models_source",
             "defaultSort": {"field": "roc_auc", "direction": "desc"},
             "density": "spacious",
             "layout": "full",
             "columns": [
-                {"field": "attempt", "label": "任务", "type": "text"},
-                {"field": "model_cn", "label": "模型", "type": "text"},
+                {"field": "attempt", "label": "Task", "type": "text"},
+                {"field": "model_cn", "label": "model", "type": "text"},
                 {"field": "roc_auc", "label": "AUC", "format": "number"},
-                {"field": "auc_ci", "label": "95%区间", "type": "text"},
+                {"field": "auc_ci", "label": "95%Interval", "type": "text"},
             ],
         },
     ]
@@ -290,7 +290,7 @@ def main() -> None:
         {
             "id": "opening",
             "type": "markdown",
-            "body": "## 问题如何变化\n\n金融数据部分没有反复修饰同一个模型，而是先后改变了截面排名、绝对涨跌和单股相对基准三种Y。三个任务的样本外AUC都接近0.5，说明当前技术特征没有在对应预测目标下形成稳定的排序能力。",
+            "body": "## How the problem changes\n\nThe financial data part does not repeatedly modify the same model., But rather changed the cross-sectional ranking sequentially, Three types: absolute price change, and single stock relative to benchmarkY. Out-of-sample for three tasksAUCAll close to0.5, It shows that current technical features have not formed a stable ranking ability under the corresponding prediction targets.. ",
         },
         {"id": "cards", "type": "metric-strip", "cardIds": [card["id"] for card in cards]},
         {"id": "best_auc_block", "type": "chart", "chartId": "best_auc", "layout": "full"},
@@ -300,7 +300,7 @@ def main() -> None:
         {
             "id": "takeaways",
             "type": "markdown",
-            "body": "## 为什么结果接近随机\n\n**AUC的含义。** AUC为0.53，表示随机抽取一组正负样本时，模型约有53%的概率把正类排在前面，只比随机排序高约3个百分点。三个时间块置信区间均覆盖0.5，现有差距不足以确认稳定信号。\n\n**计算排查。** 标签复算、日期边界、Mann-Whitney秩公式和同一测试标签检查没有发现错误。随机标签平均AUC为0.497，人工可预测标签为0.996，说明管线能够在有信息时学习。\n\n**跨期变化。** 60日截面排名中，逻辑回归AUC由2023年的0.752降到2024年的0.575和2025年的0.509，随机森林也由0.726降到0.594和0.533。训练期关系没有稳定延续到最终测试期。\n\n**信息边界。** 20余项变量大多由同一价格和成交量序列变换而来，不能覆盖估值、财报、行业景气、政策和公司事件。20日与60日标签还存在重叠，记录数明显多于独立市场状态数。\n\n**结论边界。** 当前结果不能推出机器学习无效；能够支持的结论是，现有价量特征、目标定义和时间范围尚不足以形成稳定的样本外排序能力。改进顺序应为交易决策与Y、信息覆盖、样本和验证，最后才是模型复杂度。",
+            "body": "## Why are the results close to random\n\n**AUCThe meaning of. ** AUCFor0.53, Indicates that when randomly selecting a set of positive and negative samples, The model has about53%The probability of putting the positive class in front., only about higher than random sort3percentage points. Confidence intervals for three time blocks all overlap0.5, The current gap is insufficient to confirm stable signals. \n\n**Calculation and troubleshooting. ** Label Recaltation, Date Boundary, Mann-WhitneyNo errors were found in the rank formula and verification with the same test label.. Random Label AverageAUCFor0.497, The human predictable label is0.996, Indicates that the pipeline can learn when there is information. \n\n**intertemporal change. ** 60In the daily section ranking, Logistic RegressionAUCby2023year&#39;s0.752Drop to2024year&#39;s0.575and2025year&#39;s0.509, Random forest is also composed0.726Drop to0.594and0.533. Relationships in the training period do not stably continue into the final test period.. \n\n**information boundary. ** 20Most remaining variables are derived from transformations of the same price and volume sequences., Valuation cannot be overridden., Financial report, Industry boom, Policies and Corporate Events. 20day and60Day labels are still overlapping., The number of records is significantly more than the number of independent market states. \n\n**Conclusion Boundary. ** Current results cannot conclude that machine-learning is invalid; can support the conclusion that, Existing price quantity characteristics, The target definition and time range are not sufficient to form stable out-of-sample ranking ability.. Improvement order should be trading decision andY, Information Coverage, Sample and Validation, Finally, the complexity of the model.. ",
         },
     ]
 
@@ -310,8 +310,8 @@ def main() -> None:
         "manifest": {
             "version": 1,
             "surface": "dashboard",
-            "title": "TASK5 金融市场分类尝试",
-            "description": "对比三种股票分类定义、样本外AUC及其研究边界。",
+            "title": "TASK5 Attempts at Classifying Financial Markets",
+            "description": "Comparison of Three Definitions of Stock Classification, Out of sampleAUCand its research boundaries. ",
             "generatedAt": generated,
             "filters": [],
             "cards": cards,

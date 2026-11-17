@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""TASK7 Strategy C — community-inspired weekly broad ETF momentum."""
+"""TASK7 Strategy C  -  community-inspired weekly broad ETF momentum."""
 
 from jqdata import *
 import math
@@ -23,7 +23,7 @@ def initialize(context):
         type="fund",
     )
     g.pool = ["510300.XSHG", "510500.XSHG", "159915.XSHE"]
-    # 15/20/30日只在开发期与验证期比较；15日的跨阶段稳定性最好。
+    # 15/20/30Days Compared Only in Development and Validation Periods; 15The best cross-phase stability of the day.
     g.lookback = 15
     g.target_weight = 0.50
     run_weekly(
@@ -104,7 +104,7 @@ def rebalance(context):
 def audit_orders(context):
     for order_id, order in get_orders().items():
         log.info(
-            "C订单 | id=%s security=%s amount=%s filled=%s status=%s"
+            "COrder | id=%s security=%s amount=%s filled=%s status=%s"
             % (
                 order_id,
                 order.security,
