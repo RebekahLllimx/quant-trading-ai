@@ -1,5 +1,5 @@
 {
-  "validated_at": "2026-07-26T23:19:18.953876+08:00",
+  "validated_at": "2026-11-17T12:35:01.752316+08:00",
   "overall_assessment": "ready_to_share_with_caveats",
   "checks_passed": 18,
   "checks_total": 18,
@@ -148,6 +148,6 @@
     "The universe is frozen from January 2018 liquidity and is not a historical index constituent panel.",
     "Price levels are scale-free adjusted return indexes for most symbols; only ratio features are modeled.",
     "Three initial raw files came from an earlier frozen qfq API attempt and are explicitly identified in the manifest.",
-    "Current provider limits prevented automatic company-name enrichment; stock codes remain the stable identifiers."
+    "Current provider limits prevented automatic company-name enrichment; symbols remain the stable identifiers."
   ]
 }

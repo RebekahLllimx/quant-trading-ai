@@ -1,9 +1,9 @@
-﻿year,rows,positive_rate,period
-2018年,16,0.75,开发期
-2019年,51,0.37254901960784315,开发期
-2020年,52,0.7115384615384616,开发期
-2021年,52,0.6153846153846154,开发期
-2022年,50,0.48,开发期
-2023年,50,0.44,开发期
-2024年,51,0.7058823529411765,开发期
-2025年,48,0.5208333333333334,最终测试
+year,rows,positive_rate,period
+2018year,16,0.75,Development period
+2019year,51,0.37254901960784315,Development period
+2020year,52,0.7115384615384616,Development period
+2021year,52,0.6153846153846154,Development period
+2022year,50,0.48,Development period
+2023year,50,0.44,Development period
+2024year,51,0.7058823529411765,Development period
+2025year,48,0.5208333333333334,Final Test

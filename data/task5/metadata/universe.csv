@@ -1,4 +1,4 @@
-﻿universe_rank,ts_code,median_amount,mean_amount,observed_days,symbol,name,list_date,selection_window,selection_metric
+universe_rank,ts_code,median_amount,mean_amount,observed_days,symbol,name,list_date,selection_window,selection_metric
 1,601318.SH,9352475.066,10117865.154727273,22,,,,2018-01,median_daily_amount_thousand_cny
 2,000725.SZ,5668188.5825,6815668.8246818185,22,,,,2018-01,median_daily_amount_thousand_cny
 3,600030.SH,4707802.2965,5031830.409318182,22,,,,2018-01,median_daily_amount_thousand_cny

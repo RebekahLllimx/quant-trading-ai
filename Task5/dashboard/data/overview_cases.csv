@@ -1,5 +1,5 @@
-﻿order,case,domain,target,train_samples,test_samples,best_model,best_auc,auc_ci,role
-1,乳腺癌诊断,公开医学教学数据,恶性=1，良性=0,455,114,逻辑回归 / 随机森林,0.9937169312169312,0.983—1.000,课程主案例：展示完整分类流程
-2,A股60日截面排名,冻结沪深A股股票池,未来60日收益前30%与后30%,4349,525,随机森林,0.532764277211625,0.298—0.684,金融尝试：截面选股
-3,A股20日绝对涨跌,冻结沪深A股股票池,未来20日收益是否为正,7867,1065,逻辑回归,0.5289815875817598,0.499—0.587,金融尝试：月末涨跌分类
-4,宁德时代20日超额收益,300750.SZ与沪深300,未来20日是否跑赢沪深300,318,48,决策树,0.5243478260869565,0.349—0.691,金融尝试：单股相对基准
+order,case,domain,target,train_samples,test_samples,best_model,best_auc,auc_ci,role
+1,Breast Cancer Diagnosis,Open medical teaching data,malignant=1, Benign=0,455,114,Logistic Regression / Random Forest,0.9937169312169312,0.983 - 1.000,Main Case Study of the Course: Display the complete classification process
+2,A-share60Daily Cross-Section Ranking,Freeze Shanghai and ShenzhenA-share pool,The future60Before daily earnings30%With later30%,4349,525,Random Forest,0.532764277211625,0.298 - 0.684,financial attempt: Cross-sectional stock selection
+3,A-share20Daily Absolute Change,Freeze Shanghai and ShenzhenA-share pool,The future20Is the daily return positive?,7867,1065,Logistic Regression,0.5289815875817598,0.499 - 0.587,financial attempt: Month-end rise and fall classification
+4,CATL20Daily excess return,300750.SZWith Shanghai and Shenzhen300,The future20Does Japan Win Shanghai and Shenzhen300,318,48,Decision tree,0.5243478260869565,0.349 - 0.691,financial attempt: Single Stock Relative Benchmark

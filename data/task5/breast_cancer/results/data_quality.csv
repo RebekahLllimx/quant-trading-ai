@@ -1,7 +1,7 @@
-﻿检查,结果,通过
-样本数,569,True
-数值特征数,30,True
-必需字段缺失单元格,0,True
-完全重复的特征行,0,True
-标签取值,"[0, 1]",True
-样本编号唯一,569,True
+Check,Result,Through
+Sample size,569,True
+Numerical characteristic number,30,True
+Required Fields Missing Cells,0,True
+Duplicate feature rows,0,True
+Label value,"[0, 1]",True
+Sample number is unique,569,True

@@ -1,25 +1,25 @@
-﻿model,model_cn,feature,feature_cn,importance
-decision_tree,决策树,return_1d,1日收益,0.13083813976783912
-decision_tree,决策树,rsi14,RSI(14),0.40817725165364527
-decision_tree,决策树,return_10d,10日收益,0.1568268640330782
-decision_tree,决策树,return_20d,20日收益,0.03527345707416503
-decision_tree,决策树,amount_ratio20,20日额比,0.26888428747127247
-decision_tree,决策树,return_5d,5日收益,0.0
-decision_tree,决策树,intraday_range,日内振幅,0.0
-decision_tree,决策树,benchmark_volatility20,沪深300 20日波动率,0.0
-random_forest,随机森林,return_1d,1日收益,0.13526329466386258
-random_forest,随机森林,rsi14,RSI(14),0.1934906435922232
-random_forest,随机森林,return_10d,10日收益,0.15004654980968096
-random_forest,随机森林,return_20d,20日收益,0.1480281517667544
-random_forest,随机森林,amount_ratio20,20日额比,0.10921979077852709
-random_forest,随机森林,return_5d,5日收益,0.07548066063238269
-random_forest,随机森林,intraday_range,日内振幅,0.0648729369195806
-random_forest,随机森林,benchmark_volatility20,沪深300 20日波动率,0.12359797183698853
-gradient_boosting,梯度提升,return_1d,1日收益,0.15940684948919828
-gradient_boosting,梯度提升,rsi14,RSI(14),0.34763291039590727
-gradient_boosting,梯度提升,return_10d,10日收益,0.07000228387020295
-gradient_boosting,梯度提升,return_20d,20日收益,0.13366954109919318
-gradient_boosting,梯度提升,amount_ratio20,20日额比,0.13707142561866048
-gradient_boosting,梯度提升,return_5d,5日收益,0.0
-gradient_boosting,梯度提升,intraday_range,日内振幅,0.023334901823765294
-gradient_boosting,梯度提升,benchmark_volatility20,沪深300 20日波动率,0.1288820877030726
+model,model_cn,feature,feature_cn,importance
+decision_tree,Decision tree,return_1d,1daily earnings,0.13083813976783912
+decision_tree,Decision tree,rsi14,RSI(14),0.40817725165364527
+decision_tree,Decision tree,return_10d,10daily earnings,0.1568268640330782
+decision_tree,Decision tree,return_20d,20daily earnings,0.03527345707416503
+decision_tree,Decision tree,amount_ratio20,20daily ratio,0.26888428747127247
+decision_tree,Decision tree,return_5d,5daily earnings,0.0
+decision_tree,Decision tree,intraday_range,intraday amplitude,0.0
+decision_tree,Decision tree,benchmark_volatility20,Shanghai and Shenzhen300 20daily volatility,0.0
+random_forest,Random Forest,return_1d,1daily earnings,0.13526329466386258
+random_forest,Random Forest,rsi14,RSI(14),0.1934906435922232
+random_forest,Random Forest,return_10d,10daily earnings,0.15004654980968096
+random_forest,Random Forest,return_20d,20daily earnings,0.1480281517667544
+random_forest,Random Forest,amount_ratio20,20daily ratio,0.10921979077852709
+random_forest,Random Forest,return_5d,5daily earnings,0.07548066063238269
+random_forest,Random Forest,intraday_range,intraday amplitude,0.0648729369195806
+random_forest,Random Forest,benchmark_volatility20,Shanghai and Shenzhen300 20daily volatility,0.12359797183698853
+gradient_boosting,gradient boost,return_1d,1daily earnings,0.15940684948919828
+gradient_boosting,gradient boost,rsi14,RSI(14),0.34763291039590727
+gradient_boosting,gradient boost,return_10d,10daily earnings,0.07000228387020295
+gradient_boosting,gradient boost,return_20d,20daily earnings,0.13366954109919318
+gradient_boosting,gradient boost,amount_ratio20,20daily ratio,0.13707142561866048
+gradient_boosting,gradient boost,return_5d,5daily earnings,0.0
+gradient_boosting,gradient boost,intraday_range,intraday amplitude,0.023334901823765294
+gradient_boosting,gradient boost,benchmark_volatility20,Shanghai and Shenzhen300 20daily volatility,0.1288820877030726

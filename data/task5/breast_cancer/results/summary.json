@@ -2,7 +2,7 @@
   "source": "scikit-learn load_breast_cancer",
   "samples": 569,
   "features": 30,
-  "positive_class": "恶性",
+  "positive_class": "malignant",
   "positive_rate": 0.37258347978910367,
   "train_samples": 455,
   "test_samples": 114,

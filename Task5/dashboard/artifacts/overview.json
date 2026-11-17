@@ -3,19 +3,19 @@
   "manifest": {
     "version": 1,
     "surface": "dashboard",
-    "title": "TASK5 AI交易引擎：分类模型与场景对比",
-    "description": "乳腺癌主案例和三次金融分类尝试的分页作品集。",
+    "title": "Task 5 - Machine-Learning Case Studies: Classification Model and Scenario Comparison",
+    "description": "Main breast cancer case and three financial classification attempts are presented in a paginated portfolio.. ",
     "generatedAt": "2026-07-18T20:10:22+08:00",
     "filters": [],
     "cards": [
       {
         "id": "patients",
-        "description": "scikit-learn乳腺癌诊断全部患者样本。",
+        "description": "scikit-learnAll patient samples for breast cancer diagnosis. ",
         "dataset": "summary",
         "sourceId": "summary_source",
         "metrics": [
           {
-            "label": "患者样本",
+            "label": "Patient sample",
             "field": "patients",
             "format": "compact"
           }
@@ -23,12 +23,12 @@
       },
       {
         "id": "features",
-        "description": "相关性去重与VIF检查后保留。",
+        "description": "Correlation deduplication andVIFRetention after inspection. ",
         "dataset": "summary",
         "sourceId": "summary_source",
         "metrics": [
           {
-            "label": "主案例特征",
+            "label": "Main Case Characteristics",
             "field": "selected_features",
             "format": "compact"
           }
@@ -36,12 +36,12 @@
       },
       {
         "id": "cancer_auc",
-        "description": "逻辑回归与随机森林并列最高。",
+        "description": "Logistic regression and random forest rank the highest in parallel. ",
         "dataset": "summary",
         "sourceId": "summary_source",
         "metrics": [
           {
-            "label": "主案例AUC",
+            "label": "Main CaseAUC",
             "field": "cancer_auc",
             "format": "number"
           }
@@ -49,12 +49,12 @@
       },
       {
         "id": "attempts",
-        "description": "截面排名、绝对涨跌与单股超额收益。",
+        "description": "Section Ranking, Absolute price changes and individual stock excess returns. ",
         "dataset": "summary",
         "sourceId": "summary_source",
         "metrics": [
           {
-            "label": "金融任务定义",
+            "label": "Financial Task Definition",
             "field": "finance_attempts",
             "format": "compact"
           }
@@ -62,12 +62,12 @@
       },
       {
         "id": "finance_auc",
-        "description": "三次金融尝试中的最高样本外AUC。",
+        "description": "The highest out-of-sample in three financial attemptsAUC. ",
         "dataset": "summary",
         "sourceId": "summary_source",
         "metrics": [
           {
-            "label": "金融最高AUC",
+            "label": "The highest financialAUC",
             "field": "finance_highest_auc",
             "format": "number"
           }
@@ -77,8 +77,8 @@
     "charts": [
       {
         "id": "case_auc",
-        "title": "四个分类口径的最高测试AUC",
-        "subtitle": "乳腺癌形态特征与Y的区分度明显高于当前金融特征",
+        "title": "Highest test of the four classification calibersAUC",
+        "subtitle": "Morphological characteristics of breast cancer andYDiscrimination is significantly higher than current financial features",
         "type": "bar",
         "intent": "comparison",
         "dataset": "cases",
@@ -87,7 +87,7 @@
           "x": {
             "field": "case",
             "type": "nominal",
-            "label": "分类问题"
+            "label": "classification problem"
           },
           "y": {
             "field": "best_auc",
@@ -98,17 +98,17 @@
             {
               "field": "best_model",
               "type": "text",
-              "label": "最高AUC模型"
+              "label": "highestAUCmodel"
             },
             {
               "field": "auc_ci",
               "type": "text",
-              "label": "95%区间"
+              "label": "95%Interval"
             },
             {
               "field": "test_samples",
               "type": "quantitative",
-              "label": "测试样本",
+              "label": "Test sample",
               "format": "compact"
             }
           ]
@@ -117,7 +117,7 @@
           {
             "axis": "y",
             "value": 0.5,
-            "label": "随机排序",
+            "label": "Random Sort",
             "color": "neutral",
             "lineStyle": "dashed"
           }
@@ -131,8 +131,8 @@
     "tables": [
       {
         "id": "case_table",
-        "title": "问题定义与样本边界",
-        "subtitle": "AUC必须和X、Y、样本结构一起解释",
+        "title": "Problem definition and sample boundaries",
+        "subtitle": "AUCmust andX, Y, Explain the sample structure together",
         "dataset": "cases",
         "sourceId": "cases_source",
         "defaultSort": {
@@ -144,17 +144,17 @@
         "columns": [
           {
             "field": "order",
-            "label": "序号",
+            "label": "Serial number",
             "format": "number"
           },
           {
             "field": "case",
-            "label": "案例",
+            "label": "Case study",
             "type": "text"
           },
           {
             "field": "domain",
-            "label": "数据范围",
+            "label": "Data Range",
             "type": "text"
           },
           {
@@ -164,17 +164,17 @@
           },
           {
             "field": "train_samples",
-            "label": "训练/拟合样本",
+            "label": "training/Fit sample",
             "format": "compact"
           },
           {
             "field": "test_samples",
-            "label": "测试样本",
+            "label": "Test sample",
             "format": "compact"
           },
           {
             "field": "best_model",
-            "label": "最高AUC模型",
+            "label": "highestAUCmodel",
             "type": "text"
           },
           {
@@ -184,12 +184,12 @@
           },
           {
             "field": "auc_ci",
-            "label": "95%区间",
+            "label": "95%Interval",
             "type": "text"
           },
           {
             "field": "role",
-            "label": "在TASK5中的作用",
+            "label": "InTASK5role in",
             "type": "text"
           }
         ]
@@ -198,42 +198,42 @@
     "sources": [
       {
         "id": "cases_source",
-        "label": "TASK5四个分类口径",
+        "label": "TASK5Four classification caliber",
         "path": "Task5/dashboard/data/overview_cases.csv",
         "query": {
           "engine": "duckdb",
           "language": "sql",
           "sql": "SELECT * FROM read_csv_auto('Task5/dashboard/data/overview_cases.csv', header=true)",
-          "description": "由乳腺癌主案例与三次金融尝试的冻结结果整理。",
+          "description": "Organized from the frozen results of the main breast cancer case and three financial attempts.. ",
           "tables_used": [
             "Task5/dashboard/data/overview_cases.csv"
           ],
           "filters": [
-            "乳腺癌使用固定80/20分层划分",
-            "金融数据使用2025年样本外测试"
+            "Breast cancer using fixed80/20hierarchical division",
+            "Use of financial data2025annual out-of-sample testing"
           ],
           "metric_definitions": [
-            "best_auc是每个问题定义下的最高测试ROC-AUC。"
+            "best_aucIt is the highest test under each problem definitionROC-AUC. "
           ]
         }
       },
       {
         "id": "summary_source",
-        "label": "TASK5看板摘要",
+        "label": "TASK5Dashboard Summary",
         "path": "Task5/dashboard/data/overview_summary.csv",
         "query": {
           "engine": "duckdb",
           "language": "sql",
           "sql": "SELECT * FROM read_csv_auto('Task5/dashboard/data/overview_summary.csv', header=true)",
-          "description": "主案例和金融尝试的关键数量。",
+          "description": "Key quantities of the main case and financial attempts. ",
           "tables_used": [
             "Task5/dashboard/data/overview_summary.csv"
           ],
           "filters": [
-            "只使用冻结结果"
+            "Use only frozen results"
           ],
           "metric_definitions": [
-            "finance_highest_auc是三次金融尝试最佳AUC的最大值。"
+            "finance_highest_aucBest of three financial attemptsAUCThe maximum value. "
           ]
         }
       }
@@ -242,7 +242,7 @@
       {
         "id": "opening",
         "type": "markdown",
-        "body": "## TASK5 分类研究全景\n\n课程主体使用乳腺癌诊断数据，展示从数据检查、特征筛选到ROC-AUC和混淆矩阵的完整分类流程。三次金融尝试保留在作品集中，用于比较问题定义、数据信息量和模型表现之间的差异。"
+        "body": "## TASK5 Panoramic View of Taxonomic Research\n\nThe main course uses breast cancer diagnostic data, Display from Data Check, Feature selection toROC-AUCComplete classification process of confusion matrices. Three financial attempts retained in the portfolio, Used to compare question definitions, Differences between data information volume and model performance. "
       },
       {
         "id": "cards",
@@ -270,7 +270,7 @@
       {
         "id": "navigation",
         "type": "markdown",
-        "body": "## 分页内容\n\n- [乳腺癌分类主案例](cancer.html)：数据分布、特征筛选、ROC、阈值指标和特征解释。\n- [金融市场三次尝试](finance.html)：三种Y、样本范围、模型AUC和分层结论。\n- [宁德时代单股案例](catl.html)：未来20日相对沪深300的分类设计和计算核对。"
+        "body": "## Pagination content\n\n- [Breast Cancer Classification Main Case](cancer.html): Data distribution, Feature Selection, ROC, Threshold metrics and feature interpretation. \n- [Three Attempts in the Financial Market](finance.html): Three typesY, Sample Range, modelAUCand stratification conclusions. \n- [Ningde era single-share case](catl.html): The future20Daily comparison with Shanghai and Shenzhen300Classification design and calculation check. "
       }
     ]
   },
@@ -291,51 +291,51 @@
       "cases": [
         {
           "order": 1,
-          "case": "乳腺癌诊断",
-          "domain": "公开医学教学数据",
-          "target": "恶性=1，良性=0",
+          "case": "Breast Cancer Diagnosis",
+          "domain": "Open medical teaching data",
+          "target": "malignant=1, Benign=0",
           "train_samples": 455,
           "test_samples": 114,
-          "best_model": "逻辑回归 / 随机森林",
+          "best_model": "Logistic Regression / Random Forest",
           "best_auc": 0.9937169312169312,
-          "auc_ci": "0.983—1.000",
-          "role": "课程主案例：展示完整分类流程"
+          "auc_ci": "0.983 - 1.000",
+          "role": "Main Case Study of the Course: Display the complete classification process"
         },
         {
           "order": 2,
-          "case": "A股60日截面排名",
-          "domain": "冻结沪深A股股票池",
-          "target": "未来60日收益前30%与后30%",
+          "case": "A-share60Daily Cross-Section Ranking",
+          "domain": "Freeze Shanghai and ShenzhenA-share pool",
+          "target": "The future60Before daily earnings30%With later30%",
           "train_samples": 4349,
           "test_samples": 525,
-          "best_model": "随机森林",
+          "best_model": "Random Forest",
           "best_auc": 0.532764277211625,
-          "auc_ci": "0.298—0.684",
-          "role": "金融尝试：截面选股"
+          "auc_ci": "0.298 - 0.684",
+          "role": "financial attempt: Cross-sectional stock selection"
         },
         {
           "order": 3,
-          "case": "A股20日绝对涨跌",
-          "domain": "冻结沪深A股股票池",
-          "target": "未来20日收益是否为正",
+          "case": "A-share20Daily Absolute Change",
+          "domain": "Freeze Shanghai and ShenzhenA-share pool",
+          "target": "The future20Is the daily return positive?",
           "train_samples": 7867,
           "test_samples": 1065,
-          "best_model": "逻辑回归",
+          "best_model": "Logistic Regression",
           "best_auc": 0.5289815875817598,
-          "auc_ci": "0.499—0.587",
-          "role": "金融尝试：月末涨跌分类"
+          "auc_ci": "0.499 - 0.587",
+          "role": "financial attempt: Month-end rise and fall classification"
         },
         {
           "order": 4,
-          "case": "宁德时代20日超额收益",
-          "domain": "300750.SZ与沪深300",
-          "target": "未来20日是否跑赢沪深300",
+          "case": "CATL20Daily excess return",
+          "domain": "300750.SZWith Shanghai and Shenzhen300",
+          "target": "The future20Does Japan Win Shanghai and Shenzhen300",
           "train_samples": 318,
           "test_samples": 48,
-          "best_model": "决策树",
+          "best_model": "Decision tree",
           "best_auc": 0.5243478260869565,
-          "auc_ci": "0.349—0.691",
-          "role": "金融尝试：单股相对基准"
+          "auc_ci": "0.349 - 0.691",
+          "role": "financial attempt: Single Stock Relative Benchmark"
         }
       ]
     }
@@ -343,42 +343,42 @@
   "sources": [
     {
       "id": "cases_source",
-      "label": "TASK5四个分类口径",
+      "label": "TASK5Four classification caliber",
       "path": "Task5/dashboard/data/overview_cases.csv",
       "query": {
         "engine": "duckdb",
         "language": "sql",
         "sql": "SELECT * FROM read_csv_auto('Task5/dashboard/data/overview_cases.csv', header=true)",
-        "description": "由乳腺癌主案例与三次金融尝试的冻结结果整理。",
+        "description": "Organized from the frozen results of the main breast cancer case and three financial attempts.. ",
         "tables_used": [
           "Task5/dashboard/data/overview_cases.csv"
         ],
         "filters": [
-          "乳腺癌使用固定80/20分层划分",
-          "金融数据使用2025年样本外测试"
+          "Breast cancer using fixed80/20hierarchical division",
+          "Use of financial data2025annual out-of-sample testing"
         ],
         "metric_definitions": [
-          "best_auc是每个问题定义下的最高测试ROC-AUC。"
+          "best_aucIt is the highest test under each problem definitionROC-AUC. "
         ]
       }
     },
     {
       "id": "summary_source",
-      "label": "TASK5看板摘要",
+      "label": "TASK5Dashboard Summary",
       "path": "Task5/dashboard/data/overview_summary.csv",
       "query": {
         "engine": "duckdb",
         "language": "sql",
         "sql": "SELECT * FROM read_csv_auto('Task5/dashboard/data/overview_summary.csv', header=true)",
-        "description": "主案例和金融尝试的关键数量。",
+        "description": "Key quantities of the main case and financial attempts. ",
         "tables_used": [
           "Task5/dashboard/data/overview_summary.csv"
         ],
         "filters": [
-          "只使用冻结结果"
+          "Use only frozen results"
         ],
         "metric_definitions": [
-          "finance_highest_auc是三次金融尝试最佳AUC的最大值。"
+          "finance_highest_aucBest of three financial attemptsAUCThe maximum value. "
         ]
       }
     }

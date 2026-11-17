@@ -1,35 +1,35 @@
 {
-  "created_at": "2026-07-17T16:01:05.061620+08:00",
+  "created_at": "2026-11-17T12:43:51.872758+08:00",
   "charts": [
     {
       "file": "time_split.png",
-      "question": "样本如何按时间隔离？",
+      "question": "How samples are isolated by time? ",
       "family": "trend/comparison",
-      "takeaway": "参数选择和测试期被严格隔离。"
+      "takeaway": "Parameter selection and the test period are strictly isolated.. "
     },
     {
       "file": "label_distribution.png",
-      "question": "类别比例是否随市场阶段变化？",
+      "question": "Whether category proportions change with market phases? ",
       "family": "composition/comparison",
-      "takeaway": "上涨比例存在年度状态变化。"
+      "takeaway": "The proportion of increases shows annual state changes. "
     },
     {
       "file": "roc_curves.png",
-      "question": "模型能否跨阈值区分涨跌？",
+      "question": "Whether the model can distinguish ups and downs across thresholds? ",
       "family": "uncertainty/benchmark",
-      "takeaway": "三模型仅略高于随机排序。"
+      "takeaway": "The three models are only slightly higher than random sorting. "
     },
     {
       "file": "confusion_matrices.png",
-      "question": "0.5阈值下错误来自哪里？",
+      "question": "0.5Where errors come from under threshold? ",
       "family": "matrix",
-      "takeaway": "弱信号使模型倾向预测不涨，召回率较低。"
+      "takeaway": "Weak Signals Make the Model Tend to Predict No Increase, Low recall rate. "
     },
     {
       "file": "feature_importance.png",
-      "question": "模型依赖哪些历史变量？",
+      "question": "Which historical variables the model relies on? ",
       "family": "ranking",
-      "takeaway": "重要性用于解释模型依赖，不是因果证据。"
+      "takeaway": "Importance used to explain model dependencies, Not causal evidence. "
     }
   ],
   "palette": "muted blue, orange, green and gray on a white background"
