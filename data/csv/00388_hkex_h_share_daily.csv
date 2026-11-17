@@ -1,4 +1,4 @@
-﻿Date,股票代码,Open,Close,High,Low,Volume,Amount,振幅,PctChg,涨跌额,Turnover
+Date,Symbol,Open,Close,High,Low,Volume,Amount,Amplitude,PctChg,Price change,Turnover
 2025-10-13,00388,429.0,432.8,435.4,421.6,14909392.0,,,,,
 2025-10-14,00388,433.0,420.0,435.0,418.4,11822195.0,,3.8355,-2.9575,-12.8,
 2025-10-15,00388,423.2,427.8,430.4,423.2,5114416.0,,1.7143,1.8571,7.8,

@@ -1,8 +1,8 @@
 {
   "000001": {
     "code": "000001",
-    "name": "平安银行",
-    "market": "A股",
+    "name": "Ping An Bank",
+    "market": "A-share",
     "data": [
       [
         "2025-05-29",
@@ -2147,8 +2147,8 @@
   },
   "002594": {
     "code": "002594",
-    "name": "比亚迪",
-    "market": "A股",
+    "name": "BYD",
+    "market": "A-share",
     "data": [
       [
         "2025-05-29",
@@ -4293,8 +4293,8 @@
   },
   "00388": {
     "code": "00388",
-    "name": "香港交易所",
-    "market": "港股",
+    "name": "Hong Kong Exchange",
+    "market": "Hong Kong equities",
     "data": [
       [
         "2025-05-29",
@@ -6463,8 +6463,8 @@
   },
   "00700": {
     "code": "00700",
-    "name": "腾讯控股",
-    "market": "港股",
+    "name": "Tencent Holdings",
+    "market": "Hong Kong equities",
     "data": [
       [
         "2025-05-29",
@@ -8633,8 +8633,8 @@
   },
   "00941": {
     "code": "00941",
-    "name": "中国移动",
-    "market": "港股",
+    "name": "China Mobile",
+    "market": "Hong Kong equities",
     "data": [
       [
         "2025-06-30",
@@ -10595,8 +10595,8 @@
   },
   "03690": {
     "code": "03690",
-    "name": "美团",
-    "market": "港股",
+    "name": "Meituan",
+    "market": "Hong Kong equities",
     "data": [
       [
         "2025-05-29",
@@ -12765,8 +12765,8 @@
   },
   "09988": {
     "code": "09988",
-    "name": "阿里巴巴",
-    "market": "港股",
+    "name": "Alibaba",
+    "market": "Hong Kong equities",
     "data": [
       [
         "2025-05-29",
@@ -14935,8 +14935,8 @@
   },
   "300750": {
     "code": "300750",
-    "name": "宁德时代",
-    "market": "A股",
+    "name": "CATL",
+    "market": "A-share",
     "data": [
       [
         "2025-05-29",
@@ -17081,8 +17081,8 @@
   },
   "600519": {
     "code": "600519",
-    "name": "贵州茅台",
-    "market": "A股",
+    "name": "Kweichow Moutai",
+    "market": "A-share",
     "data": [
       [
         "2025-05-29",
@@ -19227,8 +19227,8 @@
   },
   "601318": {
     "code": "601318",
-    "name": "中国平安",
-    "market": "A股",
+    "name": "Ping An of China",
+    "market": "A-share",
     "data": [
       [
         "2025-05-29",
