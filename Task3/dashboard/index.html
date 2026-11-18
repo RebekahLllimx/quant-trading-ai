@@ -17,7 +17,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei
 .topbar{background:linear-gradient(135deg,#2d3436 0%,#434a54 100%);color:#fff;
   padding:14px 28px;display:flex;justify-content:space-between;align-items:center}
 .topbar h1{font-size:1.3em;font-weight:600}
-.topbar .badge{font-size:0.75em;background:var(--accent);padding:4px 10px;border-radius:10px}
 .layout{display:flex;height:calc(100vh - 56px)}
 .sidebar{width:300px;min-width:300px;background:var(--card);border-right:1px solid var(--border);
   padding:14px;overflow-y:auto;display:flex;flex-direction:column;gap:10px}
@@ -72,7 +71,7 @@ select{width:100%;cursor:pointer}
 <body>
 
 <div class="topbar">
-  <h1>Dual Moving-Average Strategy Backtest</h1>
+  <h1>Dual Moving-Average Backtest <span style="font-weight:400;font-size:0.8em;opacity:0.8;">| SMA Crossover</span></h1>
 </div>
 
 <div class="layout">
@@ -141,7 +140,7 @@ select{width:100%;cursor:pointer}
     </div>
   </div>
 
-  <button class="btn-primary" onclick="runAll()"> Start Backtesting</button>
+  <button class="btn-primary" onclick="runAll()">Run Backtest</button>
 </div>
 
 <div class="main">
@@ -167,7 +166,7 @@ select{width:100%;cursor:pointer}
 
   <!-- Transaction Details -->
   <div class="card">
-    <h3> Transaction details</h3>
+    <h3>Transactions</h3>
     <div class="table-wrap" id="trade-table-wrap">
       <table class="trade-table" id="trade-table">
         <thead><tr>
@@ -175,7 +174,7 @@ select{width:100%;cursor:pointer}
           <th>HOLD DAYS</th><th>Yield</th><th>Accumulated income</th>
         </tr></thead>
         <tbody id="trade-tbody">
-          <tr><td colspan="8" style="color:var(--muted);padding:20px;">Please select a parameter and then click.Start Backtesting</td></tr>
+          <tr><td colspan="8" style="color:var(--muted);padding:20px;">Choose parameters and run the backtest.</td></tr>
         </tbody>
       </table>
     </div>
