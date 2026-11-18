@@ -1,19 +1,16 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Task4: will CSV Data serialized JSON, Embed Dashboard HTML
-"""
+"""Refresh the market data embedded in the Turtle strategy dashboard."""
 
-import os, sys, json
-import pandas as pd
+import json
+import re
+from pathlib import Path
 
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from turtle_strategy import load_stock
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DATA_DIR = os.path.join(BASE_DIR, '..', 'data', 'csv')
-DASHBOARD_DIR = os.path.join(BASE_DIR, 'dashboard')
-OUTPUT_FILE = os.path.join(DASHBOARD_DIR, 'index.html')
+BASE_DIR = Path(__file__).resolve().parents[1]
+OUTPUT_FILE = BASE_DIR / 'dashboard' / 'index.html'
+STOCKS_BINDING = re.compile(r'^\s*const STOCKS =\s*', re.MULTILINE)
 
 STOCKS = [
     ('600519', 'Kweichow Moutai', 'A-share'),
@@ -30,58 +27,50 @@ STOCKS = [
 
 
 def build_stocks_json():
-    """will 10 Only the stock OHLCV Data serialized JSON"""
+    """Load the ten instrument snapshots in the dashboard's OHLCV schema."""
     stocks = {}
     for code, name, market in STOCKS:
-        try:
-            df = load_stock(code, name, market)
-            # Keep Core Columns
-            df = df[['Date', 'Open', 'Close', 'High', 'Low', 'Volume']].copy()
-            df['Date'] = df['Date'].dt.strftime('%Y-%m-%d')
-            data = df.values.tolist()
-            stocks[code] = {
-                'code': code,
-                'name': name,
-                'market': market,
-                'data': data,  # [[Date, Open, Close, High, Low, Volume], ...]
-                'dateStart': data[0][0] if data else '',
-                'dateEnd': data[-1][0] if data else '',
-                'records': len(data),
-            }
-            print(f'   {code} {name} ({market}): {len(data)} item')
-        except Exception as e:
-            print(f'   {code} {name}: {e}')
+        df = load_stock(code, name, market)
+        df = df[['Date', 'Open', 'Close', 'High', 'Low', 'Volume']].copy()
+        if df.empty:
+            raise ValueError(f'No market observations for {code}')
+        df['Date'] = df['Date'].dt.strftime('%Y-%m-%d')
+        data = df.values.tolist()
+        stocks[code] = {
+            'code': code,
+            'name': name,
+            'market': market,
+            'data': data,  # Date, Open, Close, High, Low, Volume.
+            'dateStart': data[0][0],
+            'dateEnd': data[-1][0],
+            'records': len(data),
+        }
+        print(f'   {code} {name} ({market}): {len(data)} observations')
 
     return stocks
 
 
+def replace_stock_payload(html, stocks):
+    """Replace one JSON data binding while preserving the surrounding page."""
+    matches = list(STOCKS_BINDING.finditer(html))
+    if len(matches) != 1:
+        raise ValueError('Expected exactly one const STOCKS data binding')
+    start = matches[0].end()
+    current, length = json.JSONDecoder().raw_decode(html[start:])
+    if not isinstance(current, dict) or not html[start + length:].lstrip().startswith(';'):
+        raise ValueError('Expected a JSON object followed by a semicolon')
+    # Keep data containing HTML delimiters inside the existing script element.
+    payload = json.dumps(stocks, ensure_ascii=False, allow_nan=False)
+    payload = payload.replace('<', r'\u003c').replace('\u2028', r'\u2028').replace('\u2029', r'\u2029')
+    return html[:start] + payload + html[start + length:]
+
+
 def main():
-    print('=' * 60)
-    print('  Task4: Prepare dashboard data')
-    print('=' * 60)
-
-    stocks = build_stocks_json()
-    stocks_json = json.dumps(stocks, ensure_ascii=False)
-
-    # Read HTML Template and inject data
-    template_path = os.path.join(DASHBOARD_DIR, 'template.html')
-    if os.path.exists(template_path):
-        with open(template_path, 'r', encoding='utf-8') as f:
-            html = f.read()
-        html = html.replace('/* __STOCKS_DATA_PLACEHOLDER__ */',
-                           f'const STOCKS = {stocks_json};')
-    else:
-        print('   Template file not found, Please create first template.html')
-        return
-
-    os.makedirs(DASHBOARD_DIR, exist_ok=True)
-    with open(OUTPUT_FILE, 'w', encoding='utf-8') as f:
-        f.write(html)
-
-    file_size = os.path.getsize(OUTPUT_FILE)
-    print(f'\n Dashboard generated: {OUTPUT_FILE} ({file_size/1024:.0f} KB)')
-    print('=' * 60)
-
+    html = OUTPUT_FILE.read_text(encoding='utf-8')
+    refreshed = replace_stock_payload(html, build_stocks_json())
+    if refreshed != html:
+        OUTPUT_FILE.write_text(refreshed, encoding='utf-8')
+    print(f'Dashboard data ready: {OUTPUT_FILE.relative_to(BASE_DIR)}')
 
 if __name__ == '__main__':
     main()

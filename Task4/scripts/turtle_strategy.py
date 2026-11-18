@@ -689,16 +689,17 @@ def param_sweep(df: pd.DataFrame,
 
 def load_stock(code: str, name: str, market: str,
                data_dir: str = None) -> pd.DataFrame:
-    """Load Stock CSV Data"""
-    import os
+    """Load one instrument snapshot by symbol, independent of display labels."""
+    from pathlib import Path
+
     if data_dir is None:
-        data_dir = os.path.join(
-            os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-            '..', 'data', 'csv'
-        )
-    filename = f"{code}_{name}_{market}_daily.csv"
-    filepath = os.path.join(data_dir, filename)
-    df = pd.read_csv(filepath, encoding='utf-8-sig')
+        data_dir = Path(__file__).resolve().parents[2] / 'data' / 'csv'
+    candidates = sorted(Path(data_dir).glob(f'{code}_*_daily.csv'))
+    if not candidates:
+        raise FileNotFoundError(f'No daily-price snapshot found for {code}')
+    if len(candidates) != 1:
+        raise ValueError(f'Multiple daily-price snapshots found for {code}')
+    df = pd.read_csv(candidates[0], encoding='utf-8-sig')
     df['Date'] = pd.to_datetime(df['Date'])
     df = df.sort_values('Date').reset_index(drop=True)
     return df

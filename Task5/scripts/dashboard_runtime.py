@@ -29,6 +29,6 @@ def data_analytics_plugin_root() -> Path:
             return candidate
 
     raise FileNotFoundError(
-        "Not foundData Analytics DashboardPackaging Tools. "
-        "Please install the corresponding plug-in, or settingsDATA_ANALYTICS_PLUGIN_ROOTPoint to the plug-in version directory. "
+        "Data Analytics dashboard packaging tools were not found. "
+        "Install the plugin or set DATA_ANALYTICS_PLUGIN_ROOT to its version directory. "
     )
