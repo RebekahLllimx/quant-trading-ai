@@ -12,14 +12,16 @@ Logistic regression and random forest both achieved test ROC-AUC near `0.994`; g
 
 Three chronological financial designs produced out-of-sample AUC values of `0.533`, `0.529`, and `0.524`, with confidence intervals covering `0.5`. The accompanying checks cover split dates, label construction, random labels, deliberately predictable labels, and performance by market period. These results show that the selected financial features did not produce a stable ranking signal on the held-out samples.
 
-## Reproduce and validate
+## Validate or rebuild the dashboard
+
+After installing the root requirements, run from the repository root. The first command checks portfolio entry points, unit tests, and saved Task 5-7 results; the second rebuilds Task 5's pages from saved outputs without fitting models.
 
 ```bash
-python Task5/scripts/cancer_case_analysis.py
+python tools/run_all_validations.py
 python Task5/scripts/build_task5_dashboard.py
-python Task5/scripts/validate_results.py
-python Task5/scripts/validate_experiment2.py
 ```
+
+To rerun the primary classification experiment, use `python Task5/scripts/cancer_case_analysis.py`. It refits models and replaces the case's generated outputs. The [script guide](scripts/README.md) separates this step from financial-data refresh and dashboard rendering.
 
 ## Entry points
 

@@ -1,10 +1,4 @@
-"""Build eight concise, publication-style English reports.
-
-The reports are authored as structured content rather than reconstructed from
-page-level PDF text. This keeps the technical detail while removing notebook
-output, duplicated explanations, and the decorative title pages of the source
-documents.
-"""
+"""Build eight English trading-research reports from structured task content."""
 
 from __future__ import annotations
 
@@ -39,7 +33,7 @@ REPORTS = {
         "overview": "This task establishes the data layer used by the later strategy and machine-learning studies. It normalizes daily A-share and Hong Kong equity data, preserves reproducible snapshots, and exposes the same records to Python analysis and a portable browser dashboard.",
         "sections": [
             ("1. Objective and scope", [
-                ("p", "A quantitative result is only as reliable as the prices, timestamps, and corporate-action treatment that enter the calculation. The task therefore begins before strategy design: ten liquid securities were selected across banking, insurance, consumer goods, new energy, internet platforms, telecommunications, and exchange services. The maintained course snapshots contain 241 A-share trading days and 244 Hong Kong trading days."),
+                ("p", "A quantitative result is only as reliable as the prices, timestamps, and corporate-action treatment that enter the calculation. The task therefore begins before strategy design: ten liquid securities were selected across banking, insurance, consumer goods, new energy, internet platforms, telecommunications, and exchange services. The frozen snapshots contain 241 A-share trading days and 244 Hong Kong trading days."),
                 ("bullets", [
                     "Retrieve daily open, high, low, close, volume, and turnover fields from AKShare, with Tushare as a provider-specific fallback.",
                     "Use forward-adjusted prices so that ex-dividend and split events do not appear as artificial trading signals.",
@@ -63,7 +57,7 @@ REPORTS = {
                 ("figure", "task1_market_comparison.png", "Figure 2. Period return, annualized volatility, and maximum drawdown for the ten securities."),
             ]),
             ("4. Dashboard and reproducibility", [
-                ("p", "The static dashboard embeds the normalized records directly in HTML. The browser computes range return, annualized volatility, drawdown, and win rate, and renders candlestick, volume, return-distribution, and cumulative-return views. Because the data are embedded, the published page can be opened without a running server. Refresh scripts remain separate from the offline build so that a network failure cannot change a reviewed result."),
+                ("p", "The static dashboard embeds the normalized records directly in HTML. The browser computes range return, annualized volatility, drawdown, and win rate, and renders candlestick, volume, return-distribution, and cumulative-return views. Because the data are embedded, the published page can be opened without a running server. Refresh scripts remain separate from the offline build so that a network failure cannot change a saved result."),
                 ("p", "The key engineering result is a stable interface between acquisition and analysis. Tasks 2-8 can change indicators, models, or portfolio rules without rewriting the market-data layer."),
             ]),
         ],
@@ -124,7 +118,7 @@ REPORTS = {
                 ("figure", "task3_signals.png", "Figure 1. MA(5, 15) entries and exits on the frozen Kweichow Moutai sample."),
                 ("p", "The rule reduces exposure during sustained declines, but it also trades after the trend has already changed. In range-bound periods the two averages repeatedly cross and reverse, creating small losses and costs. The mechanism is therefore transparent: it exchanges early entry for confirmation and accepts lag as the price of smoothing."),
             ]),
-            ("3. Course-period result", [
+            ("3. Backtest result", [
                 ("table", [
                     ["Metric", "MA(5, 15)", "Buy and hold"],
                     ["Cumulative return", "-5.67%", "-18.24%"],
@@ -138,7 +132,7 @@ REPORTS = {
                 ("p", "Most tested combinations remain negative. Better results appear in limited regions rather than across a broad, smooth plateau. A single best pair is therefore less informative than the neighborhood around it. A production research process would select parameters on a development window and evaluate them once on an untouched period."),
             ]),
             ("5. Implementation result", [
-                ("p", "The backtest stores positions, cash, trades, turnover, net asset value, and drawdown for each date. The dashboard recomputes the strategy under alternative windows and costs, making the execution assumptions visible rather than burying them in a notebook cell."),
+                ("p", "The backtest stores positions, cash, trades, turnover, net asset value, and drawdown for each date. The dashboard recomputes the strategy under alternative windows and costs, making the execution assumptions explicit."),
                 ("p", "The remaining weakness is structural rather than cosmetic. Fixed position size and a crossover-only exit do not normalize risk across volatility regimes or protect against a sharp move between signals. This limitation motivates the ATR sizing, stops, and stateful accounting introduced in Task 4."),
             ]),
         ],
@@ -167,7 +161,7 @@ REPORTS = {
                     "Trade records retain entry, adds, exit, price, shares, return, and exit reason.",
                 ]),
             ]),
-            ("3. Course-period result", [
+            ("3. Backtest result", [
                 ("figure", "task4_equity_drawdown.png", "Figure 1. Turtle equity, buy-and-hold equity, and strategy drawdown on the frozen sample."),
                 ("table", [
                     ["Metric", "Turtle strategy", "Buy and hold"],
@@ -443,7 +437,7 @@ def build_report(task: int) -> Path:
     styles = report_styles()
     story = [
         Paragraph(escape(spec["title"]), styles["ReportTitle"]),
-        Paragraph(f"Quantitative Trading Coursework - Task {task}<br/>Muxiao Li - Peking University - 2026", styles["Meta"]),
+        Paragraph(f"Quantitative Trading Research - Task {task}<br/>2026", styles["Meta"]),
         Paragraph("Overview", styles["Section"]),
         Paragraph(escape(spec["overview"]), styles["Overview"]),
     ]
@@ -458,6 +452,14 @@ def build_report(task: int) -> Path:
                 *figure_parts(path, block[2], styles),
             ]))
             remaining_blocks = blocks[1:]
+        elif blocks[0][0] == "table":
+            block = blocks[0]
+            story.append(KeepTogether([
+                Paragraph(escape(heading), styles["Section"]),
+                report_table(block[1], block[2], styles),
+                Spacer(1, 4 * mm),
+            ]))
+            remaining_blocks = blocks[1:]
         else:
             story.append(Paragraph(escape(heading), styles["Section"]))
             remaining_blocks = blocks
@@ -468,7 +470,7 @@ def build_report(task: int) -> Path:
     document = SimpleDocTemplate(
         str(output), pagesize=A4, leftMargin=22 * mm, rightMargin=22 * mm,
         topMargin=18 * mm, bottomMargin=17 * mm, title=spec["title"],
-        author="Muxiao Li", subject="Quantitative trading course report",
+        author="", subject="Quantitative trading research report",
     )
     document.build(story, onFirstPage=first_page, onLaterPages=later_page)
     return output

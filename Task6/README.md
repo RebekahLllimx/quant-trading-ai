@@ -20,7 +20,20 @@ The extension predicts Ping An Bank's next three-day direction from rolling pric
 
 The model-selection comparison is part of the result rather than an omitted tuning detail. A larger search produced a validation AUC of `0.752` but only `0.538` on the untouched test. The frozen rolling baseline transferred more consistently (`0.623` validation, `0.571` test), so the test window is treated as a one-time audit rather than another tuning surface.
 
-## Reproduce and validate
+## Inspect the committed results
+
+Use the pinned environment in the root `requirements.txt`. From the repository root:
+
+```bash
+python tools/run_all_validations.py
+python Task6/scripts/build_dashboard.py
+```
+
+This checks the saved predictions and portfolios and rebuilds the dashboard without refitting a model.
+
+## Rerun the research pipelines
+
+The following commands refit models and replace generated predictions, portfolio records, metadata, and figures:
 
 ```bash
 python Task6/scripts/main_pipeline.py

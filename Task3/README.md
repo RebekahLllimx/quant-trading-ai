@@ -24,4 +24,16 @@ The parameter grid shows the trade-off between short lookbacks, which create mor
 - [`scripts/build_dashboard.py`](scripts/build_dashboard.py) - static dashboard build
 - [English report](../reports/Task3_Report.pdf)
 
+## Reproduce from frozen prices
+
+After the repository-level environment setup, run from the repository root:
+
+```bash
+python Task3/scripts/prepare_data.py
+python Task3/scripts/build_dashboard.py
+python Task3/scripts/plot_strategy.py
+```
+
+The first two commands rebuild `dashboard/data.json` and `dashboard/index.html` from `data/csv/`. The last regenerates analysis figures under `artifacts/charts/task3/`. These commands overwrite generated files and do not refresh market data.
+
 The dashboard exposes the equity curve, drawdown, trades, and parameter grid for the same frozen interval.

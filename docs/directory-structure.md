@@ -1,4 +1,4 @@
-# Repository Structure and File Lifecycle
+# Repository Structure
 
 The repository separates public entry points, executable research code, structured evidence, and generated artifacts.
 
@@ -6,7 +6,7 @@ The repository separates public entry points, executable research code, structur
 Task1/ ... Task8/       task-specific README, scripts, and dashboard
 data/                   raw snapshots, processed datasets, and metadata
 artifacts/models/       serialized estimators used by the validated pipelines
-artifacts/charts/       maintained English charts used by current analyses
+artifacts/charts/       charts used by the analyses and dashboards
 reports/                eight generated English PDF reports
 src/                    shared indicator and equation utilities
 tools/                  repository-wide validation and report builders
@@ -20,9 +20,9 @@ index.html              GitHub Pages hub
 - `TaskN/README.md` explains the task, method, result, limitations, and entry points.
 - `TaskN/scripts/` contains data preparation, research, validation, and page-build code.
 - `TaskN/dashboard/index.html` is the stable public page for each task.
-- `data/taskN/raw/` stores frozen source snapshots; processed and metadata directories store derived evidence and provenance.
+- `data/csv/` holds the shared daily-price snapshots used by Tasks 1-4. Tasks 5-7 use task-specific trees under `data/task5/`, `data/task6/`, and `data/task7/`, with raw, processed, and metadata files where required.
 - `artifacts/models/` stores estimators only when the matching feature contract and metadata are present.
-- `reports/TaskN_Report.pdf` is generated from the maintained English task summary.
+- `reports/TaskN_Report.pdf` contains the task's methods, results, and interpretation.
 
 ## Evidence rules
 
@@ -32,12 +32,14 @@ index.html              GitHub Pages hub
 4. No account identifiers, passwords, cookies, tokens, or private share links belong in the repository.
 5. Generated files are kept only when they support a maintained dashboard, validation check, or report.
 
-## Maintenance checks
+## Validation and rebuilding
 
-Run the repository-wide validation before publishing:
+From the repository root:
 
 ```bash
 python tools/run_all_validations.py
 ```
 
-When a data contract changes, update the producer, consumer, metadata, dashboard, and validation in the same change.
+The wrapper runs the structure checks, unit tests, and Task 5-7 result validators without fetching new prices or training models. Individual validators write timestamped validation reports; the wrapper restores those files after the check.
+
+Dashboard builders replace HTML and presentation JSON. Research pipelines can also replace predictions, model bundles, charts, and metadata. Task 7's market-data refresh uses network access; its offline shadow engine reads the committed snapshots. Task 4 refreshes the data embedded in its standalone dashboard without replacing the page layout.

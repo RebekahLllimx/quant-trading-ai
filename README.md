@@ -1,8 +1,10 @@
-# Quantitative Trading Coursework
+# Quantitative Trading Research
 
-Eight projects completed for the Peking University Guanghua Business Analytics Workshop (June-July 2026). Together they form a research pipeline from market-data preparation to indicator calculation, rule-based backtesting, machine-learning experiments, portfolio construction, and strategy monitoring.
+Compare rule-based and machine-learning trading strategies using explicit execution timing, transaction costs, and chronological validation. Eight connected studies cover market-data preparation, indicators, backtesting, predictive models, portfolio construction, and strategy monitoring.
 
 [Open the GitHub Pages hub](https://rebekahlllimx.github.io/quant-trading-ai/) to explore the dashboards, or start with the [Task 7 strategy dashboard](Task7/dashboard/index.html).
+
+Developed for the Peking University Guanghua Business Analytics Workshop (June-July 2026).
 
 ## What is here
 
@@ -17,7 +19,7 @@ Eight projects completed for the Peking University Guanghua Business Analytics W
 | [7. Strategy deployment study](Task7/README.md) | Compare three ETF strategies and track their signals through backtests and a public-data shadow portfolio. |
 | [8. Final report](Task8/README.md) | Synthesize the methods, findings, and limits of the preceding tasks. |
 
-The [eight English reports](reports/) contain the full analysis for each task. The [directory guide](docs/directory-structure.md) explains shared data, artifacts, and scripts; dashboards and structured outputs provide the underlying figures and metrics.
+The [eight English reports](reports/) summarize the methods and findings for each task. The [directory guide](docs/directory-structure.md) explains shared data, artifacts, and scripts; dashboards and structured outputs provide the underlying figures and metrics.
 
 ## Research architecture
 
@@ -30,7 +32,7 @@ frozen market snapshots
         -> static dashboards and generated reports
 ```
 
-The tasks share data conventions and reporting rules but remain independently reproducible. Structured CSV and JSON outputs are the evidence layer; dashboards and PDFs render those artifacts rather than serving as the only copy of a result.
+The tasks share data conventions and reporting rules, with separate research entry points. Structured CSV and JSON outputs preserve predictions, trades, and metrics. Task READMEs distinguish offline checks, model reruns, and dashboard builds.
 
 ## Key technical decisions
 
@@ -45,19 +47,19 @@ The tasks share data conventions and reporting rules but remain independently re
 
 ## Explore and verify offline
 
-The published [hub](https://rebekahlllimx.github.io/quant-trading-ai/) and committed dashboards can be viewed without an account. Run the offline checks from the repository root:
+The published [hub](https://rebekahlllimx.github.io/quant-trading-ai/) and committed dashboards can be viewed without an account. For local checks, use Python 3.10 (the CI version) and the pinned NumPy, pandas, and scikit-learn versions in `requirements.txt`. The saved Task 6 model bundles record those versions; loading them with a different scikit-learn release is not the validated reproduction path.
+
+Run from the repository root:
 
 ```bash
 python -m venv .venv
 source .venv/bin/activate
 python -m pip install -r requirements.txt
 
-python -m unittest discover -s tests -v
-python Task7/scripts/validate_results.py
-python Task2/scripts/build_dashboard.py
+python tools/run_all_validations.py
 ```
 
-The final command rebuilds `Task2/dashboard/index.html` from committed CSV files. Task-specific commands are listed in each task README.
+The validation command checks repository structure, regression tests, and saved Task 5-7 results without refreshing market data or retraining models. It restores timestamp-only validation artifacts after checking. Task-specific build commands are listed in each README; builders overwrite their documented generated outputs.
 
 ## Data and execution boundaries
 
@@ -72,6 +74,6 @@ The final command rebuilds `Task2/dashboard/index.html` from committed CSV files
 | [`Task1/` to `Task8/`](Task1/) | Task scripts, dashboards, and analyses. |
 | [`data/`](data/) | Raw and processed research data plus metadata. |
 | [`artifacts/`](artifacts/) | Generated charts and model artifacts. |
-| [`reports/`](reports/) | Eight maintained English reports generated from the current project evidence. |
+| [`reports/`](reports/) | Eight English reports covering methods, results, and interpretation. |
 | [`src/`](src/) | Shared code across tasks. |
 | [`docs/`](docs/) | Data and directory conventions. |

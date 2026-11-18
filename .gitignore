@@ -26,10 +26,10 @@ Task7/reference/
 Task7/output/*.png
 *.zip
 
-# Internal workflow doc (contains AI de-texting tricks, not for teachers/TAs)
+# Local drafting notes
 skills.md
 
-# Claude Code
+# Local tool configuration
 .claude/
 
 # Temporary office files

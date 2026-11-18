@@ -17,8 +17,23 @@ Channel levels use prior completed bars, so the current high or low cannot trigg
 
 - [Interactive dashboard](dashboard/index.html)
 - [`scripts/turtle_strategy.py`](scripts/turtle_strategy.py) - stateful strategy engine
-- [`scripts/plot_turtle.py`](scripts/plot_turtle.py) - analysis and plots
-- [`scripts/prepare_data.py`](scripts/prepare_data.py) - normalized input preparation
+- [`scripts/plot_turtle.py`](scripts/plot_turtle.py) - regenerate the strategy figures
+- [`scripts/prepare_data.py`](scripts/prepare_data.py) - refresh the dashboard's embedded market data
 - [English report](../reports/Task4_Report.pdf)
 
 Parameter scans compare channel lengths, stop multiples, risk budgets, and instrument-level behavior under the same execution rules.
+
+## Run the backtest and figures
+
+After the repository-level environment setup, run from the repository root:
+
+```bash
+python Task4/scripts/turtle_strategy.py
+python Task4/scripts/plot_turtle.py
+```
+
+These scripts read the shared snapshots in `data/csv/`; the plotting command replaces figures in `artifacts/charts/task4/`. The committed dashboard is a standalone page that can be opened directly.
+
+Local runs use the date range in the shared CSV snapshots. The committed dashboard and report retain their reference-period results until explicitly regenerated; compare strategy metrics over matching dates.
+
+To update the dashboard after changing the shared snapshots, run `python Task4/scripts/prepare_data.py`. It replaces only the embedded stock data, preserving the page layout and browser-side strategy code.
