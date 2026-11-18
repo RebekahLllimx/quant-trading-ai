@@ -1,4 +1,4 @@
-date,strategy,symbol,side,shares,raw_price,fill_price,gross_value,commission,slippage_cost,reason
+﻿date,strategy,symbol,side,shares,raw_price,fill_price,gross_value,commission,slippage_cost,reason
 2016-02-17,C,159915,BUY,118900,2.09899998,2.10109898,249820.66871962,74.94620062,249.57109762,Highest weekly momentum: 159915
 2016-02-24,C,159915,SELL,100,2.10200000,2.09989800,209.98980000,5.00000000,0.21020000,Weekly rebalancing to50%Target position size
 2016-03-02,C,159915,SELL,118800,1.82299995,1.82117695,216355.82166594,64.90674650,216.57239406,Three of themETFNone of the momenta are positive.

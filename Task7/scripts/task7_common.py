@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """Shared data, backtest, metric and export helpers for TASK7.
 
-The local engine is deliberately simple and conservative:
+Execution assumptions:
 
 * signals only use information available at the previous close;
 * orders execute at the next open;
@@ -33,10 +33,10 @@ METADATA_DIR = DATA_ROOT / "metadata"
 DASHBOARD_DATA_DIR = ROOT / "Task7" / "dashboard" / "data"
 
 SYMBOLS = {
-    "510300": {"jq": "510300.XSHG", "yahoo": "510300.SS", "name": "Shanghai and Shenzhen300ETF"},
-    "510500": {"jq": "510500.XSHG", "yahoo": "510500.SS", "name": "CSI500ETF"},
-    "159915": {"jq": "159915.XSHE", "yahoo": "159915.SZ", "name": "GEMETF"},
-    "000300": {"jq": "000300.XSHG", "yahoo": "000300.SS", "name": "Shanghai and Shenzhen300"},
+    "510300": {"jq": "510300.XSHG", "yahoo": "510300.SS", "name": "CSI 300 ETF"},
+    "510500": {"jq": "510500.XSHG", "yahoo": "510500.SS", "name": "CSI 500 ETF"},
+    "159915": {"jq": "159915.XSHE", "yahoo": "159915.SZ", "name": "ChiNext ETF"},
+    "000300": {"jq": "000300.XSHG", "yahoo": "000300.SS", "name": "CSI 300"},
 }
 
 INITIAL_CAPITAL = 500_000.0

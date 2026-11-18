@@ -52,9 +52,9 @@ def latest_card(strategy, frame, metrics, platform_status):
     return {
         "strategy": strategy,
         "name": {
-            "A": "platform-template baseline",
-            "B": "dual moving-average + ATRRisk control",
-            "C": "broad-marketETFmomentum rotation",
+            "A": "Platform-template baseline",
+            "B": "Dual moving-average with ATR risk control",
+            "C": "Broad-market ETF momentum rotation",
         }[strategy],
         "as_of": latest["Date"],
         "signal": latest["Signal"],
@@ -89,7 +89,7 @@ def main() -> int:
         "simulation_status",
         {
             "status": "not_imported",
-            "message": "The simulation panel remains private.; After creation, supplement evidence via screenshots or field exports. ",
+            "message": "No platform execution summary has been imported.",
             "actual_performance_available": False,
         },
     )

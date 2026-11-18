@@ -1,4 +1,4 @@
-date,strategy,symbol,side,shares,raw_price,fill_price,gross_value,commission,slippage_cost,reason
+﻿date,strategy,symbol,side,shares,raw_price,fill_price,gross_value,commission,slippage_cost,reason
 2016-02-18,A,510300,BUY,193300,2.58251391,2.58509642,499699.13874180,149.90974162,499.19993880,T-1closing price higherMA20
 2016-02-19,A,510300,SELL,200,2.55899822,2.55643922,511.28784436,5.00000000,0.51179964,T-1closing price higherMA20
 2016-02-26,A,510300,SELL,193100,2.45737749,2.45492011,474045.07372568,142.21352212,474.51959332,T-1The closing price is not higherMA20
