@@ -16,6 +16,5 @@ python-docx>=0.8
 reportlab>=4.0
 
 # Optional market-data refresh scripts; running them needs network access
-akshare>=1.18
-tushare>=1.4
+# Live providers are installed separately with requirements-refresh.txt.
 requests>=2.28

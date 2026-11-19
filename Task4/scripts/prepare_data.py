@@ -7,23 +7,13 @@ import re
 from pathlib import Path
 
 from turtle_strategy import load_stock
+from market_data import INSTRUMENTS
 
 BASE_DIR = Path(__file__).resolve().parents[1]
 OUTPUT_FILE = BASE_DIR / 'dashboard' / 'index.html'
 STOCKS_BINDING = re.compile(r'^\s*const STOCKS =\s*', re.MULTILINE)
 
-STOCKS = [
-    ('600519', 'Kweichow Moutai', 'A-share'),
-    ('601318', 'Ping An of China', 'A-share'),
-    ('300750', 'CATL', 'A-share'),
-    ('002594', 'BYD', 'A-share'),
-    ('000001', 'Ping An Bank', 'A-share'),
-    ('00700', 'Tencent Holdings', 'Hong Kong equities'),
-    ('09988', 'Alibaba', 'Hong Kong equities'),
-    ('03690', 'Meituan', 'Hong Kong equities'),
-    ('00388', 'Hong Kong Exchange', 'Hong Kong equities'),
-    ('00941', 'China Mobile', 'Hong Kong equities'),
-]
+STOCKS = [(item.code, item.name, item.market) for item in INSTRUMENTS]
 
 
 def build_stocks_json():

@@ -12,6 +12,7 @@ ROOT = Path(__file__).resolve().parents[1]
 COMMANDS = [
     [sys.executable, "tools/validate_public_structure.py"],
     [sys.executable, "-m", "unittest", "discover", "-s", "tests", "-v"],
+    [sys.executable, "tools/validate_market_snapshot.py"],
     [sys.executable, "Task5/scripts/validate_results.py"],
     [sys.executable, "Task5/scripts/validate_experiment2.py"],
     [sys.executable, "Task6/scripts/validate_results.py"],

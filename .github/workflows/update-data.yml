@@ -2,11 +2,9 @@ name: Update Market Data
 
 on:
   schedule:
-    # Each trading day UTC 10:00 = Beijing time 18:00 (AAfter the closing of shares)
-    # Monday to Friday
+    # Weekdays at 18:00 Asia/Shanghai; providers determine available trading bars.
     - cron: '0 10 * * 1-5'
   workflow_dispatch:
-    # Manually Trigger Entry: GitHub warehouse  ->  Actions  ->  Update Market Data  ->  Run workflow
     inputs:
       prefer_tushare:
         description: 'Prefer Tushare for this manual run (falls back automatically)'
@@ -17,7 +15,6 @@ on:
 permissions:
   contents: write
 
-# prevent the same workflow Concurrent execution (Manually triggering on the same day will not conflict with scheduled tasks)
 concurrency:
   group: update-data
   cancel-in-progress: false
@@ -37,13 +34,16 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v6
         with:
-          python-version: '3.10'
+          python-version: '3.12'
           cache: 'pip'
+          cache-dependency-path: requirements-refresh.txt
 
       - name: Install dependencies
         run: |
-          pip install --upgrade pip
-          pip install tushare akshare pandas numpy requests openpyxl
+          python -m pip install -r requirements-refresh.txt
+          python -m pip check
+          python tools/check_refresh_dependencies.py
+          python -m unittest discover -s tests -v
 
       - name: Fetch latest market data
         env:
@@ -66,8 +66,11 @@ jobs:
       - name: Check for changes
         id: git-check
         run: |
-          git status --short
-          if git diff --quiet && git diff --cached --quiet; then
+          python tools/validate_market_snapshot.py
+          git add -A -- data/csv Task1/dashboard/index.html Task2/dashboard/index.html
+          git add -- Task3/dashboard/data.json Task3/dashboard/index.html Task4/dashboard/index.html
+          git add -- data/task7 Task7/dashboard/data/dashboard.json Task7/dashboard/index.html
+          if git diff --cached --quiet; then
             echo "changed=false" >> $GITHUB_OUTPUT
             echo "No data changes detected  -  skipping commit"
           else
@@ -79,7 +82,5 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/csv/*.csv Task3/dashboard/index.html Task4/dashboard/index.html
-          git add data/task7 Task7/dashboard/data/dashboard.json Task7/dashboard/index.html
           git commit -m "chore(data): auto-update market data $(date +%Y-%m-%d)"
           git push

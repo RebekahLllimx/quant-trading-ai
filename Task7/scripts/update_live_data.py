@@ -219,14 +219,14 @@ def fetch_benchmark_akshare() -> pd.DataFrame:
 
     today = pd.Timestamp.today().strftime("%Y%m%d")
     try:
-        frame = ak.stock_zh_index_daily_em(
+        frame = ak.index_zh_daily_em(
             symbol="sh000300",
             start_date=START_DATE.replace("-", ""),
             end_date=today,
         )
         source = "Eastmoney via AKShare (unadjusted index)"
     except Exception as primary_error:
-        frame = ak.stock_zh_index_daily(symbol="sh000300")
+        frame = ak.index_zh_daily_sina(symbol="sh000300")
         frame["date"] = pd.to_datetime(frame["date"])
         frame = frame[
             (frame["date"] >= START_DATE)

@@ -18,3 +18,18 @@ jobs:
           cache: pip
       - run: python -m pip install -r requirements.txt
       - run: python tools/run_all_validations.py
+
+  refresh-contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements-refresh.txt
+      - run: python -m pip install -r requirements-refresh.txt
+      - run: python -m pip check
+      - run: python tools/check_refresh_dependencies.py
+      - run: python -m unittest discover -s tests -v
+      - run: python tools/validate_market_snapshot.py

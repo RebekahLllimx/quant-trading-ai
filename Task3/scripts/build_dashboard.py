@@ -862,7 +862,7 @@ def main():
     print(f'   Loading {len(stocks)} Stock only data')
 
     # Serialized as JS object
-    stocks_json = json.dumps(stocks, ensure_ascii=False, indent=2)
+    stocks_json = json.dumps(stocks, allow_nan=False, indent=2).replace('<', '\\u003c')
 
     # Embed Data
     html = HTML_TEMPLATE.replace('__STOCKS_DATA__', stocks_json)

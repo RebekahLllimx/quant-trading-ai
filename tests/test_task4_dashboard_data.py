@@ -58,7 +58,7 @@ class DashboardDataTest(unittest.TestCase):
     def test_snapshot_lookup_uses_symbol_and_sorts_dates(self):
         with TemporaryDirectory() as directory:
             snapshot = Path(directory) / '600519_kweichow_moutai_a_share_daily.csv'
-            snapshot.write_text('Date,Close\n2026-01-02,12\n2026-01-01,11\n', encoding='utf-8')
+            snapshot.write_text('Date,Open,Close,High,Low,Volume\n2026-01-02,12,12,13,11,100\n2026-01-01,11,11,12,10,90\n', encoding='utf-8')
             frame = dashboard_data.load_stock('600519', 'Kweichow Moutai', 'A-share', directory)
             self.assertEqual(frame['Close'].tolist(), [11, 12])
 
