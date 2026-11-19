@@ -10,7 +10,7 @@ Task 3 implements a moving-average crossover strategy with explicit signal timin
 - Remain long-only; do not use leverage or short selling.
 - Deduct commission and slippage from every trade.
 
-## Course result
+## Reference analysis
 
 For the frozen Kweichow Moutai example from May 2025 to July 2026, the default MA(5, 15) rule returned `-5.67%`, compared with `-18.24%` for buy-and-hold. Maximum drawdown was `-15.20%` versus `-21.35%`. The strategy reduced exposure during a declining period, but did not produce a positive absolute return.
 
@@ -24,7 +24,7 @@ The parameter grid shows the trade-off between short lookbacks, which create mor
 - [`scripts/build_dashboard.py`](scripts/build_dashboard.py) - static dashboard build
 - [English report](../reports/Task3_Report.pdf)
 
-## Reproduce from frozen prices
+## Rebuild from stored prices
 
 After the repository-level environment setup, run from the repository root:
 
@@ -36,4 +36,4 @@ python Task3/scripts/plot_strategy.py
 
 The first two commands rebuild `dashboard/data.json` and `dashboard/index.html` from `data/csv/`. The last regenerates analysis figures under `artifacts/charts/task3/`. These commands overwrite generated files and do not refresh market data.
 
-The dashboard exposes the equity curve, drawdown, trades, and parameter grid for the same frozen interval.
+The dashboard computes the equity curve, drawdown, trades, and parameter grid over the current shared snapshots. Scheduled updates can change that interval. The PDF report preserves the reference analysis above; compare metrics only over matching dates.

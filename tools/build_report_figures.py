@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import sys
 from pathlib import Path
 
 import matplotlib.pyplot as plt
@@ -12,6 +13,8 @@ import pandas as pd
 
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+from market_data import INSTRUMENTS, canonical_path
 OUT = ROOT / "reports" / "figures"
 OUT.mkdir(parents=True, exist_ok=True)
 
@@ -33,11 +36,11 @@ def load_market_file(path: Path) -> pd.DataFrame:
 
 
 def task1() -> None:
-    files = sorted((ROOT / "data/csv").glob("*_daily.csv"))
     fig, ax = plt.subplots(figsize=(9.2, 4.3), constrained_layout=True)
-    for path in files:
+    for item in INSTRUMENTS:
+        path = canonical_path(item.code)
         frame = load_market_file(path)
-        label = path.stem.replace("_daily", "").split("_", 1)[1].replace("_", " ").title()
+        label = item.name
         normalized = frame["Close"] / frame["Close"].iloc[0] * 100
         ax.plot(frame["Date"], normalized, lw=1.3, label=label)
     ax.axhline(100, color="#999999", lw=0.8)

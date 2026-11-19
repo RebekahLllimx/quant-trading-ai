@@ -565,7 +565,7 @@ if __name__ == "__main__":
 
     # Load 1 stocks for testing.
     DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'data', 'csv')
-    test_file = os.path.join(DATA_DIR, '600519_Kweichow Moutai_A-share_daily.csv')
+    test_file = os.path.join(DATA_DIR, '600519_kweichow_moutai_a_share_daily.csv')
 
     if os.path.exists(test_file):
         print(f" Test data: 600519 Kweichow Moutai")

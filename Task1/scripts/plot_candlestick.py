@@ -1,12 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-AComparison and Analysis of Character Stocks Between A-Shares and Hong Kong Stocks  -  -  KLine Diagram (Candlestick chart) + multi-dimensional contrast
-use mplfinance Drawing StandardsKLine Diagram, Covering Shanghai and ShenzhenA-shares and Hong Kong equities
-"""
+"""Plot candlestick and cross-market comparisons from committed OHLCV snapshots."""
 
 import os
 import sys
+from pathlib import Path
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -14,6 +12,8 @@ import matplotlib.dates as mdates
 import mplfinance as mpf
 from datetime import datetime, timedelta
 import warnings
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+from market_data import load_prices, volume_in_shares
 warnings.filterwarnings('ignore')
 
 # ==================== Configuration ====================
@@ -44,7 +44,7 @@ HK_STOCKS = [
     {"code": "00941", "name": "China Mobile",   "sector": "Telecommunications Operations",   "market": "Hang Seng Index constituents"},
 ]
 
-# Chinese fonts
+# Font fallbacks for portable chart rendering.
 plt.rcParams['font.sans-serif'] = ['Heiti SC', 'STHeiti', 'PingFang SC', 'Arial Unicode MS', 'SimHei', 'sans-serif']
 plt.rcParams['axes.unicode_minus'] = False
 plt.rcParams['font.monospace'] = ['Heiti SC', 'STHeiti', 'sans-serif']
@@ -52,44 +52,23 @@ plt.rcParams['font.monospace'] = ['Heiti SC', 'STHeiti', 'sans-serif']
 # ==================== Data Acquisition ====================
 
 def fetch_a_stock(code):
-    """GetAPre-stock recovery daily data"""
-    import akshare as ak
-    df = ak.stock_zh_a_hist(symbol=code, period='daily',
-                            start_date=START_DATE, end_date=END_DATE, adjust='qfq')
-    df = df.rename(columns={
-        'Date': 'Date', 'Opening': 'Open', 'Close of trading': 'Close',
-        'highest': 'High', 'Minimum': 'Low', 'Trading volume': 'Volume',
-        'Turnover': 'Amount', 'Return': 'PctChg', 'Turnover rate': 'Turnover',
-    })
-    df['Date'] = pd.to_datetime(df['Date'])
-    df = df.sort_values('Date').reset_index(drop=True)
-    return df
+    """Read the validated snapshot; network refresh is a separate operation."""
+    return load_prices(code, DATA_DIR)
 
 
 def fetch_hk_stock(code):
-    """Obtain Hong Kong equity adjusted daily data"""
-    import akshare as ak
-    df = ak.stock_hk_hist(symbol=code, period='daily',
-                          start_date=START_DATE, end_date=END_DATE, adjust='qfq')
-    df = df.rename(columns={
-        'Date': 'Date', 'Opening': 'Open', 'Close of trading': 'Close',
-        'highest': 'High', 'Minimum': 'Low', 'Trading volume': 'Volume',
-        'Turnover': 'Amount', 'Return': 'PctChg',
-    })
-    df['Date'] = pd.to_datetime(df['Date'])
-    df = df.sort_values('Date').reset_index(drop=True)
-    return df
+    """Read the validated Hong Kong snapshot."""
+    return load_prices(code, DATA_DIR)
 
 
 # ==================== Kline graph drawing (mplfinance) ====================
 
 def plot_candlestick(df, title, save_path, stock_info, show_ma=True):
-    """use mplfinance Drawing StandardsKLine Candle Chart + Trading volume"""
+    """Plot prices, moving averages, and volume in millions of shares."""
     # Prepare data: mplfinance need Date, Open, High, Low, Close, Volume column
     ohlc_df = df[['Date', 'Open', 'High', 'Low', 'Close', 'Volume']].copy()
     ohlc_df = ohlc_df.set_index('Date')
-    # Volume Unit Conversion (AHands.->million shares, Hong Kong equity->million shares)
-    ohlc_df['Volume'] = ohlc_df['Volume'] / 10000
+    ohlc_df['Volume'] = volume_in_shares(df, stock_info['code']).to_numpy() / 1_000_000
 
     # Calculate moving average
     if show_ma:
@@ -172,7 +151,7 @@ def plot_candlestick(df, title, save_path, stock_info, show_ma=True):
 
 
 def plot_candlestick_recent(df, title, save_path, months=3):
-    """Draw nearNmonths ofKLine Diagram (Zoom in on details) """
+    """Plot a recent window with the same price and volume units."""
     cutoff = df['Date'].max() - pd.DateOffset(months=months)
     df_recent = df[df['Date'] >= cutoff].copy()
     if len(df_recent) < 20:
@@ -180,7 +159,8 @@ def plot_candlestick_recent(df, title, save_path, months=3):
 
     ohlc_df = df_recent[['Date', 'Open', 'High', 'Low', 'Close', 'Volume']].copy()
     ohlc_df = ohlc_df.set_index('Date')
-    ohlc_df['Volume'] = ohlc_df['Volume'] / 10000
+    code = str(df_recent['Symbol'].iloc[0])
+    ohlc_df['Volume'] = volume_in_shares(df_recent, code).to_numpy() / 1_000_000
 
     mc = mpf.make_marketcolors(
         up='red', down='green', edge='inherit', wick='inherit',
@@ -354,7 +334,7 @@ def build_summary(a_data, hk_data):
 if __name__ == "__main__":
     print("=" * 65)
     print("  A-share vs Hong Kong equities Representative stock of personalityKline graph analysis and comparison")
-    print(f"  Time range: {START_DATE} ~ {END_DATE}")
+    print("  Input: committed snapshots in data/csv")
     print("=" * 65)
 
     #  Steps1: Get data
@@ -428,23 +408,10 @@ if __name__ == "__main__":
     print(summary.to_string(index=False))
     print(f"\nStatistical summary saved: AH_summary.csv")
 
-    #  Steps8: SaveCSV
-    print("\n>>> Steps8: Save all stocksCSV...")
-    all_stocks = [(A_STOCKS, a_data, 'A-share'), (HK_STOCKS, hk_data, 'Hong Kong equities')]
-    for stock_list, data_dict, mkt in all_stocks:
-        for s in stock_list:
-            name = s['name']
-            if name in data_dict:
-                df_out = data_dict[name].copy()
-                df_out['Date'] = df_out['Date'].dt.strftime('%Y-%m-%d')
-                csv_path = os.path.join(DATA_DIR, f"{s['code']}_{name}_{mkt}_daily.csv")
-                df_out.to_csv(csv_path, index=False, encoding='utf-8-sig')
-                print(f"  [{mkt}stock] {name}  ->  {os.path.basename(csv_path)}")
-
     print("\n" + "=" * 65)
     print(f"  All completed! ")
     print(f"  A-share {len(a_data)} only + Hong Kong equities {len(hk_data)} only, total {len(a_data)+len(hk_data)} Only stock")
     print(f"   10 ZhangKLine Candle Chart (Contains2Zhang Recent Details Enlarged) ")
     print(f"   1 ZhangA-sharevsHong Kong Stock Comprehensive Comparison Chart")
-    print(f"   1 Statistical summary table + 10 Share of individual stocksCSV")
+    print("   Charts and summary generated; source price snapshots are unchanged.")
     print("=" * 65)

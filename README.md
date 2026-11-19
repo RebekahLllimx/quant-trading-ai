@@ -24,7 +24,7 @@ The [eight English reports](reports/) summarize the methods and findings for eac
 ## Research architecture
 
 ```text
-frozen market snapshots
+versioned market snapshots
         -> validated schemas and indicators
         -> rule-based or statistical signals
         -> positions, costs, and portfolio accounting
@@ -41,7 +41,7 @@ The tasks share data conventions and reporting rules, with separate research ent
 | Chronological validation for market models | Random splits would mix later market regimes into training and overstate out-of-sample evidence. |
 | Explicit signal and execution time | Indicators use completed observations, and positions take effect on the next eligible bar to prevent look-ahead. |
 | Costs inside the portfolio engine | Commission, slippage, and turnover are part of the strategy calculation rather than an adjustment added after performance is observed. |
-| Frozen inputs for offline reproduction | Committed snapshots allow the same calculations and dashboards to run without live API credentials or provider drift. |
+| Versioned inputs for offline reproduction | A checked-out revision provides its own snapshots and results. Tasks 1-4 can be refreshed together; saved model studies and PDF reports keep their recorded inputs. |
 | Structured predictions and portfolio records | Metrics can be recomputed from saved predictions, holdings, trades, and net asset value instead of copied from charts. |
 | Separate evidence layers | Historical backtests, platform simulations, and public-data shadow portfolios remain distinct because their feeds and execution rules differ. |
 
@@ -59,13 +59,15 @@ python -m pip install -r requirements.txt
 python tools/run_all_validations.py
 ```
 
-The validation command checks repository structure, regression tests, and saved Task 5-7 results without refreshing market data or retraining models. It restores timestamp-only validation artifacts after checking. Task-specific build commands are listed in each README; builders overwrite their documented generated outputs.
+The validation command checks repository structure, regression tests, CSV-to-dashboard consistency, and saved Task 5-7 results without fetching market data or retraining models. It preserves the saved validation reports. Task-specific build commands are listed in each README; builders overwrite their documented generated outputs.
 
 ## Data and execution boundaries
 
 - `data/` contains committed inputs and derived datasets. `artifacts/` stores charts and model outputs; `reports/` stores the final PDFs.
-- Refresh scripts such as [`Task2/scripts/update_data.py`](Task2/scripts/update_data.py) call external market-data APIs. Offline builds use committed snapshots.
+- [`update_all_data.py`](update_all_data.py) refreshes Tasks 1-4 as one validated snapshot. It stages all inputs and pages, checks their values agree, and replaces files only after the complete build passes. Provider fields, volume units, qfq revisions, and recovery commands are described in the [market-data guide](docs/market-data.md).
 - JoinQuant supplies `jqdata` inside its platform. Task 7 also maintains a public-data shadow portfolio; platform results and shadow results remain separate because their data and execution rules differ.
+
+Market refresh uses a separate Python 3.12 environment with `requirements-refresh.txt`. It does not retrain models or regenerate the PDF reports. The scheduled workflow also updates and validates Task 7's shadow portfolio before committing its outputs.
 
 ## Repository map
 

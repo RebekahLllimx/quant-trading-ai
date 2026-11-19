@@ -34,6 +34,6 @@ python Task4/scripts/plot_turtle.py
 
 These scripts read the shared snapshots in `data/csv/`; the plotting command replaces figures in `artifacts/charts/task4/`. The committed dashboard is a standalone page that can be opened directly.
 
-Local runs use the date range in the shared CSV snapshots. The committed dashboard and report retain their reference-period results until explicitly regenerated; compare strategy metrics over matching dates.
+Local runs and the dashboard use the date range in the shared CSV snapshots. Scheduled refreshes update the dashboard's inputs. The PDF report preserves its reference-period analysis; compare strategy metrics over matching dates.
 
 To update the dashboard after changing the shared snapshots, run `python Task4/scripts/prepare_data.py`. It replaces only the embedded stock data, preserving the page layout and browser-side strategy code.

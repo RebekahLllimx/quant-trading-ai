@@ -1,25 +1,19 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Multiple Shanghai and ShenzhenAStock data acquisition, Visualization and Analysis
-use Tushare Pro API, Covering the main board of Shanghai Stock Exchange, Shenzhen Stock Exchange Main Board, GEM and other different sectors
-"""
+"""Plot five A-share equities and summarize their committed daily-price histories."""
 
 import os
+import sys
+from pathlib import Path
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 from datetime import datetime, timedelta
-import tushare as ts
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+from market_data import load_prices
 
 # ==================== Configuration ====================
-# From config.py Read Tushare Token (config.py Has been gitignore Exclude)
-try:
-    from config import TUSHARE_TOKEN
-except ImportError:
-    TUSHARE_TOKEN = ""  # If not configured, use A-shareKShare
-
-# Curated5Only represents different industries and sectors in Shanghai and Shenzhen.A-share
+# Five A-share instruments representing different sectors.
 STOCKS = [
     {"code": "000001", "name": "Ping An Bank", "sector": "Bank Finance", "market": "Shenzhen Stock Exchange Main Board"},
     {"code": "600519", "name": "Kweichow Moutai", "sector": "liquor consumption", "market": "SSE Main Board"},
@@ -38,48 +32,20 @@ os.makedirs(CHART_DIR, exist_ok=True)
 os.makedirs(DATA_DIR, exist_ok=True)
 CHART_COMPARE = os.path.join(CHART_DIR, "multi_stock_compare.png")
 
-# Chinese fonts
+# Font fallbacks for portable chart rendering.
 plt.rcParams['font.sans-serif'] = ['Heiti SC', 'STHeiti', 'PingFang SC', 'Arial Unicode MS', 'SimHei', 'sans-serif']
 plt.rcParams['axes.unicode_minus'] = False
 plt.rcParams['font.monospace'] = ['Heiti SC', 'STHeiti', 'sans-serif']
 
 
 def fetch_stock_data(code):
-    """Obtain stock adjusted daily data (AKShareforward-adjusted, TushareSpare) """
-    # PlanA: AKShare forward-adjusted (Properly handling stock splits and dividend adjustments)
-    try:
-        import akshare as ak
-        df = ak.stock_zh_a_hist(symbol=code, period='daily',
-                                start_date=START_DATE, end_date=END_DATE, adjust='qfq')
-        if df is not None and len(df) > 0:
-            df = df.rename(columns={
-                'Date': 'trade_date', 'Opening': 'open', 'Close of trading': 'close',
-                'highest': 'high', 'Minimum': 'low', 'Trading volume': 'vol', 'Turnover': 'amount',
-                'Return': 'pct_chg', 'Price change': 'change', 'Turnover rate': 'turnover',
-                'Symbol': 'ts_code', 'Amplitude': 'amplitude',
-            })
-            df['trade_date'] = pd.to_datetime(df['trade_date'])
-            df = df.sort_values('trade_date').reset_index(drop=True)
-            print(f"  Fetching... {code} (AKShareforward-adjusted)...", end=" ")
-            print(f"{len(df)} records")
-            return df
-    except Exception as e:
-        print(f"  AKShareFailure({str(e)[:50]}), FallbackTushare...", end=" ")
-
-    # PlanB: Tushare Pro
-    ts.set_token(TUSHARE_TOKEN)
-    pro = ts.pro_api()
-
-    if code.startswith(('6', '9')):
-        ts_code = f"{code}.SH"
-    else:
-        ts_code = f"{code}.SZ"
-
-    df = pro.daily(ts_code=ts_code, start_date=START_DATE, end_date=END_DATE)
-    df = df.sort_values('trade_date').reset_index(drop=True)
-    df['trade_date'] = pd.to_datetime(df['trade_date'])
-    print(f"{len(df)} records (Tushare)")
-    return df
+    """Adapt committed bars to the plotting functions' lowercase field names."""
+    return load_prices(code, DATA_DIR).rename(columns={
+        'Date': 'trade_date', 'Open': 'open', 'Close': 'close', 'High': 'high',
+        'Low': 'low', 'Volume': 'vol', 'Amount': 'amount', 'PctChg': 'pct_chg',
+        'Price change': 'change', 'Turnover': 'turnover', 'Symbol': 'ts_code',
+        'Amplitude': 'amplitude',
+    })
 
 
 def normalize_price_series(df, base=100):
@@ -243,7 +209,7 @@ def plot_individual_charts(stocks_data, stocks_info):
 
 
 def build_statistics_table(stocks_data, stocks_info):
-    """Generate statistical summary DataFrame"""
+    """Summarize returns, volatility, and peak-relative maximum drawdown."""
     rows = []
     for s_name, df in stocks_data.items():
         info = stocks_info[s_name]
@@ -253,7 +219,8 @@ def build_statistics_table(stocks_data, stocks_info):
         df_copy['ret'] = close_p.pct_change()
         daily_std = df_copy['ret'].std()
         annual_vol = daily_std * (252 ** 0.5) * 100
-        max_dd = (close_p.cummax() - close_p).max() / close_p.cummax().max() * 100
+        peaks = close_p.cummax()
+        max_dd = ((peaks - close_p) / peaks).max() * 100
 
         rows.append({
             'Name of Stock': s_name,
@@ -268,27 +235,17 @@ def build_statistics_table(stocks_data, stocks_info):
             'Range change rate(%)': f"{chg:+.2f}",
             'annualized volatility(%)': f"{annual_vol:.2f}",
             'Maximum Drawdown(%)': f"{max_dd:.2f}",
-            'Average daily trading volume(Ten thousand hands)': f"{df['vol'].mean()/10000:,.0f}",
+            'Average daily volume (10,000 lots)': f"{df['vol'].mean()/10000:,.0f}",
         })
     return pd.DataFrame(rows)
 
-
-def save_csv_files(stocks_data, stocks_info):
-    """Save each stock&#39;sCSV"""
-    for s_name, df in stocks_data.items():
-        info = stocks_info[s_name]
-        csv_path = os.path.join(DATA_DIR, f"{info['code']}_{s_name}_daily.csv")
-        df_out = df.copy()
-        df_out['trade_date'] = df_out['trade_date'].dt.strftime('%Y-%m-%d')
-        df_out.to_csv(csv_path, index=False, encoding='utf-8-sig')
-        print(f"[CSV] {s_name} Data saved: {csv_path}")
 
 
 # ==================== Main program ====================
 if __name__ == "__main__":
     print("=" * 65)
     print("  Multiple Shanghai and ShenzhenABulk acquisition and analysis of historical stock trading data")
-    print(f"  Time range: {START_DATE} ~ {END_DATE}")
+    print("  Input: committed snapshots in data/csv")
     print("=" * 65)
 
     # 1. Get data in bulk
@@ -305,10 +262,6 @@ if __name__ == "__main__":
             print(f"  Failed to retrieve: {e}")
 
     print(f"\nSuccessfully obtained {len(stocks_data)}/{len(STOCKS)} Stock only data")
-
-    # 2. SaveCSV
-    print("\n>>> Steps2: SaveCSVFile")
-    save_csv_files(stocks_data, stocks_info)
 
     # 3. Generate statistical summary table
     print("\n>>> Steps3: Statistical Summary")
@@ -327,9 +280,9 @@ if __name__ == "__main__":
     individual_charts = plot_individual_charts(stocks_data, stocks_info)
 
     print("\n" + "=" * 65)
-    print("  All completed! Symbiotic: ")
-    print(f"   {len(stocks_data)} Only the stock CSV Data File")
-    print(f"   {len(stocks_data)} Individual stock chart")
-    print("   1 Zhang multi-strand comparison chart")
+    print("  Charts and summary complete")
+    print("   Source price snapshots are unchanged.")
+    print(f"   {len(stocks_data)} individual-stock charts")
+    print("   1 cross-stock comparison chart")
     print("   1 Statistical summary table")
     print("=" * 65)

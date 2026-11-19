@@ -7,6 +7,7 @@ Kweichow Moutai (600519) Main display target, Draw comprehensive index map + Par
 
 import os
 import sys
+from pathlib import Path
 import warnings
 warnings.filterwarnings('ignore')
 
@@ -15,6 +16,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
 import mplfinance as mpf
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+from market_data import load_prices, volume_in_shares
 
 # Add scripts To Path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -33,7 +37,7 @@ DATA_DIR = os.path.join(BASE_DIR, '..', 'data', 'csv')
 CHART_DIR = os.path.join(BASE_DIR, '..', 'artifacts', 'charts', 'task2')
 os.makedirs(CHART_DIR, exist_ok=True)
 
-# Chinese fonts
+# Font fallbacks for portable chart rendering.
 plt.rcParams['font.sans-serif'] = [
     'Heiti SC', 'STHeiti', 'PingFang SC',
     'Arial Unicode MS', 'SimHei', 'sans-serif'
@@ -60,14 +64,7 @@ STYLE = mpf.make_mpf_style(
 
 def load_stock(code, name, market):
     """Load Stock CSV Data"""
-    filename = f"{code}_{name}_{market}_daily.csv"
-    filepath = os.path.join(DATA_DIR, filename)
-    if not os.path.exists(filepath):
-        raise FileNotFoundError(f"Data file does not exist: {filepath}")
-    df = pd.read_csv(filepath, encoding='utf-8-sig')
-    df['Date'] = pd.to_datetime(df['Date'])
-    df = df.sort_values('Date').reset_index(drop=True)
-    return df
+    return load_prices(code, DATA_DIR)
 
 
 def prepare_ohlc(df):
@@ -75,8 +72,8 @@ def prepare_ohlc(df):
     ohlc = df[['Date', 'Open', 'High', 'Low', 'Close', 'Volume']].copy()
     ohlc = ohlc.set_index('Date')
     ohlc['Volume'] = ohlc['Volume'].astype(float)
-    # turnover to tens of thousands of shares
-    ohlc['Volume'] = ohlc['Volume'] / 10000
+    code = str(df['Symbol'].iloc[0])
+    ohlc['Volume'] = volume_in_shares(df, code).to_numpy() / 1_000_000
     return ohlc
 
 

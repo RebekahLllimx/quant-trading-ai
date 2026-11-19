@@ -7,6 +7,7 @@ Output 5 PNG files to artifacts/charts/task3/
 
 import os
 import sys
+from pathlib import Path
 import warnings
 warnings.filterwarnings('ignore')
 
@@ -16,7 +17,10 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
 from matplotlib.patches import FancyBboxPatch
 
-# Chinese fonts
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+from market_data import load_prices
+
+# Font fallbacks for portable chart rendering.
 plt.rcParams['font.sans-serif'] = [
     'Heiti SC', 'STHeiti', 'PingFang SC',
     'Arial Unicode MS', 'SimHei', 'sans-serif'
@@ -33,12 +37,7 @@ os.makedirs(CHART_DIR, exist_ok=True)
 #
 
 def load_stock(code, name, market):
-    filename = f"{code}_{name}_{market}_daily.csv"
-    filepath = os.path.join(DATA_DIR, filename)
-    df = pd.read_csv(filepath, encoding='utf-8-sig')
-    df['Date'] = pd.to_datetime(df['Date'])
-    df = df.sort_values('Date').reset_index(drop=True)
-    return df
+    return load_prices(code, DATA_DIR)
 
 
 def calc_sma(series, period):

@@ -11,6 +11,9 @@ reports/                eight generated English PDF reports
 src/                    shared indicator and equation utilities
 tools/                  repository-wide validation and report builders
 tests/                  offline regression tests
+market_data.py          instrument registry, OHLCV contract, and history rules
+refresh_pipeline.py     staged snapshot builds and publication validation
+update_all_data.py      provider adapters and the market-refresh CLI
 .github/workflows/      scheduled refresh and validation workflows
 index.html              GitHub Pages hub
 ```
@@ -21,6 +24,7 @@ index.html              GitHub Pages hub
 - `TaskN/scripts/` contains data preparation, research, validation, and page-build code.
 - `TaskN/dashboard/index.html` is the stable public page for each task.
 - `data/csv/` holds the shared daily-price snapshots used by Tasks 1-4. Tasks 5-7 use task-specific trees under `data/task5/`, `data/task6/`, and `data/task7/`, with raw, processed, and metadata files where required.
+- `data/csv/manifest.json` records snapshot hashes, coverage, units, and price-adjustment provenance. The [market-data guide](market-data.md) explains refresh and migration commands.
 - `artifacts/models/` stores estimators only when the matching feature contract and metadata are present.
 - `reports/TaskN_Report.pdf` contains the task's methods, results, and interpretation.
 
@@ -40,6 +44,6 @@ From the repository root:
 python tools/run_all_validations.py
 ```
 
-The wrapper runs the structure checks, unit tests, and Task 5-7 result validators without fetching new prices or training models. Individual validators write timestamped validation reports; the wrapper restores those files after the check.
+The Python 3.10 research environment runs structure checks, unit tests, stock-page consistency checks, and Task 5-7 result validators without fetching prices or training models. The wrapper preserves the saved validation reports. Live-provider refresh uses Python 3.12 and `requirements-refresh.txt` separately.
 
-Dashboard builders replace HTML and presentation JSON. Research pipelines can also replace predictions, model bundles, charts, and metadata. Task 7's market-data refresh uses network access; its offline shadow engine reads the committed snapshots. Task 4 refreshes the data embedded in its standalone dashboard without replacing the page layout.
+Dashboard builders replace HTML and presentation JSON. Tasks 1, 2, and 4 preserve their page layout and JavaScript calculations while refreshing embedded data. The unified updater stages and validates all four stock pages before replacing the working snapshot. Research pipelines can also replace predictions, model bundles, charts, and metadata. Task 7's market-data refresh uses network access; its offline shadow engine reads the committed snapshots.
