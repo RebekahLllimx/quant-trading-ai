@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "as_of": "2026-11-19",
+  "as_of": "2026-11-21",
   "instruments": {
     "600519": {
       "file": "600519_kweichow_moutai_a_share_daily.csv",
